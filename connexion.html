@@ -85,21 +85,34 @@
     .auth-brand-logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 16px;
       position: relative;
       z-index: 1;
     }
 
-    .auth-brand-logo img {
-      width: 38px;
-      height: 38px;
+    .auth-brand-logo-badge {
+      width: 100px;
+      height: 100px;
+      flex-shrink: 0;
+      background: #ffffff;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+    }
+
+    .auth-brand-logo-badge img {
+      width: 76px;
+      height: 76px;
       object-fit: contain;
     }
 
     .auth-brand-logo span {
       font-family: var(--sala-font-display);
       font-weight: 800;
-      font-size: 1.2rem;
+      font-size: 1.5rem;
+      letter-spacing: 0.02em;
     }
 
     .auth-brand-body {
@@ -341,6 +354,17 @@
         padding: 28px 26px;
       }
 
+      .auth-brand-logo-badge {
+        width: 76px;
+        height: 76px;
+        border-radius: 18px;
+      }
+
+      .auth-brand-logo-badge img {
+        width: 56px;
+        height: 56px;
+      }
+
       .auth-brand-body {
         justify-content: flex-start;
       }
@@ -369,7 +393,9 @@
 
     <div class="auth-brand-panel">
       <div class="auth-brand-logo">
-        <img src="img/logo_transparent.png" alt="Logo Sala">
+        <div class="auth-brand-logo-badge">
+          <img src="img/logo_transparent.png" alt="Logo Sala">
+        </div>
         <span>SALA</span>
       </div>
       <div class="auth-brand-body">
