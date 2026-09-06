@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue sur Sala — Découverte</title>
+  <meta name="description" content="Découvrez Sala, la plateforme pour l'emploi, les stages et les CV pour les jeunes en République du Congo.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/logo_100.png">
+
+  <!-- Polices Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/sala-theme.css" rel="stylesheet">
+
+  <style>
+    body {
+      background: #f8faf9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-x: hidden;
+    }
+
+    .onboarding-card {
+      max-width: 540px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 35px 30px;
+      box-shadow: 0 12px 40px rgba(30, 107, 49, 0.08);
+      border: 1px solid var(--sala-border);
+      text-align: center;
+      position: relative;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .slide-illustration {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      transition: transform 0.4s ease;
+    }
+
+    .slide-1 .slide-illustration { background: #eaf6ed; color: var(--sala-green); }
+    .slide-2 .slide-illustration { background: #fee2e2; color: var(--sala-red); }
+    .slide-3 .slide-illustration { background: #fefce8; color: #b45309; }
+    .slide-4 .slide-illustration { background: #e0f2fe; color: #0284c7; }
+
+    .step-indicator {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--sala-green);
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+      display: inline-block;
+      background: #eaf6ed;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .dots-container {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 25px 0;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      width: 28px;
+      border-radius: 10px;
+      background: var(--sala-green);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="p-3 px-md-4 d-flex justify-content-between align-items-center">
+    <a href="index.html" class="d-flex align-items-center text-decoration-none">
+      <img src="img/logo_transparent.png" alt="Logo Sala" style="height: 40px; width: auto;" class="me-2">
+      <span style="font-weight: 800; font-size: 1.3rem; color: var(--sala-green);">SALA</span>
+    </a>
+    <button id="btnSkip" class="btn btn-link text-muted text-decoration-none fw-bold small">
+      Passer <i class="fas fa-arrow-right ms-1"></i>
+    </button>
+  </header>
+
+  <!-- Container de slide -->
+  <main class="container my-auto py-3">
+    <div class="onboarding-card" id="onboardingCard">
+      
+      <span class="step-indicator" id="stepCounter">1 / 4</span>
+
+      <div class="slide-illustration" id="slideIcon">
+        <i class="fas fa-briefcase fa-4x"></i>
+      </div>
+
+      <h2 class="h3 fw-bold mb-3" id="slideTitle">Des offres d'emploi quotidiennes</h2>
+      
+      <p class="text-secondary mb-4" id="slideDescription" style="font-size: 1rem; line-height: 1.6; min-height: 60px;">
+        Des centaines d'opportunités d'emploi et de stage mises à jour régulièrement à Brazzaville, Pointe-Noire et dans tout le Congo.
+      </p>
+
+      <!-- Dots de progression -->
+      <div class="dots-container" id="dotsContainer">
+        <div class="dot active" data-index="0"></div>
+        <div class="dot" data-index="1"></div>
+        <div class="dot" data-index="2"></div>
+        <div class="dot" data-index="3"></div>
+      </div>
+
+      <!-- Bouton d'action -->
+      <button class="btn-sala-primary w-100 py-3 rounded-pill fw-bold" id="btnNext">
+        <span>Suivant</span> <i class="fas fa-arrow-right ms-2"></i>
+      </button>
+
+    </div>
+  </main>
+
+  <footer class="py-3 text-center text-muted small">
+    ONG Sala — Pour l'insertion professionnelle des jeunes au Congo
+  </footer>
+
+  <script>
+    const slides = [
+      {
+        counter: "1 / 4",
+        iconClass: "fas fa-briefcase fa-4x",
+        themeClass: "slide-1",
+        title: "Des offres d'emploi quotidiennes",
+        description: "Accédez aux opportunités de recrutement et de stage vérifiées à Brazzaville, Pointe-Noire et partout en République du Congo.",
+        btnText: "Suivant"
+      },
+      {
+        counter: "2 / 4",
+        iconClass: "fas fa-file-alt fa-4x",
+        themeClass: "slide-2",
+        title: "Générateur de CV professionnel",
+        description: "Créez votre CV moderne en 7 étapes intuitives, optimisé pour les recruteurs et téléchargeable gratuitement au format PDF.",
+        btnText: "Suivant"
+      },
+      {
+        counter: "3 / 4",
+        iconClass: "fas fa-user-tie fa-4x",
+        themeClass: "slide-3",
+        title: "Préparez vos entretiens d'embauche",
+        description: "Entraînez-vous avec les questions fréquentes des recruteurs et maîtrisez le droit du travail congolais.",
+        btnText: "Suivant"
+      },
+      {
+        counter: "4 / 4",
+        iconClass: "fas fa-wifi fa-4x",
+        themeClass: "slide-4",
+        title: "Disponible partout, même hors-ligne",
+        description: "Grâce à notre PWA, sauvegardez vos offres favorites et continuez vos démarches même avec un réseau limité.",
+        btnText: "Commencer sur Sala 🚀"
+      }
+    ];
+
+    let currentSlide = 0;
+    const card = document.getElementById("onboardingCard");
+    const stepCounter = document.getElementById("stepCounter");
+    const slideIcon = document.getElementById("slideIcon");
+    const slideTitle = document.getElementById("slideTitle");
+    const slideDescription = document.getElementById("slideDescription");
+    const btnNext = document.getElementById("btnNext");
+    const btnSkip = document.getElementById("btnSkip");
+    const dots = document.querySelectorAll(".dot");
+
+    function renderSlide(index) {
+      const data = slides[index];
+      
+      // Animation douce
+      card.style.opacity = "0";
+      card.style.transform = "translateY(8px)";
+
+      setTimeout(() => {
+        stepCounter.textContent = data.counter;
+        slideIcon.innerHTML = `<i class="${data.iconClass}"></i>`;
+        
+        // Supprimer anciennes classes
+        card.classList.remove("slide-1", "slide-2", "slide-3", "slide-4");
+        card.classList.add(data.themeClass);
+
+        slideTitle.textContent = data.title;
+        slideDescription.textContent = data.description;
+        btnNext.innerHTML = `<span>${data.btnText}</span> <i class="fas fa-arrow-right ms-2"></i>`;
+
+        // Mise à jour des dots
+        dots.forEach((d, i) => {
+          d.classList.toggle("active", i === index);
+        });
+
+        card.style.opacity = "1";
+        card.style.transform = "translateY(0)";
+      }, 150);
+    }
+
+    function completeOnboarding() {
+      localStorage.setItem("sala_onboarded", "true");
+      window.location.href = "offres.html";
+    }
+
+    btnNext.addEventListener("click", () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        renderSlide(currentSlide);
+      } else {
+        completeOnboarding();
+      }
+    });
+
+    btnSkip.addEventListener("click", () => {
+      completeOnboarding();
+    });
+
+    dots.forEach((dot) => {
+      dot.addEventListener("click", () => {
+        currentSlide = parseInt(dot.dataset.index);
+        renderSlide(currentSlide);
+      });
+    });
+
+    // Initialisation
+    renderSlide(0);
+  </script>
+</body>
+</html>

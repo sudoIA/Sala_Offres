@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Droit du Travail & Législation au Congo — Sala</title>
+  <meta name="description" content="Guide pratique du Code du Travail de la République du Congo (Loi n° 45-75). Contrats, SMIG, congés, préavis et protection des jeunes travailleurs à Brazzaville et Pointe-Noire.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/logo_100.png">
+
+  <!-- Polices Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/sala-theme.css" rel="stylesheet">
+
+  <style>
+    .topic-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: #ffffff;
+      border: 1.5px solid var(--sala-border);
+      color: #555e68;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .topic-pill:hover {
+      border-color: var(--sala-green);
+      color: var(--sala-green-dark);
+      background: rgba(59, 148, 82, 0.05);
+    }
+
+    .topic-pill.active {
+      background: var(--sala-green);
+      color: #ffffff;
+      border-color: var(--sala-green);
+      box-shadow: var(--sala-shadow-green);
+    }
+
+    .law-card {
+      background: #ffffff;
+      border: 1px solid var(--sala-border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--sala-shadow-sm);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .law-card:hover {
+      border-color: var(--sala-green);
+      box-shadow: var(--sala-shadow-md);
+    }
+
+    .badge-article {
+      background: rgba(59, 148, 82, 0.12);
+      color: var(--sala-green-dark);
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      border-radius: 30px;
+    }
+
+    .law-highlight {
+      background: #f8fbf9;
+      border-left: 4px solid var(--sala-green);
+      padding: 14px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+
+    .law-warning {
+      background: #fff8f8;
+      border-left: 4px solid var(--sala-red);
+      padding: 14px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 0.95rem;
+    }
+
+    .faq-q {
+      cursor: pointer;
+      padding: 14px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      color: #1e293b;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .faq-q:hover {
+      color: var(--sala-green-dark);
+    }
+
+    .faq-a {
+      display: none;
+      padding: 12px 0 16px;
+      color: #475569;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .faq-a.show {
+      display: block;
+    }
+  </style>
+</head>
+<body style="background-color: #f8fafc; padding-bottom: 85px;">
+
+  <!-- Barre supérieure Sala -->
+  <header class="navbar navbar-expand-lg bg-white border-bottom sticky-top py-2 px-3">
+    <div class="container-fluid max-w-7xl">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+        <img src="img/logo.jpg" alt="Logo Sala" style="height: 38px; width: 38px; border-radius: 8px; object-fit: cover;">
+        <span class="fw-bold" style="color: var(--sala-green-dark); font-size: 1.3rem;">SALA</span>
+      </a>
+
+      <div class="d-none d-md-flex align-items-center gap-4">
+        <a href="offres.html" class="text-secondary text-decoration-none fw-semibold">Offres d'emploi</a>
+        <a href="annuaires.html" data-nav-key="annuaires" class="text-secondary text-decoration-none fw-semibold">Annuaires & Formations</a>
+        <a href="entretiens.html" data-nav-key="entretiens" class="text-secondary text-decoration-none fw-semibold">Prépa Entretiens</a>
+        <a href="legislation.html" data-nav-key="legislation" class="fw-bold text-decoration-none" style="color: var(--sala-green);">Législation</a>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <a href="cv-builder.html" class="btn btn-sm btn-danger text-white rounded-pill px-3 fw-bold d-none d-sm-inline-flex align-items-center gap-1">
+          <i class="fas fa-file-invoice"></i> Créer mon CV
+        </a>
+        <a href="auth.html" id="navProfileBtn" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-semibold">
+          <i class="fas fa-user me-1"></i> Connexion
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Header Législation -->
+  <section class="py-4 py-md-5 text-white" style="background: linear-gradient(135deg, #1e6b31 0%, #3b9452 100%);">
+    <div class="container text-center">
+      <span class="badge bg-white text-dark fw-bold mb-3 px-3 py-2 rounded-pill shadow-sm">
+        <i class="fas fa-balance-scale text-success me-1"></i> Loi n° 45-75 & Code du Travail du Congo
+      </span>
+      <h1 class="display-6 fw-bold mb-2">Vos Droits & Devoirs de Travailleur</h1>
+      <p class="lead mx-auto mb-4" style="max-width: 650px; font-size: 1.05rem; opacity: 0.95;">
+        Comprenez vos droits fondamentaux au travail en République du Congo : contrats, salaires, heures de travail, congés et démarches en cas de litige.
+      </p>
+
+      <!-- Barre de recherche -->
+      <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+          <div class="input-group shadow-lg rounded-pill overflow-hidden bg-white p-1">
+            <span class="input-group-text bg-white border-0 ps-3">
+              <i class="fas fa-search text-muted"></i>
+            </span>
+            <input type="text" id="lawSearchInput" class="form-control border-0 shadow-none ps-2" placeholder="Ex: période d'essai, SMIG, congés, préavis...">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filtres par thématiques -->
+  <section class="container mt-4 mb-3">
+    <div class="d-flex gap-2 overflow-auto pb-2" style="scrollbar-width: thin;">
+      <button class="topic-pill active" data-topic="all">
+        <i class="fas fa-list-ul"></i> Tous les thèmes
+      </button>
+      <button class="topic-pill" data-topic="contrat">
+        <i class="fas fa-file-contract"></i> Contrat & Essai
+      </button>
+      <button class="topic-pill" data-topic="salaire">
+        <i class="fas fa-money-bill-wave"></i> Salaire & SMIG
+      </button>
+      <button class="topic-pill" data-topic="horaires">
+        <i class="fas fa-clock"></i> Horaires & Heures sup
+      </button>
+      <button class="topic-pill" data-topic="conges">
+        <i class="fas fa-umbrella-beach"></i> Congés & Maternité
+      </button>
+      <button class="topic-pill" data-topic="rupture">
+        <i class="fas fa-door-open"></i> Rupture & Préavis
+      </button>
+      <button class="topic-pill" data-topic="organismes">
+        <i class="fas fa-landmark"></i> ACPE, CNSS & DGT
+      </button>
+    </div>
+  </section>
+
+  <!-- Contenu des cartes juridiques -->
+  <main class="container my-4">
+    <div class="row" id="lawCardsContainer">
+
+      <!-- Fiches thématiques (Contrat, Salaire, Horaires, Congés, Rupture) : chargées depuis
+           Firestore ("legislation"), éditables depuis l'administration. Insérées ici en JS. -->
+      <div class="col-12 text-center py-5" id="lawCardsLoading">
+        <div class="spinner-border text-success"></div>
+        <p class="text-muted mt-2">Chargement du guide...</p>
+      </div>
+
+      <!-- Carte fixe : Organismes publics de l'emploi -->
+      <div class="col-lg-6 law-item" data-topic="organismes" data-keywords="acpe onemo cnss dgt inspection travail litige congo brazzaville pointe-noire securite sociale">
+        <div class="law-card">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="badge-article"><i class="fas fa-building me-1"></i> Institutions Publiques</span>
+            <span class="badge bg-light text-secondary border">Protection & Recours</span>
+          </div>
+          <h4 class="fw-bold mb-2">ACPE, CNSS & Inspection du Travail</h4>
+          <p class="text-secondary small">
+            Trois institutions congolaises clés accompagnent et protègent les jeunes travailleurs.
+          </p>
+
+          <div class="p-3 bg-light rounded-3 mb-2 border">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="badge bg-success">ACPE</span>
+              <strong class="small">Agence Congolaise Pour l'Emploi (ex-ONEMO)</strong>
+            </div>
+            <p class="small text-muted mb-0">
+              Enregistre les demandeurs d'emploi, vise les contrats d'apprentissage et centralise les offres d'entreprises.
+            </p>
+          </div>
+
+          <div class="p-3 bg-light rounded-3 mb-2 border">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="badge bg-primary">CNSS</span>
+              <strong class="small">Caisse Nationale de Sécurité Sociale</strong>
+            </div>
+            <p class="small text-muted mb-0">
+              Assure la couverture sociale : retraite, allocations familiales, couverture des accidents du travail et maladies professionnelles.
+            </p>
+          </div>
+
+          <div class="p-3 bg-light rounded-3 border">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="badge bg-danger">DGT / Inspection</span>
+              <strong class="small">Inspection du Travail du Congo</strong>
+            </div>
+            <p class="small text-muted mb-0">
+              En cas de conflit avec votre employeur, saisissez gratuitement l'Inspection du Travail de votre arrondissement (Brazzaville ou Pointe-Noire) pour une tentative de <strong>conciliation amiable obligatoire</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bannière d'aide ONG Sala -->
+    <div class="card border-0 text-white p-4 my-4 shadow-lg rounded-4" style="background: linear-gradient(135deg, #1e6b31 0%, #15803d 100%);">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-warning text-dark fw-bold">ONG Sala & Jeunesse</span>
+            <span class="text-white-50 small">Assistance gratuite</span>
+          </div>
+          <h4 class="fw-bold mb-1">Une question sur vos droits ou un contrat litigieux ?</h4>
+          <p class="mb-0 opacity-90 small">
+            L'équipe de l'ONG Sala vous oriente vers les conseillers d'insertion et l'Inspection du Travail compétente à Brazzaville et Pointe-Noire.
+          </p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+          <a href="mailto:contact.ongsala@gmail.com" data-site-contact-mailto class="btn btn-light rounded-pill px-4 py-2 fw-bold text-success shadow-sm">
+            <i class="fas fa-envelope me-1"></i> Écrire à l'ONG Sala
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bouton Flottant FAB "Faire un CV" (comme sur l'application mobile) -->
+  <a href="cv-builder.html" class="sala-fab-cv" title="Faire un CV">
+    <i class="fas fa-pen"></i>
+    <span class="tooltip-text">Faire un CV professionnel</span>
+  </a>
+
+  <!-- Barre de navigation mobile inférieure (Bottom Navigation calquée sur l'app Android) -->
+  <nav class="sala-bottom-nav">
+    <a href="offres.html" class="sala-bottom-nav-item">
+      <i class="fas fa-briefcase"></i>
+      <span>Emplois</span>
+    </a>
+    <a href="evenements.html" data-nav-key="evenements" class="sala-bottom-nav-item">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Événements</span>
+    </a>
+    <a href="cv-builder.html" class="sala-bottom-fab" title="Faire un CV">
+      <i class="fas fa-pen"></i>
+    </a>
+    <a href="entretiens.html" data-nav-key="entretiens" class="sala-bottom-nav-item">
+      <i class="fas fa-user-tie"></i>
+      <span>Entretiens</span>
+    </a>
+    <a href="legislation.html" data-nav-key="legislation" class="sala-bottom-nav-item active">
+      <i class="fas fa-balance-scale"></i>
+      <span>Droit</span>
+    </a>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.min.js"></script>
+  <script type="module">
+    import { auth, onAuthStateChanged } from "./js/firebase-config.js";
+    import { loadLegislationTopics } from "./js/legislation-data.js";
+    import { loadSiteSettings, applyNavVisibility, applyContactInfo } from "./js/site-settings.js";
+    loadSiteSettings().then(settings => { applyNavVisibility(settings); applyContactInfo(settings); });
+
+    const searchInput = document.getElementById("lawSearchInput");
+    const topicPills = document.querySelectorAll(".topic-pill");
+    const lawCardsContainer = document.getElementById("lawCardsContainer");
+    const lawCardsLoading = document.getElementById("lawCardsLoading");
+
+    let lawItems = [];
+    let currentTopic = "all";
+
+    function topicCardHtml(fiche) {
+      const faqHtml = fiche.faqQuestion ? `
+        <div class="accordion-box mt-3">
+          <div class="faq-q">
+            <span>${DOMPurify.sanitize(fiche.faqQuestion)}</span>
+            <i class="fas fa-chevron-down text-muted"></i>
+          </div>
+          <div class="faq-a">${DOMPurify.sanitize(fiche.faqAnswer || "")}</div>
+        </div>
+      ` : "";
+
+      return `
+        <div class="col-lg-6 law-item" data-topic="${fiche.topic || ""}">
+          <div class="law-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="badge-article"><i class="fas fa-gavel me-1"></i> ${DOMPurify.sanitize(fiche.articleRef || "")}</span>
+              <span class="badge bg-light text-secondary border">${DOMPurify.sanitize(fiche.topicLabel || "")}</span>
+            </div>
+            <h4 class="fw-bold mb-2">${DOMPurify.sanitize(fiche.title || "")}</h4>
+            <p class="text-secondary small">${DOMPurify.sanitize(fiche.intro || "")}</p>
+            ${DOMPurify.sanitize(fiche.bodyHtml || "", { ADD_ATTR: ["style"] })}
+            ${faqHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    async function initLawCards() {
+      const topics = await loadLegislationTopics();
+      lawCardsLoading.remove();
+      lawCardsContainer.insertAdjacentHTML("afterbegin", topics.map(topicCardHtml).join(""));
+
+      // Inclut aussi la fiche fixe "Organismes" déjà présente dans le HTML
+      lawItems = document.querySelectorAll(".law-item");
+
+      document.querySelectorAll(".faq-q").forEach(question => {
+        question.addEventListener("click", () => {
+          const answer = question.nextElementSibling;
+          const icon = question.querySelector("i");
+          if (answer.classList.contains("show")) {
+            answer.classList.remove("show");
+            icon.classList.replace("fa-chevron-up", "fa-chevron-down");
+          } else {
+            answer.classList.add("show");
+            icon.classList.replace("fa-chevron-down", "fa-chevron-up");
+          }
+        });
+      });
+
+      filterLawCards();
+    }
+
+    function filterLawCards() {
+      const q = searchInput.value.trim().toLowerCase();
+
+      lawItems.forEach(item => {
+        const itemTopic = item.dataset.topic;
+        const itemText = item.innerText.toLowerCase();
+
+        const matchTopic = (currentTopic === "all") || (itemTopic === currentTopic);
+        const matchSearch = !q || itemText.includes(q);
+
+        item.style.display = (matchTopic && matchSearch) ? "" : "none";
+      });
+    }
+
+    topicPills.forEach(pill => {
+      pill.addEventListener("click", () => {
+        topicPills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentTopic = pill.dataset.topic;
+        filterLawCards();
+      });
+    });
+
+    searchInput.addEventListener("input", filterLawCards);
+
+    initLawCards();
+
+    // Profil utilisateur
+    onAuthStateChanged(auth, (user) => {
+      const btn = document.getElementById("navProfileBtn");
+      if (user && btn) {
+        btn.innerHTML = `<i class="fas fa-user-circle me-1 text-success"></i> ${user.displayName ? user.displayName.split(" ")[0] : "Mon profil"}`;
+        btn.href = "profile.html";
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+
+</body>
+</html>

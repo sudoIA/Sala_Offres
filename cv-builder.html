@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Générateur de CV Professionnel Gratuit — Sala</title>
+  <meta name="description" content="Créez votre CV moderne en 7 étapes simples et téléchargez-le gratuitement au format PDF sur Sala Congo.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/logo_100.png">
+
+  <!-- Polices Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/sala-theme.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f8faf9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Stepper Header */
+    .cv-stepper-container {
+      background: #ffffff;
+      border-bottom: 1px solid var(--sala-border);
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .stepper-track {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 880px;
+      margin: 0 auto;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .step-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      flex: 1;
+      position: relative;
+      min-width: 90px;
+    }
+
+    .step-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #edf2f7;
+      color: #718096;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: all 0.25s ease;
+      margin-bottom: 6px;
+    }
+
+    .step-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #718096;
+      white-space: nowrap;
+      transition: color 0.25s ease;
+    }
+
+    .step-node.active .step-circle {
+      background: var(--sala-green);
+      color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(59, 148, 82, 0.2);
+    }
+
+    .step-node.active .step-label {
+      color: var(--sala-green);
+      font-weight: 700;
+    }
+
+    .step-node.completed .step-circle {
+      background: #eaf6ed;
+      color: var(--sala-green);
+    }
+
+    /* Form Cards */
+    .cv-card {
+      background: #ffffff;
+      border: 1px solid var(--sala-border);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      margin-bottom: 24px;
+    }
+
+    .dynamic-entry-item {
+      background: #fdfdfd;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      transition: border-color 0.2s ease;
+    }
+
+    .dynamic-entry-item:hover {
+      border-color: var(--sala-green-border);
+    }
+
+    .btn-remove-entry {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #e53e3e;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 4px;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-remove-entry:hover {
+      transform: scale(1.15);
+    }
+
+    /* Photo Upload Preview */
+    .avatar-upload-box {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px dashed #cbd5e0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      background: #f8faf9;
+      transition: border-color 0.2s ease;
+    }
+
+    .avatar-upload-box:hover {
+      border-color: var(--sala-green);
+    }
+
+    .avatar-upload-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ==========================================================================
+       CV TEMPLATE A4 STYLING (Pour l'aperçu et l'export PDF)
+       ========================================================================== */
+    #cv-pdf-render {
+      background: #ffffff;
+      color: #2d3748;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 24mm 20mm;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Pendant l'export PDF : plus de hauteur minimale forcée, pour éviter
+       qu'un CV court ne déborde d'un cheveu sur une 2e page quasi vide. */
+    #cv-pdf-render.exporting {
+      min-height: 0;
+    }
+
+    .cv-pdf-header {
+      border-bottom: 2.5px solid #334155;
+      padding-bottom: 18px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .cv-pdf-name {
+      font-family: 'Heebo', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #1a1d20;
+      margin: 0 0 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .cv-pdf-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #475569;
+      margin: 0 0 10px;
+    }
+
+    .cv-pdf-contacts {
+      font-size: 11px;
+      color: #4a5568;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .cv-pdf-contacts i {
+      color: #64748b;
+    }
+
+    .cv-pdf-photo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #334155;
+      flex-shrink: 0;
+    }
+
+    .cv-section-title {
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #1e293b;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-top: 18px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    /* Empêche une expérience/formation/projet d'être coupé au milieu entre 2 pages PDF */
+    .cv-entry-block {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .cv-item-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: #1a202c;
+    }
+
+    .cv-item-subtitle {
+      font-size: 12px;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .cv-item-date {
+      font-size: 11px;
+      color: #718096;
+    }
+
+    .cv-item-desc {
+      font-size: 11.5px;
+      color: #4a5568;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .cv-item-list {
+      list-style: none;
+      margin: 6px 0 0;
+      padding: 0;
+    }
+
+    .cv-item-list li {
+      position: relative;
+      padding-left: 14px;
+      font-size: 11.5px;
+      color: #4a5568;
+      line-height: 1.5;
+      margin-bottom: 3px;
+    }
+
+    .cv-item-list li::before {
+      content: "–";
+      position: absolute;
+      left: 0;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+
+    .cv-badge-skill {
+      display: inline-block;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    /* ==========================================================================
+       SÉLECTEUR DE MODÈLE
+       ========================================================================== */
+    .template-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      max-width: 210mm;
+      margin: 0 auto 20px;
+    }
+
+    .template-option {
+      border: 2px solid var(--sala-border);
+      border-radius: 12px;
+      padding: 10px;
+      cursor: pointer;
+      background: #ffffff;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .template-option:hover {
+      border-color: var(--sala-green-border);
+    }
+
+    .template-option.active {
+      border-color: var(--sala-green);
+      box-shadow: 0 0 0 3px var(--sala-green-light);
+    }
+
+    .template-thumb {
+      height: 90px;
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      margin-bottom: 8px;
+      border: 1px solid #eee;
+    }
+
+    .template-thumb-classic { flex-direction: column; }
+    .template-thumb-classic .t-band { height: 22%; background: #3b9452; }
+    .template-thumb-classic .t-body { flex: 1; background: #fff; padding: 6px; }
+    .template-thumb-classic .t-line { height: 4px; background: #e2e8f0; border-radius: 2px; margin-bottom: 4px; }
+    .template-thumb-classic .t-line.w60 { width: 60%; }
+    .template-thumb-classic .t-line.w80 { width: 80%; }
+
+    .template-thumb-marine .t-side { width: 34%; background: #16214a; }
+    .template-thumb-marine .t-main { flex: 1; background: #fff; padding: 6px; }
+    .template-thumb-marine .t-line { height: 4px; background: #e2e8f0; border-radius: 2px; margin-bottom: 4px; }
+    .template-thumb-marine .t-line.w70 { width: 70%; }
+
+    .template-thumb-moderne { flex-direction: column; }
+    .template-thumb-moderne .t-band { height: 30%; background: #eef1ee; display: flex; align-items: center; padding: 0 6px; }
+    .template-thumb-moderne .t-dot { width: 16px; height: 16px; border-radius: 50%; background: #cbd5e0; margin-right: 6px; flex-shrink: 0; }
+    .template-thumb-moderne .t-body { flex: 1; background: #fff; display: flex; }
+    .template-thumb-moderne .t-col1 { width: 35%; padding: 6px; border-right: 1px solid #eee; }
+    .template-thumb-moderne .t-col2 { flex: 1; padding: 6px; }
+    .template-thumb-moderne .t-line { height: 4px; background: #e2e8f0; border-radius: 2px; margin-bottom: 4px; }
+
+    .template-option-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--sala-text-primary);
+    }
+
+    /* Évaluation légère de complétude du CV */
+    .completeness-bar-track {
+      height: 8px;
+      background: #edf2f7;
+      border-radius: 4px;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .completeness-bar-fill {
+      height: 100%;
+      background: var(--sala-green);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    /* ==========================================================================
+       MODÈLE "MARINE" — sidebar bleu marine pleine hauteur
+       ========================================================================== */
+    #cv-pdf-render.tpl-marine {
+      padding: 0;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .tpl-marine-sidebar {
+      width: 34%;
+      flex-shrink: 0;
+      background: #16214a;
+      color: #e2e8f0;
+      padding: 22mm 10mm 10mm;
+      box-sizing: border-box;
+    }
+
+    .tpl-marine-main {
+      flex: 1;
+      padding: 22mm 12mm 10mm;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    .tpl-marine-photo {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ffffff;
+      display: block;
+      margin: 0 auto 18px;
+    }
+
+    .tpl-marine-sidebar .cv-section-title {
+      color: #ffffff;
+      border-bottom-color: rgba(255,255,255,0.2);
+      font-size: 12px;
+    }
+
+    .tpl-marine-sidebar .cv-item-desc { color: #cbd5e0; font-size: 10.5px; }
+    .tpl-marine-sidebar .cv-pdf-contacts { flex-direction: column; gap: 8px; color: #cbd5e0; }
+    .tpl-marine-sidebar .cv-pdf-contacts i { color: #94a3b8; }
+
+    .tpl-marine-lang-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .tpl-marine-lang-bar span {
+      display: block;
+      height: 100%;
+      background: #cbd5e0;
+    }
+
+    .tpl-marine-main .cv-pdf-name { color: #16214a; }
+    .tpl-marine-main .cv-pdf-title { color: #475569; }
+    .tpl-marine-main .cv-section-title { color: #16214a; border-bottom-color: #e2e8f0; }
+    .tpl-marine-timeline-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #16214a;
+      display: inline-block; margin-right: 8px; flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       MODÈLE "MODERNE" — bandeau clair + 2 colonnes
+       ========================================================================== */
+    #cv-pdf-render.tpl-moderne {
+      padding: 0;
+    }
+
+    .tpl-moderne-header {
+      background: #eef0f3;
+      padding: 16mm 16mm 14px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .tpl-moderne-photo {
+      width: 90px;
+      height: 90px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 3px solid #ffffff;
+    }
+
+    .tpl-moderne-body {
+      display: flex;
+      padding: 16px 16mm 10mm;
+      gap: 24px;
+    }
+
+    .tpl-moderne-col1 { width: 34%; flex-shrink: 0; }
+    .tpl-moderne-col2 { flex: 1; min-width: 0; }
+
+    .tpl-moderne-body .cv-section-title { font-size: 12.5px; }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="sala-topbar">
+    <a href="index.html" class="d-flex align-items-center text-decoration-none">
+      <img src="img/logo_transparent.png" alt="Logo Sala" style="height: 38px; width: auto;" class="me-2">
+      <span style="font-weight: 800; font-size: 1.25rem; color: var(--sala-green);">SALA</span>
+    </a>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-white text-success fw-bold border px-3 py-1 d-none d-sm-inline">
+        <i class="fas fa-magic me-1"></i> Générateur de CV
+      </span>
+      <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="btnResetCV" title="Effacer tout et repartir de zéro">
+        <i class="fas fa-eraser me-1"></i> <span class="d-none d-sm-inline">Nouveau CV</span>
+      </button>
+      <a href="offres.html" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+        Quitter
+      </a>
+    </div>
+  </header>
+
+  <!-- Stepper Navigation -->
+  <div class="cv-stepper-container">
+    <div class="stepper-track">
+      <div class="step-node active" data-step="1">
+        <div class="step-circle">1</div>
+        <div class="step-label">Infos</div>
+      </div>
+      <div class="step-node" data-step="2">
+        <div class="step-circle">2</div>
+        <div class="step-label">Expériences</div>
+      </div>
+      <div class="step-node" data-step="3">
+        <div class="step-circle">3</div>
+        <div class="step-label">Formations</div>
+      </div>
+      <div class="step-node" data-step="4">
+        <div class="step-circle">4</div>
+        <div class="step-label">Projets</div>
+      </div>
+      <div class="step-node" data-step="5">
+        <div class="step-circle">5</div>
+        <div class="step-label">Compétences</div>
+      </div>
+      <div class="step-node" data-step="6">
+        <div class="step-circle">6</div>
+        <div class="step-label">Langues</div>
+      </div>
+      <div class="step-node" data-step="7">
+        <div class="step-circle">7</div>
+        <div class="step-label">Aperçu & PDF</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire Principal -->
+  <main class="container my-4" style="max-width: 880px;">
+    
+    <!-- ==========================================
+         ÉTAPE 1 : INFORMATIONS PERSONNELLES
+         ========================================== -->
+    <div class="step-pane cv-card" id="step-1">
+      <h3 class="h4 fw-bold mb-1 text-dark">Informations personnelles</h3>
+      <p class="text-muted small mb-4">Ces informations permettront aux recruteurs congolais de vous contacter directement.</p>
+
+      <div class="row align-items-center mb-4">
+        <div class="col-auto">
+          <div class="avatar-upload-box" id="avatarUploadTrigger" title="Cliquer pour ajouter une photo">
+            <img id="avatarPreview" src="" alt="Aperçu photo" style="display:none;">
+            <div id="avatarPlaceholder" class="text-center p-2 text-muted">
+              <i class="fas fa-camera fa-2x mb-1 text-success"></i>
+              <div style="font-size: 0.72rem; font-weight: 600;">Ajouter photo</div>
+            </div>
+          </div>
+          <input type="file" id="avatarFileInput" accept="image/*" style="display:none;">
+        </div>
+        <div class="col">
+          <label class="form-label small fw-bold">Photo de profil (Recommandée)</label>
+          <p class="text-muted small mb-2">Un portrait soigné et souriant valorise votre candidature auprès des entreprises.</p>
+          <button type="button" class="btn btn-sm btn-outline-danger" id="btnRemovePhoto" style="display:none;">
+            <i class="fas fa-trash me-1"></i> Supprimer la photo
+          </button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="fullName" class="form-label small fw-bold">Nom complet *</label>
+          <input type="text" class="form-control" id="fullName" placeholder="Ex: Jean Paul MOUKOKO" required>
+          <div class="invalid-feedback">Merci d'indiquer votre nom complet — il est indispensable sur un CV.</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="jobTitle" class="form-label small fw-bold">Titre du poste recherché *</label>
+          <input type="text" class="form-control" id="jobTitle" placeholder="Ex: Comptable Junior, Chauffeur, Développeur Web" required>
+          <div class="invalid-feedback">Indiquez le poste recherché pour orienter votre candidature.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="email" class="form-label small fw-bold">Adresse Email *</label>
+          <input type="email" class="form-control" id="email" placeholder="nom@exemple.cg" required>
+          <div class="invalid-feedback">Une adresse email valide est nécessaire pour que les recruteurs vous contactent.</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="phone" class="form-label small fw-bold">Numéro de téléphone *</label>
+          <input type="tel" class="form-control" id="phone" placeholder="+242 06 ... / 05 ..." required>
+          <div class="invalid-feedback">Un numéro de téléphone est nécessaire pour que les recruteurs vous joignent.</div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="city" class="form-label small fw-bold">Ville de résidence *</label>
+          <select class="form-select" id="city">
+            <option value="Brazzaville" selected>Brazzaville</option>
+            <option value="Pointe-Noire">Pointe-Noire</option>
+            <option value="Dolisie">Dolisie</option>
+            <option value="Nkayi">Nkayi</option>
+            <option value="Oyo">Oyo</option>
+            <option value="Autre localité">Autre localité</option>
+          </select>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="address" class="form-label small fw-bold">Adresse / Quartier</label>
+          <input type="text" class="form-control" id="address" placeholder="Ex: Moungali, Poto-Poto, Tié-Tié...">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="bio" class="form-label small fw-bold">Objectif professionnel / Profil en résumé</label>
+        <textarea class="form-control" id="bio" rows="3" placeholder="Présentez en 2 ou 3 phrases vos atouts, votre motivation et ce que vous apportez à l'entreprise..."></textarea>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ÉTAPE 2 : EXPÉRIENCES PROFESSIONNELLES
+         ========================================== -->
+    <div class="step-pane cv-card" id="step-2" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h3 class="h4 fw-bold mb-1 text-dark">Expériences professionnelles</h3>
+          <p class="text-muted small mb-0">Stages, emplois, missions bénévoles ou alternances.</p>
+        </div>
+        <button type="button" class="btn-sala-outline btn-sm" id="btnAddExperience">
+          <i class="fas fa-plus me-1"></i> Ajouter un poste
+        </button>
+      </div>
+
+      <div id="experiencesContainer">
+        <!-- Rempli dynamiquement -->
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ÉTAPE 3 : FORMATION & DIPLÔMES
+         ========================================== -->
+    <div class="step-pane cv-card" id="step-3" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h3 class="h4 fw-bold mb-1 text-dark">Formations & Diplômes</h3>
+          <p class="text-muted small mb-0">Vos diplômes d'études secondaires, universitaires ou attestations professionnelles.</p>
+        </div>
+        <button type="button" class="btn-sala-outline btn-sm" id="btnAddEducation">
+          <i class="fas fa-plus me-1"></i> Ajouter un diplôme
+        </button>
+      </div>
+
+      <div id="educationContainer">
+        <!-- Rempli dynamiquement -->
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ÉTAPE 4 : PROJETS & RÉALISATIONS
+         ========================================== -->
+    <div class="step-pane cv-card" id="step-4" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h3 class="h4 fw-bold mb-1 text-dark">Projets & Réalisations (Facultatif)</h3>
+          <p class="text-muted small mb-0">Projets académiques, initiatives personnelles ou associatives marquantes.</p>
+        </div>
+        <button type="button" class="btn-sala-outline btn-sm" id="btnAddProject">
+          <i class="fas fa-plus me-1"></i> Ajouter un projet
+        </button>
+      </div>
+
+      <div id="projectsContainer">
+        <!-- Rempli dynamiquement -->
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ÉTAPE 5 : COMPÉTENCES CLÉS
+         ========================================== -->
+    <div class="step-pane cv-card" id="step-5" style="display:none;">
+      <h3 class="h4 fw-bold mb-1 text-dark">Compétences</h3>
+      <p class="text-muted small mb-3">Indiquez vos compétences techniques et humaines (séparées par des virgules).</p>
+
+      <div class="mb-4">
+        <label class="form-label small fw-bold">Vos compétences</label>
+        <textarea class="form-control" id="skillsInput" rows="3" placeholder="Ex: Comptabilité générale, Excel, Word, Vente & Négociation, Travail en équipe, Rigueur, Permis B"></textarea>
+        <small class="text-muted">Astuce : Séparez chaque compétence par une virgule pour qu'elle s'affiche sous forme de badge élégant.</small>
+      </div>
+
+      <div class="p-3 bg-light rounded-3 mb-4">
+        <div class="small fw-bold text-dark mb-2">Exemples de compétences recherchées :</div>
+        <div class="d-flex flex-wrap gap-2" id="suggestedSkills">
+          <span class="badge bg-white text-dark border p-2 cursor-pointer skill-suggestion">+ Pack Office</span>
+          <span class="badge bg-white text-dark border p-2 cursor-pointer skill-suggestion">+ Gestion de caisse</span>
+          <span class="badge bg-white text-dark border p-2 cursor-pointer skill-suggestion">+ Communication</span>
+          <span class="badge bg-white text-dark border p-2 cursor-pointer skill-suggestion">+ Service client</span>
+          <span class="badge bg-white text-dark border p-2 cursor-pointer skill-suggestion">+ Gestion des stocks</span>
+        </div>
+      </div>
+
+      <hr class="mb-4">
+
+      <h3 class="h5 fw-bold mb-1 text-dark">Loisirs & Centres d'intérêt</h3>
+      <p class="text-muted small mb-3">Un CV avec des centres d'intérêt paraît plus humain aux yeux du recruteur (séparés par des virgules).</p>
+      <div class="mb-3">
+        <label class="form-label small fw-bold">Vos loisirs</label>
+        <textarea class="form-control" id="hobbiesInput" rows="2" placeholder="Ex: Football, Lecture, Bénévolat associatif, Musique, Voyages"></textarea>
+      </div>
+      <div class="p-3 bg-light rounded-3">
+        <div class="small fw-bold text-dark mb-2">Exemples de loisirs :</div>
+        <div class="d-flex flex-wrap gap-2" id="suggestedHobbies">
+          <span class="badge bg-white text-dark border p-2 cursor-pointer hobby-suggestion">+ Football</span>
+          <span class="badge bg-white text-dark border p-2 cursor-pointer hobby-suggestion">+ Lecture</span>
+          <span class="badge bg-white text-dark border p-2 cursor-pointer hobby-suggestion">+ Bénévolat associatif</span>
+          <span class="badge bg-white text-dark border p-2 cursor-pointer hobby-suggestion">+ Musique</span>
+          <span class="badge bg-white text-dark border p-2 cursor-pointer hobby-suggestion">+ Voyages</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ÉTAPE 6 : LANGUES
+         ========================================== -->
+    <div class="step-pane cv-card" id="step-6" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h3 class="h4 fw-bold mb-1 text-dark">Langues maîtrisées</h3>
+          <p class="text-muted small mb-0">Langues nationales et internationales avec votre niveau de maîtrise.</p>
+        </div>
+        <button type="button" class="btn-sala-outline btn-sm" id="btnAddLanguage">
+          <i class="fas fa-plus me-1"></i> Ajouter une langue
+        </button>
+      </div>
+
+      <div id="languagesContainer">
+        <!-- Rempli dynamiquement -->
+      </div>
+    </div>
+
+    <!-- ==========================================
+         ÉTAPE 7 : APERÇU ET EXPORT PDF
+         ========================================== -->
+    <div class="step-pane" id="step-7" style="display:none;">
+
+      <!-- Sélecteur de modèle -->
+      <h3 class="h5 fw-bold mb-1 text-dark">Choisissez votre modèle</h3>
+      <p class="text-muted small mb-3">Le modèle sélectionné détermine la mise en page de votre CV téléchargé en PDF.</p>
+      <div class="template-picker">
+        <div class="template-option active" data-template="classic">
+          <div class="template-thumb template-thumb-classic">
+            <div class="t-band"></div>
+            <div class="t-body">
+              <div class="t-line w80"></div>
+              <div class="t-line w60"></div>
+              <div class="t-line w60"></div>
+            </div>
+          </div>
+          <div class="template-option-label">Classique Sala</div>
+        </div>
+        <div class="template-option" data-template="marine">
+          <div class="template-thumb template-thumb-marine">
+            <div class="t-side"></div>
+            <div class="t-main">
+              <div class="t-line w70"></div>
+              <div class="t-line w70"></div>
+              <div class="t-line w70"></div>
+            </div>
+          </div>
+          <div class="template-option-label">Sidebar Marine</div>
+        </div>
+        <div class="template-option" data-template="moderne">
+          <div class="template-thumb template-thumb-moderne">
+            <div class="t-band"><div class="t-dot"></div><div class="t-line w70"></div></div>
+            <div class="t-body">
+              <div class="t-col1"><div class="t-line"></div><div class="t-line"></div></div>
+              <div class="t-col2"><div class="t-line"></div><div class="t-line"></div></div>
+            </div>
+          </div>
+          <div class="template-option-label">Moderne 2 colonnes</div>
+        </div>
+      </div>
+
+      <!-- Évaluation légère de complétude -->
+      <div class="p-3 bg-white rounded-3 border shadow-sm mb-3" id="cvCompletenessBox" style="max-width: 210mm; margin-left:auto; margin-right:auto;"></div>
+
+      <!-- Barre d'actions Aperçu -->
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 p-3 bg-white rounded-3 border shadow-sm">
+        <div>
+          <h4 class="h5 fw-bold mb-0 text-success"><i class="fas fa-check-circle me-1"></i> Votre CV est prêt !</h4>
+          <small class="text-muted">Vérifiez la mise en page avant de télécharger le document officiel.</small>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn-sala-primary fw-bold" id="btnDownloadPDF">
+            <i class="fas fa-file-pdf me-1"></i> Télécharger mon CV (PDF)
+          </button>
+          <button type="button" class="btn btn-outline-secondary" id="btnSaveOnline">
+            <i class="fas fa-cloud-upload-alt me-1"></i> Sauvegarder
+          </button>
+        </div>
+      </div>
+
+      <!-- FEUILLE DE RENDU A4 DU CV (Convertie en PDF par html2pdf.js), remplie dynamiquement selon le modèle choisi -->
+      <div id="cv-pdf-render"></div>
+
+    </div>
+
+    <!-- Barre de Navigation Précédent / Suivant en bas de chaque étape -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <button type="button" class="btn btn-light rounded-pill px-4 fw-bold" id="btnPrevStep" style="display:none;">
+        <i class="fas fa-arrow-left me-2"></i> Précédent
+      </button>
+      <div class="ms-auto">
+        <button type="button" class="btn-sala-primary rounded-pill px-4 fw-bold" id="btnNextStep">
+          <span>Suivant</span> <i class="fas fa-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Librairies pour la génération du PDF côté client (capture + mise en page manuelle des pages) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <!-- Script d'orchestration du Générateur de CV -->
+  <script type="module">
+    import { cvState, saveLocalCV, loadLocalCV, saveCVToFirestore } from "./js/cv-controller.js";
+    import { auth } from "./js/firebase-config.js";
+
+    let currentStep = 1;
+    const totalSteps = 7;
+
+    const stepNodes = document.querySelectorAll(".step-node");
+    const stepPanes = document.querySelectorAll(".step-pane");
+    const btnNext = document.getElementById("btnNextStep");
+    const btnPrev = document.getElementById("btnPrevStep");
+
+    // Initialisation depuis sessionStorage si présent
+    loadLocalCV();
+
+    // Remplissage initial de l'étape 1 si des données existent
+    if (cvState.personal.fullName) document.getElementById("fullName").value = cvState.personal.fullName;
+    if (cvState.personal.jobTitle) document.getElementById("jobTitle").value = cvState.personal.jobTitle;
+    if (cvState.personal.email) document.getElementById("email").value = cvState.personal.email;
+    if (cvState.personal.phone) document.getElementById("phone").value = cvState.personal.phone;
+    if (cvState.personal.city) document.getElementById("city").value = cvState.personal.city;
+    if (cvState.personal.address) document.getElementById("address").value = cvState.personal.address;
+    if (cvState.personal.bio) document.getElementById("bio").value = cvState.personal.bio;
+    if (cvState.personal.photo) {
+      document.getElementById("avatarPreview").src = cvState.personal.photo;
+      document.getElementById("avatarPreview").style.display = "block";
+      document.getElementById("avatarPlaceholder").style.display = "none";
+      document.getElementById("btnRemovePhoto").style.display = "inline-block";
+    }
+
+    // Gestion de la photo de profil
+    const avatarTrigger = document.getElementById("avatarUploadTrigger");
+    const fileInput = document.getElementById("avatarFileInput");
+    const avatarPreview = document.getElementById("avatarPreview");
+    const avatarPlaceholder = document.getElementById("avatarPlaceholder");
+    const btnRemovePhoto = document.getElementById("btnRemovePhoto");
+
+    avatarTrigger.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          cvState.personal.photo = ev.target.result;
+          avatarPreview.src = ev.target.result;
+          avatarPreview.style.display = "block";
+          avatarPlaceholder.style.display = "none";
+          btnRemovePhoto.style.display = "inline-block";
+          saveLocalCV();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    btnRemovePhoto.addEventListener("click", () => {
+      cvState.personal.photo = null;
+      avatarPreview.src = "";
+      avatarPreview.style.display = "none";
+      avatarPlaceholder.style.display = "block";
+      btnRemovePhoto.style.display = "none";
+      fileInput.value = "";
+      saveLocalCV();
+    });
+
+    // Validation des champs obligatoires de l'étape 1 (indispensables à un CV utilisable)
+    const REQUIRED_STEP1_FIELDS = ["fullName", "jobTitle", "email", "phone"];
+
+    function validateStep1() {
+      let isValid = true;
+      REQUIRED_STEP1_FIELDS.forEach(id => {
+        const input = document.getElementById(id);
+        const filled = input.value.trim().length > 0;
+        input.classList.toggle("is-invalid", !filled);
+        if (!filled) isValid = false;
+      });
+      return isValid;
+    }
+
+    function notifyValidationError() {
+      const firstInvalid = document.querySelector("#step-1 .is-invalid");
+      if (firstInvalid) {
+        firstInvalid.focus();
+        firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+
+    // Retire l'état d'erreur dès que l'utilisateur corrige un champ obligatoire
+    REQUIRED_STEP1_FIELDS.forEach(id => {
+      document.getElementById(id).addEventListener("input", (e) => {
+        if (e.target.value.trim().length > 0) e.target.classList.remove("is-invalid");
+      });
+    });
+
+    // Navigation entre étapes
+    function goToStep(stepNumber) {
+      if (stepNumber < 1 || stepNumber > totalSteps) return;
+
+      // Impossible d'avancer au-delà de l'étape 1 sans les informations essentielles
+      if (currentStep === 1 && stepNumber > currentStep && !validateStep1()) {
+        notifyValidationError();
+        return;
+      }
+
+      // Sauvegarder les données de l'étape courante avant de basculer
+      saveCurrentStepData();
+
+      currentStep = stepNumber;
+
+      // Mise à jour visuelle du Stepper
+      stepNodes.forEach(node => {
+        const nodeStep = parseInt(node.dataset.step);
+        node.classList.toggle("active", nodeStep === currentStep);
+        node.classList.toggle("completed", nodeStep < currentStep);
+      });
+
+      // Affichage du bon panneau
+      stepPanes.forEach(pane => {
+        pane.style.display = (pane.id === `step-${currentStep}`) ? "block" : "none";
+      });
+
+      // Mise à jour des boutons Précédent / Suivant
+      btnPrev.style.display = (currentStep === 1) ? "none" : "inline-block";
+
+      if (currentStep === totalSteps) {
+        btnNext.style.display = "none";
+        renderPreview();
+      } else {
+        btnNext.style.display = "inline-block";
+        btnNext.innerHTML = `<span>Suivant</span> <i class="fas fa-arrow-right ms-2"></i>`;
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    stepNodes.forEach(node => {
+      node.addEventListener("click", () => {
+        goToStep(parseInt(node.dataset.step));
+      });
+    });
+
+    btnNext.addEventListener("click", () => {
+      if (currentStep < totalSteps) goToStep(currentStep + 1);
+    });
+
+    btnPrev.addEventListener("click", () => {
+      if (currentStep > 1) goToStep(currentStep - 1);
+    });
+
+    // Sauvegarde de l'étape active dans cvState
+    function saveCurrentStepData() {
+      // Étape 1 : Infos perso
+      cvState.personal.fullName = document.getElementById("fullName").value.trim();
+      cvState.personal.jobTitle = document.getElementById("jobTitle").value.trim();
+      cvState.personal.email = document.getElementById("email").value.trim();
+      cvState.personal.phone = document.getElementById("phone").value.trim();
+      cvState.personal.city = document.getElementById("city").value;
+      cvState.personal.address = document.getElementById("address").value.trim();
+      cvState.personal.bio = document.getElementById("bio").value.trim();
+
+      // Étape 5 : Compétences
+      const rawSkills = document.getElementById("skillsInput").value;
+      cvState.skills = rawSkills.split(",").map(s => s.trim()).filter(s => s.length > 0);
+
+      // Étape 5 : Loisirs & Centres d'intérêt
+      const rawHobbies = document.getElementById("hobbiesInput").value;
+      cvState.hobbies = rawHobbies.split(",").map(s => s.trim()).filter(s => s.length > 0);
+
+      saveLocalCV();
+    }
+
+    // -------------------------------------------------------------
+    // GESTIONNAIRE DYNAMIQUE : EXPÉRIENCES
+    // -------------------------------------------------------------
+    const expContainer = document.getElementById("experiencesContainer");
+    const btnAddExp = document.getElementById("btnAddExperience");
+
+    function renderExperiences() {
+      expContainer.innerHTML = "";
+      if (cvState.experiences.length === 0) {
+        expContainer.innerHTML = `
+          <div class="text-center py-4 text-muted bg-light rounded-3">
+            <p class="mb-2">Aucune expérience ajoutée pour l'instant.</p>
+            <button type="button" class="btn btn-sm btn-outline-success" id="btnFirstExp">+ Ajouter ma première expérience</button>
+          </div>
+        `;
+        document.getElementById("btnFirstExp")?.addEventListener("click", addExperience);
+        return;
+      }
+
+      cvState.experiences.forEach((exp, idx) => {
+        const item = document.createElement("div");
+        item.className = "dynamic-entry-item";
+        item.innerHTML = `
+          <button type="button" class="btn-remove-entry" data-index="${idx}" title="Supprimer"><i class="fas fa-trash"></i></button>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Poste / Fonction</label>
+              <input type="text" class="form-control exp-field" data-field="title" data-index="${idx}" value="${exp.title || ''}" placeholder="Ex: Assistant Commercial">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Entreprise / Organisation</label>
+              <input type="text" class="form-control exp-field" data-field="company" data-index="${idx}" value="${exp.company || ''}" placeholder="Ex: TotalEnergies Congo, MTN, Boutique...">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Ville</label>
+              <input type="text" class="form-control exp-field" data-field="city" data-index="${idx}" value="${exp.city || 'Brazzaville'}" placeholder="Brazzaville, Pointe-Noire...">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Période</label>
+              <input type="text" class="form-control exp-field" data-field="period" data-index="${idx}" value="${exp.period || ''}" placeholder="Ex: Mars 2023 - Présent">
+            </div>
+          </div>
+          <div class="mb-1">
+            <label class="form-label small fw-bold">Principales réalisations & missions</label>
+            <textarea class="form-control exp-field" data-field="description" data-index="${idx}" rows="3" placeholder="Une tâche ou réalisation par ligne, ex :&#10;Gestion de la caisse et des encaissements quotidiens&#10;Supervision d'une équipe de 3 vendeurs&#10;Réduction des délais de livraison de 20%">${exp.description || ''}</textarea>
+            <small class="text-muted">Astuce : une tâche par ligne (touche Entrée) pour un rendu en liste à puces sur le CV.</small>
+          </div>
+        `;
+        expContainer.appendChild(item);
+      });
+
+      // Écouteurs de modification
+      expContainer.querySelectorAll(".exp-field").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const index = parseInt(e.target.dataset.index);
+          const field = e.target.dataset.field;
+          cvState.experiences[index][field] = e.target.value;
+          saveLocalCV();
+        });
+      });
+
+      // Écouteurs de suppression
+      expContainer.querySelectorAll(".btn-remove-entry").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const index = parseInt(e.currentTarget.dataset.index);
+          cvState.experiences.splice(index, 1);
+          saveLocalCV();
+          renderExperiences();
+        });
+      });
+    }
+
+    function addExperience() {
+      cvState.experiences.push({
+        title: "",
+        company: "",
+        city: "Brazzaville",
+        period: "",
+        description: ""
+      });
+      saveLocalCV();
+      renderExperiences();
+    }
+
+    btnAddExp.addEventListener("click", addExperience);
+
+    // -------------------------------------------------------------
+    // GESTIONNAIRE DYNAMIQUE : FORMATIONS
+    // -------------------------------------------------------------
+    const eduContainer = document.getElementById("educationContainer");
+    const btnAddEdu = document.getElementById("btnAddEducation");
+
+    function renderEducation() {
+      eduContainer.innerHTML = "";
+      if (cvState.education.length === 0) {
+        eduContainer.innerHTML = `
+          <div class="text-center py-4 text-muted bg-light rounded-3">
+            <p class="mb-2">Aucune formation enregistrée.</p>
+            <button type="button" class="btn btn-sm btn-outline-success" id="btnFirstEdu">+ Ajouter un diplôme</button>
+          </div>
+        `;
+        document.getElementById("btnFirstEdu")?.addEventListener("click", addEducation);
+        return;
+      }
+
+      cvState.education.forEach((edu, idx) => {
+        const item = document.createElement("div");
+        item.className = "dynamic-entry-item";
+        item.innerHTML = `
+          <button type="button" class="btn-remove-entry" data-index="${idx}" title="Supprimer"><i class="fas fa-trash"></i></button>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Diplôme obtenu ou en cours</label>
+              <input type="text" class="form-control edu-field" data-field="degree" data-index="${idx}" value="${edu.degree || ''}" placeholder="Ex: Licence en Gestion, Baccalauréat C...">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Établissement / Université</label>
+              <input type="text" class="form-control edu-field" data-field="school" data-index="${idx}" value="${edu.school || ''}" placeholder="Ex: Université Marien Ngouabi, Lycée Chaminade...">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Ville</label>
+              <input type="text" class="form-control edu-field" data-field="city" data-index="${idx}" value="${edu.city || 'Brazzaville'}" placeholder="Brazzaville, Pointe-Noire...">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Année d'obtention</label>
+              <input type="text" class="form-control edu-field" data-field="year" data-index="${idx}" value="${edu.year || ''}" placeholder="Ex: 2022 ou 2020 - 2023">
+            </div>
+          </div>
+        `;
+        eduContainer.appendChild(item);
+      });
+
+      eduContainer.querySelectorAll(".edu-field").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const index = parseInt(e.target.dataset.index);
+          const field = e.target.dataset.field;
+          cvState.education[index][field] = e.target.value;
+          saveLocalCV();
+        });
+      });
+
+      eduContainer.querySelectorAll(".btn-remove-entry").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const index = parseInt(e.currentTarget.dataset.index);
+          cvState.education.splice(index, 1);
+          saveLocalCV();
+          renderEducation();
+        });
+      });
+    }
+
+    function addEducation() {
+      cvState.education.push({
+        degree: "",
+        school: "",
+        city: "Brazzaville",
+        year: ""
+      });
+      saveLocalCV();
+      renderEducation();
+    }
+
+    btnAddEdu.addEventListener("click", addEducation);
+
+    // -------------------------------------------------------------
+    // GESTIONNAIRE DYNAMIQUE : PROJETS
+    // -------------------------------------------------------------
+    const projContainer = document.getElementById("projectsContainer");
+    const btnAddProj = document.getElementById("btnAddProject");
+
+    function renderProjects() {
+      projContainer.innerHTML = "";
+      if (cvState.projects.length === 0) {
+        projContainer.innerHTML = `
+          <div class="text-center py-4 text-muted bg-light rounded-3">
+            <p class="mb-2">Aucun projet ajouté (cette section est facultative).</p>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="btnFirstProj">+ Ajouter un projet</button>
+          </div>
+        `;
+        document.getElementById("btnFirstProj")?.addEventListener("click", addProject);
+        return;
+      }
+
+      cvState.projects.forEach((proj, idx) => {
+        const item = document.createElement("div");
+        item.className = "dynamic-entry-item";
+        item.innerHTML = `
+          <button type="button" class="btn-remove-entry" data-index="${idx}" title="Supprimer"><i class="fas fa-trash"></i></button>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Nom du projet</label>
+              <input type="text" class="form-control proj-field" data-field="name" data-index="${idx}" value="${proj.name || ''}" placeholder="Ex: Création d'une application mobile, Campagne de reboisement...">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Rôle dans le projet</label>
+              <input type="text" class="form-control proj-field" data-field="role" data-index="${idx}" value="${proj.role || ''}" placeholder="Ex: Chef de projet, Développeur, Bénévole...">
+            </div>
+          </div>
+          <div class="mb-1">
+            <label class="form-label small fw-bold">Description / Impact</label>
+            <textarea class="form-control proj-field" data-field="description" data-index="${idx}" rows="3" placeholder="Un point par ligne, ex :&#10;Développement d'une application de suivi des stocks&#10;Formation de 5 bénévoles à son utilisation">${proj.description || ''}</textarea>
+            <small class="text-muted">Astuce : un point par ligne (touche Entrée) pour un rendu en liste à puces sur le CV.</small>
+          </div>
+        `;
+        projContainer.appendChild(item);
+      });
+
+      projContainer.querySelectorAll(".proj-field").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const index = parseInt(e.target.dataset.index);
+          const field = e.target.dataset.field;
+          cvState.projects[index][field] = e.target.value;
+          saveLocalCV();
+        });
+      });
+
+      projContainer.querySelectorAll(".btn-remove-entry").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const index = parseInt(e.currentTarget.dataset.index);
+          cvState.projects.splice(index, 1);
+          saveLocalCV();
+          renderProjects();
+        });
+      });
+    }
+
+    function addProject() {
+      cvState.projects.push({ name: "", role: "", description: "" });
+      saveLocalCV();
+      renderProjects();
+    }
+
+    btnAddProj.addEventListener("click", addProject);
+
+    // -------------------------------------------------------------
+    // GESTIONNAIRE DYNAMIQUE : LANGUES
+    // -------------------------------------------------------------
+    const langContainer = document.getElementById("languagesContainer");
+    const btnAddLang = document.getElementById("btnAddLanguage");
+
+    function renderLanguages() {
+      langContainer.innerHTML = "";
+      cvState.languages.forEach((lang, idx) => {
+        const item = document.createElement("div");
+        item.className = "dynamic-entry-item";
+        item.innerHTML = `
+          <button type="button" class="btn-remove-entry" data-index="${idx}" title="Supprimer"><i class="fas fa-trash"></i></button>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Langue</label>
+              <input type="text" class="form-control lang-field" data-field="name" data-index="${idx}" value="${lang.name || ''}" placeholder="Ex: Français, Anglais, Lingala, Kituba...">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label small fw-bold">Niveau</label>
+              <select class="form-select lang-field" data-field="level" data-index="${idx}">
+                <option value="Langue maternelle" ${lang.level === 'Langue maternelle' ? 'selected' : ''}>Langue maternelle</option>
+                <option value="Courant" ${lang.level === 'Courant' ? 'selected' : ''}>Courant / Professionnel</option>
+                <option value="Intermédiaire" ${lang.level === 'Intermédiaire' ? 'selected' : ''}>Intermédiaire</option>
+                <option value="Notions de base" ${lang.level === 'Notions de base' ? 'selected' : ''}>Notions de base</option>
+              </select>
+            </div>
+          </div>
+        `;
+        langContainer.appendChild(item);
+      });
+
+      langContainer.querySelectorAll(".lang-field").forEach(input => {
+        input.addEventListener("input", (e) => {
+          const index = parseInt(e.target.dataset.index);
+          const field = e.target.dataset.field;
+          cvState.languages[index][field] = e.target.value;
+          saveLocalCV();
+        });
+      });
+
+      langContainer.querySelectorAll(".btn-remove-entry").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const index = parseInt(e.currentTarget.dataset.index);
+          cvState.languages.splice(index, 1);
+          saveLocalCV();
+          renderLanguages();
+        });
+      });
+    }
+
+    function addLanguage() {
+      cvState.languages.push({ name: "", level: "Intermédiaire" });
+      saveLocalCV();
+      renderLanguages();
+    }
+
+    btnAddLang.addEventListener("click", addLanguage);
+
+    // Suggestions de compétences au clic
+    document.querySelectorAll(".skill-suggestion").forEach(badge => {
+      badge.addEventListener("click", () => {
+        const text = badge.textContent.replace("+", "").trim();
+        const input = document.getElementById("skillsInput");
+        const current = input.value.trim();
+        input.value = current ? `${current}, ${text}` : text;
+        saveCurrentStepData();
+      });
+    });
+
+    // Suggestions de loisirs au clic
+    document.querySelectorAll(".hobby-suggestion").forEach(badge => {
+      badge.addEventListener("click", () => {
+        const text = badge.textContent.replace("+", "").trim();
+        const input = document.getElementById("hobbiesInput");
+        const current = input.value.trim();
+        input.value = current ? `${current}, ${text}` : text;
+        saveCurrentStepData();
+      });
+    });
+
+    // Initialisation des rendus de listes
+    renderExperiences();
+    renderEducation();
+    renderProjects();
+    renderLanguages();
+    if (cvState.skills.length > 0) {
+      document.getElementById("skillsInput").value = cvState.skills.join(", ");
+    }
+    if (cvState.hobbies.length > 0) {
+      document.getElementById("hobbiesInput").value = cvState.hobbies.join(", ");
+    }
+
+    // -------------------------------------------------------------
+    // SÉLECTEUR DE MODÈLE
+    // -------------------------------------------------------------
+    let selectedTemplate = cvState.template || "classic";
+
+    document.querySelectorAll(".template-option").forEach(opt => {
+      opt.classList.toggle("active", opt.dataset.template === selectedTemplate);
+      opt.addEventListener("click", () => {
+        selectedTemplate = opt.dataset.template;
+        cvState.template = selectedTemplate;
+        document.querySelectorAll(".template-option").forEach(o => o.classList.toggle("active", o === opt));
+        saveLocalCV();
+        renderPreview();
+      });
+    });
+
+    // -------------------------------------------------------------
+    // ÉTAPE 7 : APERÇU TEMPS RÉEL DU CV (selon le modèle choisi)
+    // -------------------------------------------------------------
+    const LEVEL_TO_PERCENT = { "Langue maternelle": 100, "Courant": 85, "Intermédiaire": 60, "Notions de base": 35 };
+
+    // Transforme un texte multi-lignes (une tâche par ligne) en liste à puces.
+    // Si l'utilisateur n'a tapé qu'une seule ligne, elle s'affiche comme une puce unique.
+    function bulletListHtml(text) {
+      if (!text) return "";
+      const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+      if (lines.length === 0) return "";
+      return `<ul class="cv-item-list">${lines.map(l => `<li>${l}</li>`).join("")}</ul>`;
+    }
+
+    function experiencesBlocks(data, withDot) {
+      if (data.experiences.length === 0) return "";
+      return data.experiences.map(exp => `
+        <div class="mb-3 d-flex cv-entry-block">
+          ${withDot ? '<span class="tpl-marine-timeline-dot mt-1"></span>' : ''}
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-baseline flex-wrap">
+              <div class="cv-item-title">${exp.title || 'Poste'}</div>
+              <div class="cv-item-date">${exp.period || ''}</div>
+            </div>
+            <div class="cv-item-subtitle">${exp.company || ''} ${exp.city ? '— ' + exp.city : ''}</div>
+            ${bulletListHtml(exp.description)}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function educationBlocks(data, withDot) {
+      if (data.education.length === 0) return "";
+      return data.education.map(edu => `
+        <div class="mb-2 d-flex cv-entry-block">
+          ${withDot ? '<span class="tpl-marine-timeline-dot mt-1"></span>' : ''}
+          <div class="flex-grow-1">
+            <div class="d-flex justify-content-between align-items-baseline flex-wrap">
+              <div class="cv-item-title">${edu.degree || 'Diplôme'}</div>
+              <div class="cv-item-date">${edu.year || ''}</div>
+            </div>
+            <div class="cv-item-subtitle">${edu.school || ''} ${edu.city ? '— ' + edu.city : ''}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function projectsBlocks(data) {
+      if (data.projects.length === 0) return "";
+      return data.projects.map(proj => `
+        <div class="mb-2 cv-entry-block">
+          <div class="cv-item-title">${proj.name} ${proj.role ? '— <span class="cv-item-subtitle">' + proj.role + '</span>' : ''}</div>
+          ${bulletListHtml(proj.description)}
+        </div>
+      `).join("");
+    }
+
+    function skillsBadges(data) {
+      return data.skills.length > 0
+        ? data.skills.map(s => `<span class="cv-badge-skill">${s}</span>`).join("")
+        : `<span class="text-muted small">Aucune compétence listée</span>`;
+    }
+
+    function hobbiesBadges(data) {
+      return (data.hobbies || []).map(h => `<span class="cv-badge-skill">${h}</span>`).join("");
+    }
+
+    function buildClassicHtml(data) {
+      return `
+        <div class="cv-pdf-header">
+          <div>
+            <h1 class="cv-pdf-name">${data.personal.fullName || "VOTRE NOM"}</h1>
+            <div class="cv-pdf-title">${(data.personal.jobTitle || "Titre du poste").toUpperCase()}</div>
+            <div class="cv-pdf-contacts">
+              <span><i class="fas fa-map-marker-alt me-1"></i> ${data.personal.city}, ${data.personal.country}</span>
+              <span><i class="fas fa-envelope me-1"></i> ${data.personal.email || ""}</span>
+              <span><i class="fas fa-phone me-1"></i> ${data.personal.phone || ""}</span>
+            </div>
+          </div>
+          ${data.personal.photo ? `<img class="cv-pdf-photo" src="${data.personal.photo}" alt="Photo">` : ""}
+        </div>
+        ${data.personal.bio ? `<div><div class="cv-section-title"><i class="fas fa-user-circle"></i> Profil Professionnel</div><div class="cv-item-desc">${data.personal.bio}</div></div>` : ""}
+        ${data.experiences.length ? `<div><div class="cv-section-title"><i class="fas fa-briefcase"></i> Expériences Professionnelles</div>${experiencesBlocks(data, false)}</div>` : ""}
+        ${data.education.length ? `<div><div class="cv-section-title"><i class="fas fa-graduation-cap"></i> Formations & Diplômes</div>${educationBlocks(data, false)}</div>` : ""}
+        ${data.projects.length ? `<div><div class="cv-section-title"><i class="fas fa-tasks"></i> Projets Marquants</div>${projectsBlocks(data)}</div>` : ""}
+        <div class="row mt-2">
+          <div class="col-7">
+            <div class="cv-section-title"><i class="fas fa-tools"></i> Compétences Clés</div>
+            <div>${skillsBadges(data)}</div>
+          </div>
+          <div class="col-5">
+            <div class="cv-section-title"><i class="fas fa-language"></i> Langues</div>
+            ${data.languages.map(l => `<div class="small mb-1"><strong>${l.name}</strong> : <span class="text-muted">${l.level}</span></div>`).join("")}
+          </div>
+        </div>
+        ${(data.hobbies || []).length ? `<div class="mt-2"><div class="cv-section-title"><i class="fas fa-heart"></i> Loisirs & Centres d'intérêt</div><div>${hobbiesBadges(data)}</div></div>` : ""}
+      `;
+    }
+
+    function buildMarineHtml(data) {
+      return `
+        <div class="tpl-marine-sidebar">
+          ${data.personal.photo ? `<img class="tpl-marine-photo" src="${data.personal.photo}" alt="Photo">` : ""}
+          ${data.personal.bio ? `<div class="cv-section-title">Profil</div><div class="cv-item-desc mb-3">${data.personal.bio}</div>` : ""}
+          <div class="cv-section-title">Contact</div>
+          <div class="cv-pdf-contacts mb-3">
+            ${data.personal.phone ? `<span><i class="fas fa-phone"></i> ${data.personal.phone}</span>` : ""}
+            ${data.personal.email ? `<span><i class="fas fa-envelope"></i> ${data.personal.email}</span>` : ""}
+            <span><i class="fas fa-map-marker-alt"></i> ${data.personal.city}${data.personal.address ? ", " + data.personal.address : ""}</span>
+          </div>
+          ${data.skills.length ? `<div class="cv-section-title">Compétences</div><div class="mb-3">${skillsBadges(data)}</div>` : ""}
+          ${data.languages.length ? `
+            <div class="cv-section-title">Langues</div>
+            ${data.languages.map(l => `
+              <div class="small mb-2">
+                <div class="d-flex justify-content-between"><strong>${l.name}</strong><span>${l.level}</span></div>
+                <div class="tpl-marine-lang-bar"><span style="width:${LEVEL_TO_PERCENT[l.level] || 60}%;"></span></div>
+              </div>
+            `).join("")}
+          ` : ""}
+          ${(data.hobbies || []).length ? `<div class="cv-section-title">Loisirs</div><div class="mb-2">${hobbiesBadges(data)}</div>` : ""}
+        </div>
+        <div class="tpl-marine-main">
+          <h1 class="cv-pdf-name">${data.personal.fullName || "VOTRE NOM"}</h1>
+          <div class="cv-pdf-title">${(data.personal.jobTitle || "Titre du poste").toUpperCase()}</div>
+          ${data.experiences.length ? `<div class="mt-3"><div class="cv-section-title"><i class="fas fa-briefcase"></i> Expériences Professionnelles</div>${experiencesBlocks(data, true)}</div>` : ""}
+          ${data.education.length ? `<div><div class="cv-section-title"><i class="fas fa-graduation-cap"></i> Formations & Diplômes</div>${educationBlocks(data, true)}</div>` : ""}
+          ${data.projects.length ? `<div><div class="cv-section-title"><i class="fas fa-tasks"></i> Projets Marquants</div>${projectsBlocks(data)}</div>` : ""}
+        </div>
+      `;
+    }
+
+    function buildModerneHtml(data) {
+      return `
+        <div class="tpl-moderne-header">
+          ${data.personal.photo ? `<img class="tpl-moderne-photo" src="${data.personal.photo}" alt="Photo">` : ""}
+          <div>
+            <h1 class="cv-pdf-name" style="font-size:22px;">${data.personal.fullName || "VOTRE NOM"}</h1>
+            <div class="cv-pdf-title">${(data.personal.jobTitle || "Titre du poste").toUpperCase()}</div>
+            <div class="cv-pdf-contacts">
+              <span><i class="fas fa-map-marker-alt me-1"></i> ${data.personal.city}</span>
+              <span><i class="fas fa-envelope me-1"></i> ${data.personal.email || ""}</span>
+              <span><i class="fas fa-phone me-1"></i> ${data.personal.phone || ""}</span>
+            </div>
+          </div>
+        </div>
+        <div class="tpl-moderne-body">
+          <div class="tpl-moderne-col1">
+            ${data.skills.length ? `<div class="cv-section-title">Compétences</div><div class="mb-3">${skillsBadges(data)}</div>` : ""}
+            ${data.languages.length ? `<div class="cv-section-title">Langues</div>${data.languages.map(l => `<div class="small mb-1"><strong>${l.name}</strong> : <span class="text-muted">${l.level}</span></div>`).join("")}` : ""}
+            ${data.projects.length ? `<div class="cv-section-title mt-2">Projets</div>${projectsBlocks(data)}` : ""}
+            ${(data.hobbies || []).length ? `<div class="cv-section-title mt-2">Loisirs</div><div>${hobbiesBadges(data)}</div>` : ""}
+          </div>
+          <div class="tpl-moderne-col2">
+            ${data.personal.bio ? `<div class="cv-section-title">Profil</div><div class="cv-item-desc mb-2">${data.personal.bio}</div>` : ""}
+            ${data.experiences.length ? `<div class="cv-section-title"><i class="fas fa-briefcase"></i> Expériences</div>${experiencesBlocks(data, false)}` : ""}
+            ${data.education.length ? `<div class="cv-section-title"><i class="fas fa-graduation-cap"></i> Formations</div>${educationBlocks(data, false)}` : ""}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPreview() {
+      saveCurrentStepData();
+
+      const renderEl = document.getElementById("cv-pdf-render");
+      renderEl.className = `tpl-${selectedTemplate}`;
+
+      if (selectedTemplate === "marine") {
+        renderEl.innerHTML = buildMarineHtml(cvState);
+      } else if (selectedTemplate === "moderne") {
+        renderEl.innerHTML = buildModerneHtml(cvState);
+      } else {
+        renderEl.innerHTML = buildClassicHtml(cvState);
+      }
+
+      renderCompletenessBox();
+    }
+
+    // -------------------------------------------------------------
+    // ÉVALUATION LÉGÈRE DE COMPLÉTUDE (encourage, ne bloque jamais)
+    // -------------------------------------------------------------
+    function computeCvCompleteness() {
+      const checks = [
+        { label: "une photo de profil", done: !!cvState.personal.photo },
+        { label: "un objectif professionnel", done: !!cvState.personal.bio },
+        { label: "au moins une expérience", done: cvState.experiences.length > 0 },
+        { label: "au moins une formation", done: cvState.education.length > 0 },
+        { label: "au moins 3 compétences", done: cvState.skills.length >= 3 },
+        { label: "au moins 2 langues", done: cvState.languages.length >= 2 },
+        { label: "un loisir ou centre d'intérêt", done: cvState.hobbies.length > 0 }
+      ];
+      const doneCount = checks.filter(c => c.done).length;
+      return {
+        percent: Math.round((doneCount / checks.length) * 100),
+        missing: checks.filter(c => !c.done).map(c => c.label)
+      };
+    }
+
+    function renderCompletenessBox() {
+      const box = document.getElementById("cvCompletenessBox");
+      const { percent, missing } = computeCvCompleteness();
+
+      const message = missing.length === 0
+        ? `<span class="text-success fw-bold"><i class="fas fa-star me-1"></i> Votre CV est complet, bravo !</span>`
+        : `Pensez à ajouter : <strong>${missing.join(", ")}</strong>.`;
+
+      box.innerHTML = `
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <span class="small fw-bold text-nowrap">CV complété à ${percent}%</span>
+          <div class="completeness-bar-track"><div class="completeness-bar-fill" style="width:${percent}%;"></div></div>
+        </div>
+        <p class="small text-muted mb-0 mt-2">${message}</p>
+      `;
+    }
+
+    // -------------------------------------------------------------
+    // NOUVEAU CV VIERGE
+    // -------------------------------------------------------------
+    document.getElementById("btnResetCV").addEventListener("click", () => {
+      const hasData = cvState.personal.fullName || cvState.personal.email || cvState.experiences.length || cvState.education.length;
+      if (hasData && !confirm("Repartir d'un CV vierge ? Toutes les données actuellement saisies seront définitivement effacées.")) {
+        return;
+      }
+
+      sessionStorage.removeItem("sala_current_cv");
+      Object.assign(cvState, {
+        template: "classic",
+        personal: {
+          fullName: "", jobTitle: "", email: "", phone: "", address: "",
+          city: "Brazzaville", country: "République du Congo", birthDate: "", photo: null, bio: ""
+        },
+        experiences: [],
+        education: [],
+        projects: [],
+        skills: [],
+        hobbies: [],
+        languages: [{ name: "Français", level: "Courant" }]
+      });
+
+      ["fullName", "jobTitle", "email", "phone", "address", "bio"].forEach(id => {
+        document.getElementById(id).value = "";
+        document.getElementById(id).classList.remove("is-invalid");
+      });
+      document.getElementById("city").value = "Brazzaville";
+      document.getElementById("skillsInput").value = "";
+      document.getElementById("hobbiesInput").value = "";
+
+      avatarPreview.src = "";
+      avatarPreview.style.display = "none";
+      avatarPlaceholder.style.display = "block";
+      btnRemovePhoto.style.display = "none";
+      fileInput.value = "";
+
+      selectedTemplate = "classic";
+      document.querySelectorAll(".template-option").forEach(o => o.classList.toggle("active", o.dataset.template === "classic"));
+
+      renderExperiences();
+      renderEducation();
+      renderProjects();
+      renderLanguages();
+      saveLocalCV();
+      goToStep(1);
+    });
+
+    // -------------------------------------------------------------
+    // EXPORT PDF — calcul manuel des pages (contourne le découpage automatique
+    // de html2pdf.js qui crée une 2e page quasi vide au moindre dépassement).
+    // -------------------------------------------------------------
+    const btnDownloadPDF = document.getElementById("btnDownloadPDF");
+
+    async function exportCvToPdf(element, filename) {
+      // Capture le CV en image haute résolution
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        letterRendering: true
+      });
+      const imgData = canvas.toDataURL("image/jpeg", 0.98);
+
+      const pdf = new jspdf.jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+      const pageWidth = pdf.internal.pageSize.getWidth();   // 210mm
+      const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+
+      const imgWidthMm = pageWidth;
+      const imgHeightMm = (canvas.height * imgWidthMm) / canvas.width;
+
+      // Marge de tolérance : un léger dépassement (jusqu'à 6mm, l'équivalent de
+      // quelques lignes de texte) est simplement contenu sur la page plutôt que
+      // de créer une 2e page presque vide pour presque rien.
+      const TOLERANCE_MM = 6;
+
+      if (imgHeightMm <= pageHeight + TOLERANCE_MM) {
+        pdf.addImage(imgData, "JPEG", 0, 0, imgWidthMm, imgHeightMm);
+      } else {
+        // Le CV dépasse réellement une page : découpage propre, page par page,
+        // en rejouant la même image décalée vers le haut à chaque page.
+        let heightLeft = imgHeightMm;
+        let yOffset = 0;
+        let isFirstPage = true;
+
+        while (heightLeft > 0) {
+          if (!isFirstPage) pdf.addPage();
+          pdf.addImage(imgData, "JPEG", 0, -yOffset, imgWidthMm, imgHeightMm);
+          heightLeft -= pageHeight;
+          yOffset += pageHeight;
+          isFirstPage = false;
+        }
+      }
+
+      pdf.save(filename);
+    }
+
+    btnDownloadPDF.addEventListener("click", async () => {
+      const element = document.getElementById("cv-pdf-render");
+      const candidateName = (cvState.personal.fullName || "Candidat").replace(/\s+/g, "_");
+      const filename = `CV_${candidateName}_Sala.pdf`;
+
+      btnDownloadPDF.disabled = true;
+      btnDownloadPDF.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Génération du PDF...';
+
+      // Retire la hauteur minimale forcée le temps de la capture, pour que
+      // l'image capturée corresponde exactement au contenu réel du CV.
+      element.classList.add("exporting");
+
+      try {
+        await exportCvToPdf(element, filename);
+      } catch (err) {
+        console.error("Erreur génération PDF :", err);
+        alert("Erreur lors de la génération du PDF. Veuillez réessayer.");
+      } finally {
+        element.classList.remove("exporting");
+        btnDownloadPDF.disabled = false;
+        btnDownloadPDF.innerHTML = '<i class="fas fa-file-pdf me-1"></i> Télécharger mon CV (PDF)';
+      }
+    });
+
+    // Sauvegarde en ligne
+    const btnSaveOnline = document.getElementById("btnSaveOnline");
+    btnSaveOnline.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("Veuillez vous connecter pour sauvegarder ce CV dans votre compte Sala.");
+        window.location.href = "auth.html";
+        return;
+      }
+      try {
+        btnSaveOnline.disabled = true;
+        btnSaveOnline.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Sauvegarde...';
+        await saveCVToFirestore();
+        alert("CV sauvegardé avec succès dans votre compte Sala !");
+      } catch (err) {
+        alert("Erreur : " + err.message);
+      } finally {
+        btnSaveOnline.disabled = false;
+        btnSaveOnline.innerHTML = '<i class="fas fa-cloud-upload-alt me-1"></i> Sauvegarder';
+      }
+    });
+
+  </script>
+
+</body>
+</html>

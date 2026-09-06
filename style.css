@@ -1,0 +1,704 @@
+/* ==========================================================================
+   ADMINISTRATION SALA — Styles du tableau de bord
+   Repose sur les tokens de couleur/typo/rayon de css/sala-theme.css (--sala-*),
+   et sur ses classes de coquille (.sala-sidebar, .sala-topbar, .sala-nav-item)
+   pour rester visuellement cohérent avec le reste du site.
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body.dashboard-body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--sala-bg);
+  color: var(--sala-text-primary);
+}
+
+/* ==========================================================================
+   ÉCRAN DE VÉRIFICATION D'ACCÈS
+   ========================================================================== */
+.admin-auth-checking {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--sala-text-muted);
+}
+
+/* ==========================================================================
+   BARRE SUPÉRIEURE
+   ========================================================================== */
+.admin-topbar {
+  justify-content: space-between;
+}
+
+.admin-topbar-title {
+  font-family: var(--sala-font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--sala-text-primary);
+}
+
+.admin-topbar-subtitle {
+  font-size: 0.78rem;
+  color: var(--sala-text-muted);
+  margin-top: 1px;
+}
+
+.admin-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--sala-border);
+  background: #ffffff;
+  color: var(--sala-text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.95rem;
+}
+
+.admin-icon-btn:hover {
+  border-color: var(--sala-green);
+  color: var(--sala-green-dark);
+}
+
+.admin-user-chip {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sala-text-secondary);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   SIDEBAR — extension des sections désactivées / pied de sidebar
+   ========================================================================== */
+.sala-sidebar-brand-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--sala-green);
+  background: var(--sala-green-light);
+  padding: 2px 8px;
+  border-radius: var(--sala-radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sala-nav-item.disabled {
+  cursor: not-allowed;
+  color: var(--sala-text-muted);
+  opacity: 0.65;
+}
+
+.sala-nav-item.disabled:hover {
+  background: none;
+  color: var(--sala-text-muted);
+}
+
+.admin-sidebar-footer {
+  padding: 14px 4px 4px;
+  border-top: 1px solid var(--sala-border);
+  margin-top: 12px;
+}
+
+/* ==========================================================================
+   NAVIGATION MOBILE (onglets horizontaux, remplace la sidebar < 992px)
+   ========================================================================== */
+.admin-mobile-tabs {
+  display: none;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--sala-border);
+}
+
+@media (max-width: 991px) {
+  .admin-mobile-tabs {
+    display: flex;
+  }
+}
+
+.admin-mobile-tab {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--sala-bg);
+  border: 1.5px solid var(--sala-border);
+  color: var(--sala-text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: var(--sala-radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.admin-mobile-tab.active {
+  background: var(--sala-green);
+  border-color: var(--sala-green);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   CONTENU PRINCIPAL
+   ========================================================================== */
+.admin-main {
+  padding: 28px 32px 60px;
+}
+
+.admin-section {
+  display: none;
+}
+
+.admin-section.active {
+  display: block;
+  animation: admin-fade-in 0.25s ease;
+}
+
+@keyframes admin-fade-in {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.admin-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.admin-page-title {
+  font-family: var(--sala-font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin: 0;
+  color: var(--sala-text-primary);
+}
+
+.admin-page-subtitle {
+  color: var(--sala-text-muted);
+  font-size: 0.88rem;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   VUE D'ENSEMBLE — cartes statistiques & actions rapides
+   ========================================================================== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border: 1px solid var(--sala-border);
+  border-radius: var(--sala-radius-lg);
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--sala-shadow-sm);
+}
+
+.stat-card .stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--sala-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.stat-value {
+  font-family: var(--sala-font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--sala-text-primary);
+}
+
+.stat-label {
+  color: var(--sala-text-muted);
+  font-size: 0.82rem;
+  margin-top: 5px;
+}
+
+.admin-panel {
+  background: #ffffff;
+  border: 1px solid var(--sala-border);
+  border-radius: var(--sala-radius-lg);
+  padding: 24px;
+  box-shadow: var(--sala-shadow-sm);
+  margin-bottom: 24px;
+}
+
+.admin-panel h2 {
+  font-family: var(--sala-font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   FORMULAIRES (modales)
+   ========================================================================== */
+.job-form {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  margin-bottom: 7px;
+  color: var(--sala-text-secondary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 11px 13px;
+  border: 1px solid var(--sala-border);
+  border-radius: var(--sala-radius-md);
+  font-family: var(--sala-font-sans);
+  font-size: 0.92rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--sala-green);
+  box-shadow: 0 0 0 3px var(--sala-green-light);
+  outline: none;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.visibility-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  margin-top: 8px;
+  text-align: right;
+}
+
+/* ==========================================================================
+   BARRE D'OUTILS (recherche) & GRILLES DE CARTES
+   Remplace les tableaux pour les sections Offres / Événements / Annuaires
+   ========================================================================== */
+.admin-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.admin-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+
+.admin-search-wrap i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sala-text-muted);
+  font-size: 0.85rem;
+}
+
+.admin-search-input {
+  width: 100%;
+  padding: 10px 14px 10px 36px;
+  border: 1px solid var(--sala-border);
+  border-radius: var(--sala-radius-md);
+  font-size: 0.88rem;
+  font-family: var(--sala-font-sans);
+  background: #ffffff;
+}
+
+.admin-search-input:focus {
+  border-color: var(--sala-green);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--sala-green-light);
+}
+
+.admin-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 16px;
+}
+
+.admin-card {
+  background: #ffffff;
+  border: 1px solid var(--sala-border);
+  border-radius: var(--sala-radius-lg);
+  padding: 18px;
+  box-shadow: var(--sala-shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-card:hover {
+  box-shadow: var(--sala-shadow-md);
+  transform: translateY(-2px);
+}
+
+.admin-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.admin-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--sala-text-secondary);
+}
+
+.admin-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-card-meta i {
+  color: var(--sala-text-muted);
+  font-size: 0.78rem;
+}
+
+.admin-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--sala-border);
+}
+
+.admin-card-empty {
+  grid-column: 1 / -1;
+}
+
+/* ==========================================================================
+   TABLEAUX (conservés pour d'éventuels usages ponctuels)
+   ========================================================================== */
+.annuaire-subtabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.annuaire-subtab {
+  background: #ffffff;
+  border: 1.5px solid var(--sala-border);
+  color: var(--sala-text-secondary);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--sala-radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.annuaire-subtab:hover {
+  border-color: var(--sala-green);
+  color: var(--sala-green-dark);
+}
+
+.annuaire-subtab.active {
+  background: var(--sala-green);
+  color: #ffffff;
+  border-color: var(--sala-green);
+}
+
+.table-responsive {
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid var(--sala-border);
+  border-radius: var(--sala-radius-lg);
+  box-shadow: var(--sala-shadow-sm);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 0.86rem;
+}
+
+.admin-table thead th {
+  background: var(--sala-bg);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sala-text-muted);
+  border-bottom: 1px solid var(--sala-border);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  border-bottom: 1px solid var(--sala-border);
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover {
+  background: var(--sala-green-light);
+}
+
+.admin-empty {
+  text-align: center;
+  padding: 48px 20px !important;
+  color: var(--sala-text-muted);
+}
+
+.admin-row-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-row-identity .title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--sala-text-primary);
+  line-height: 1.3;
+}
+
+.admin-row-identity .subtitle {
+  color: var(--sala-text-muted);
+  font-size: 0.78rem;
+  margin-top: 1px;
+}
+
+.admin-badge {
+  background: var(--sala-green-light);
+  color: var(--sala-green-dark);
+  font-weight: 700;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: var(--sala-radius-full);
+  white-space: nowrap;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--sala-radius-md);
+  border: 1px solid var(--sala-border);
+  background: #ffffff;
+  color: var(--sala-text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  transform: translateY(-1px);
+}
+
+.btn-icon-edit:hover {
+  border-color: var(--sala-green);
+  color: var(--sala-green-dark);
+}
+
+.btn-icon-delete:hover {
+  border-color: var(--sala-red);
+  color: var(--sala-red);
+}
+
+/* Interrupteur de visibilité */
+.admin-switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+}
+
+.admin-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.admin-switch span {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #d1d5db;
+  border-radius: 24px;
+  transition: 0.2s;
+}
+
+.admin-switch span::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.admin-switch input:checked + span {
+  background-color: var(--sala-green);
+}
+
+.admin-switch input:checked + span::before {
+  transform: translateX(18px);
+}
+
+/* ==========================================================================
+   MODALES BOOTSTRAP HABILLÉES AU STYLE SALA
+   ========================================================================== */
+.modal-content {
+  border-radius: var(--sala-radius-lg);
+  border: none;
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--sala-border);
+}
+
+.modal-title {
+  font-family: var(--sala-font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* ==========================================================================
+   MODE SOMBRE
+   ========================================================================== */
+body.dark-mode {
+  background: #10151b;
+  color: #e7ebee;
+}
+
+body.dark-mode .sala-topbar,
+body.dark-mode .sala-sidebar,
+body.dark-mode .admin-mobile-tabs,
+body.dark-mode .stat-card,
+body.dark-mode .admin-panel,
+body.dark-mode .table-responsive,
+body.dark-mode .modal-content,
+body.dark-mode .admin-icon-btn,
+body.dark-mode .btn-icon,
+body.dark-mode .annuaire-subtab,
+body.dark-mode .admin-mobile-tab,
+body.dark-mode .admin-card,
+body.dark-mode .admin-search-input {
+  background: #171d24;
+  border-color: #2a323b;
+  color: #e7ebee;
+}
+
+body.dark-mode .admin-card-footer {
+  border-top-color: #2a323b;
+}
+
+body.dark-mode .admin-table thead th {
+  background: #12171d;
+  color: #9aa5b1;
+  border-color: #2a323b;
+}
+
+body.dark-mode .admin-table td {
+  border-color: #2a323b;
+}
+
+body.dark-mode .admin-table tbody tr:hover {
+  background: #1d2530;
+}
+
+body.dark-mode .sala-nav-item {
+  color: #b7c0c9;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea {
+  background: #171d24;
+  color: #e7ebee;
+  border-color: #2a323b;
+}
+
+body.dark-mode .admin-page-title,
+body.dark-mode .admin-topbar-title,
+body.dark-mode .stat-value,
+body.dark-mode .admin-row-identity .title {
+  color: #f2f5f7;
+}

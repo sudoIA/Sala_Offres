@@ -1,0 +1,12 @@
+# Outils / configuration locale
+.claude/
+.vscode/
+.idea/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Préparation aux Entretiens d'Embauche — Sala Congo</title>
+  <meta name="description" content="Maîtrisez les questions pièges des recruteurs, découvrez les meilleures réponses et testez-vous avec le Quiz Sala.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/logo_100.png">
+
+  <!-- Polices Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/sala-theme.css" rel="stylesheet">
+
+  <style>
+    .interview-card {
+      background: #ffffff;
+      border: 1px solid var(--sala-border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--sala-shadow-sm);
+      transition: all 0.2s ease;
+    }
+
+    .interview-card:hover {
+      box-shadow: var(--sala-shadow-md);
+      border-color: var(--sala-green-border);
+    }
+
+    .badge-do {
+      background: #eaf6ed;
+      color: #1e6b31;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .badge-dont {
+      background: #fee2e2;
+      color: #b9050f;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .quiz-option {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .quiz-option:hover {
+      border-color: var(--sala-green);
+      background: #f8faf9;
+    }
+
+    .quiz-option.correct {
+      border-color: #2e7d32 !important;
+      background: #eaf6ed !important;
+      color: #1e6b31;
+      font-weight: 700;
+    }
+
+    .quiz-option.incorrect {
+      border-color: #d32f2f !important;
+      background: #fee2e2 !important;
+      color: #b9050f;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <header class="sala-topbar">
+    <div class="d-flex align-items-center gap-3">
+      <a href="index.html" class="d-flex align-items-center text-decoration-none">
+        <img src="img/logo_transparent.png" alt="Logo Sala" style="height: 40px; width: auto;" class="me-2">
+        <span style="font-weight: 800; font-size: 1.3rem; color: var(--sala-green);">SALA</span>
+      </a>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <a href="offres.html" class="btn-sala-outline py-1 px-3" style="font-size: 0.85rem;">
+        <i class="fas fa-briefcase me-1"></i> Offres
+      </a>
+      <a href="profile.html" class="btn btn-light py-1 px-3 rounded-pill text-muted small">
+        <i class="fas fa-user me-1"></i> Profil
+      </a>
+    </div>
+  </header>
+
+  <div class="container py-4" style="max-width: 840px;">
+    
+    <!-- En-tête -->
+    <div class="text-center mb-4">
+      <span class="badge-sala-green px-3 py-1 mb-2"><i class="fas fa-user-tie me-1"></i> Coaching Recrutement</span>
+      <h1 class="h2 fw-bold text-dark mb-2">Préparation aux Entretiens</h1>
+      <p class="text-muted">
+        Maîtrisez les codes des recruteurs au Congo, évitez les pièges classiques et entraînez-vous avec notre Quiz interactif.
+      </p>
+
+      <!-- Bascule Mode Guide / Mode Quiz -->
+      <div class="btn-group p-1 bg-white border rounded-pill shadow-sm mt-2" role="group">
+        <button type="button" class="btn btn-sm btn-success rounded-pill px-4 fw-bold" id="btnModeGuide">
+          <i class="fas fa-book-open me-1"></i> Guide des Questions
+        </button>
+        <button type="button" class="btn btn-sm btn-light rounded-pill px-4 fw-bold text-muted" id="btnModeQuiz">
+          <i class="fas fa-vial me-1"></i> Quiz d'entraînement
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         SECTION 1 : GUIDE DES QUESTIONS FRÉQUENTES
+         ======================================================== -->
+    <div id="guideSection">
+      
+      <!-- Question 1 -->
+      <div class="interview-card">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-light text-dark border fw-bold">Question 1</span>
+          <h5 class="fw-bold mb-0 text-dark">« Parlez-moi de vous »</h5>
+        </div>
+        <p class="text-muted small mb-3">
+          <strong>Ce que cherche le recruteur :</strong> Votre capacité de synthèse, votre parcours professionnel récent et votre adéquation avec le poste proposé.
+        </p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 h-100">
+              <span class="badge-do mb-2 d-inline-block"><i class="fas fa-check"></i> Ce qu'il faut dire</span>
+              <p class="small text-secondary mb-0">
+                Structurez en 3 temps (Passé, Présent, Futur) : <em>"Diplômé en gestion à Brazzaville, j'ai exercé 2 ans en cabinet comptable. Aujourd'hui, je souhaite mettre mes compétences d'analyse au service de votre société pour optimiser vos processus."</em>
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 h-100">
+              <span class="badge-dont mb-2 d-inline-block"><i class="fas fa-times"></i> À éviter absolument</span>
+              <p class="small text-secondary mb-0">
+                Ne racontez pas votre vie personnelle (enfance, famille), et ne récitez pas mot pour mot votre CV de façon monotone.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="interview-card">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-light text-dark border fw-bold">Question 2</span>
+          <h5 class="fw-bold mb-0 text-dark">« Pourquoi voulez-vous rejoindre notre entreprise ? »</h5>
+        </div>
+        <p class="text-muted small mb-3">
+          <strong>Ce que cherche le recruteur :</strong> Avez-vous pris le temps de vous renseigner sur l'entreprise au Congo ? Êtes-vous motivé par ce projet ou cherchez-vous n'importe quel travail ?
+        </p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 h-100">
+              <span class="badge-do mb-2 d-inline-block"><i class="fas fa-check"></i> Ce qu'il faut dire</span>
+              <p class="small text-secondary mb-0">
+                Citez un fait précis : <em>"J'admire l'engagement de votre entreprise dans la transition énergétique et votre récente expansion à Pointe-Noire. Mes compétences correspondent exactement aux défis de votre équipe."</em>
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 h-100">
+              <span class="badge-dont mb-2 d-inline-block"><i class="fas fa-times"></i> À éviter absolument</span>
+              <p class="small text-secondary mb-0">
+                <em>"Je postule parce que j'ai besoin d'un travail et que le salaire est bon."</em> C'est un motif d'élimination immédiate.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 3 -->
+      <div class="interview-card">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-light text-dark border fw-bold">Question 3</span>
+          <h5 class="fw-bold mb-0 text-dark">« Quelles sont vos prétentions salariales ? »</h5>
+        </div>
+        <p class="text-muted small mb-3">
+          <strong>Ce que cherche le recruteur :</strong> Votre connaissance du marché congolais et votre niveau d'exigence par rapport à vos compétences.
+        </p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 h-100">
+              <span class="badge-do mb-2 d-inline-block"><i class="fas fa-check"></i> Ce qu'il faut dire</span>
+              <p class="small text-secondary mb-0">
+                Donnez une fourchette réaliste en FCFA basée sur votre expérience : <em>"Compte tenu des responsabilités et de mon profil, j'envisage une rémunération entre 250 000 et 350 000 FCFA net, mais je reste ouvert à la grille salariale de votre entreprise."</em>
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 h-100">
+              <span class="badge-dont mb-2 d-inline-block"><i class="fas fa-times"></i> À éviter absolument</span>
+              <p class="small text-secondary mb-0">
+                <em>"Peu importe, donnez-moi ce que vous voulez."</em> Cela dénote un manque de confiance en soi.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 4 -->
+      <div class="interview-card">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-light text-dark border fw-bold">Question 4</span>
+          <h5 class="fw-bold mb-0 text-dark">« Avez-vous des questions pour nous ? »</h5>
+        </div>
+        <p class="text-muted small mb-3">
+          <strong>Ce que cherche le recruteur :</strong> Votre curiosité, votre proactivité et votre vision du poste.
+        </p>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 h-100">
+              <span class="badge-do mb-2 d-inline-block"><i class="fas fa-check"></i> Ce qu'il faut dire</span>
+              <p class="small text-secondary mb-0">
+                Posez 1 ou 2 questions pertinentes : <em>"Quels sont les objectifs prioritaires pour ce poste durant les 3 premiers mois ?"</em> ou <em>"Comment s'organise l'équipe au quotidien ?"</em>
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3 h-100">
+              <span class="badge-dont mb-2 d-inline-block"><i class="fas fa-times"></i> À éviter absolument</span>
+              <p class="small text-secondary mb-0">
+                Répondre <em>"Non, tout est clair"</em> donne l'impression d'un candidat passif qui n'a pas réfléchi au poste.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ========================================================
+         SECTION 2 : QUIZ D'ENTRAÎNEMENT INTERACTIF
+         ======================================================== -->
+    <div id="quizSection" style="display:none;">
+      
+      <div class="interview-card p-4 text-center" id="quizIntro">
+        <i class="fas fa-graduation-cap fa-3x text-success mb-3"></i>
+        <h4 class="fw-bold mb-2">Quiz d'Évaluation : Êtes-vous prêt pour l'entretien ?</h4>
+        <p class="text-muted mb-4">5 questions concrètes pour tester vos réflexes face à un recruteur.</p>
+        <button class="btn-sala-primary rounded-pill px-5 py-3 fw-bold" id="btnStartQuiz">
+          Commencer le Quiz (5 min) <i class="fas fa-play ms-2"></i>
+        </button>
+      </div>
+
+      <div class="interview-card p-4" id="quizPlay" style="display:none;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="badge-sala-green" id="quizStep">Question 1 / 5</span>
+          <span class="small text-muted" id="quizScoreDisplay">Score : 0 pt</span>
+        </div>
+
+        <h5 class="fw-bold mb-4" id="quizQuestionText">Chargement...</h5>
+        <div id="quizOptionsContainer"></div>
+
+        <div id="quizFeedback" class="alert mt-3" style="display:none;"></div>
+
+        <div class="text-end mt-4">
+          <button class="btn-sala-primary rounded-pill px-4" id="btnNextQuizQuestion" style="display:none;">
+            Question suivante <i class="fas fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="interview-card p-5 text-center" id="quizResult" style="display:none;">
+        <div id="quizResultIcon"></div>
+        <h3 class="fw-bold mb-2" id="quizFinalTitle">Résultat du Quiz</h3>
+        <p class="text-muted mb-4" id="quizFinalMsg"></p>
+        <div class="h2 fw-bold text-success mb-4" id="quizFinalScore">5 / 5</div>
+        <button class="btn-sala-outline rounded-pill px-4 me-2" id="btnRestartQuiz">Recommencer</button>
+        <a href="offres.html" class="btn-sala-primary rounded-pill px-4">Postuler à une offre</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bouton Flottant FAB "Faire un CV" -->
+  <a href="cv-builder.html" class="sala-fab-cv" title="Faire un CV">
+    <i class="fas fa-pen"></i>
+    <span class="tooltip-text">Faire un CV professionnel</span>
+  </a>
+
+  <!-- Barre de navigation mobile inférieure (Bottom Navigation) -->
+  <nav class="sala-bottom-nav">
+    <a href="offres.html" class="sala-bottom-nav-item">
+      <i class="fas fa-briefcase"></i>
+      <span>Emplois</span>
+    </a>
+    <a href="evenements.html" data-nav-key="evenements" class="sala-bottom-nav-item">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Événements</span>
+    </a>
+    <a href="cv-builder.html" class="sala-bottom-fab" title="Faire un CV">
+      <i class="fas fa-pen"></i>
+    </a>
+    <a href="entretiens.html" data-nav-key="entretiens" class="sala-bottom-nav-item active">
+      <i class="fas fa-user-tie"></i>
+      <span>Entretiens</span>
+    </a>
+    <a href="legislation.html" data-nav-key="legislation" class="sala-bottom-nav-item">
+      <i class="fas fa-balance-scale"></i>
+      <span>Droit</span>
+    </a>
+  </nav>
+
+  <script>
+    // Bascule entre Guide et Quiz
+    const btnModeGuide = document.getElementById("btnModeGuide");
+    const btnModeQuiz = document.getElementById("btnModeQuiz");
+    const guideSection = document.getElementById("guideSection");
+    const quizSection = document.getElementById("quizSection");
+
+    btnModeGuide.addEventListener("click", () => {
+      btnModeGuide.className = "btn btn-sm btn-success rounded-pill px-4 fw-bold";
+      btnModeQuiz.className = "btn btn-sm btn-light rounded-pill px-4 fw-bold text-muted";
+      guideSection.style.display = "block";
+      quizSection.style.display = "none";
+    });
+
+    btnModeQuiz.addEventListener("click", () => {
+      btnModeQuiz.className = "btn btn-sm btn-success rounded-pill px-4 fw-bold";
+      btnModeGuide.className = "btn btn-sm btn-light rounded-pill px-4 fw-bold text-muted";
+      guideSection.style.display = "none";
+      quizSection.style.display = "block";
+    });
+
+    // Données du Quiz
+    const quizQuestions = [
+      {
+        question: "Quand le recruteur vous demande : « Parlez-moi de votre plus grand défaut », que répondez-vous ?",
+        options: [
+          { text: "Je dis que je suis trop perfectionniste ou trop travailleur.", correct: false, explanation: "C'est un cliché que les recruteurs entendent tous les jours et qui manque de sincérité." },
+          { text: "Je cite un point d'amélioration réel et j'explique comment je travaille activement pour progresser.", correct: true, explanation: "Exact ! Exemple : « J'avais tendance à hésiter avant de prendre la parole en public, j'ai donc rejoint un club pour m'entraîner. »" },
+          { text: "Je dis que je n'ai aucun défaut majeur dans le travail.", correct: false, explanation: "Cela donne une impression d'arrogance ou de manque de recul sur soi-même." }
+        ]
+      },
+      {
+        question: "À quelle heure devez-vous vous présenter le jour de votre entretien à Brazzaville ou Pointe-Noire ?",
+        options: [
+          { text: "Exactement à l'heure pile indiquée sur la convocation.", correct: false, explanation: "En cas d'imprévu ou de formalité à l'accueil, vous risquez d'arriver en retard." },
+          { text: "10 à 15 minutes avant l'heure du rendez-vous.", correct: true, explanation: "Parfait ! Cela démontre ponctualité, respect et sang-froid." },
+          { text: "1 heure à l'avance pour être le premier.", correct: false, explanation: "Arriver trop tôt peut mettre le recruteur mal à l'aise car il a d'autres obligations." }
+        ]
+      },
+      {
+        question: "Le recruteur vous demande vos prétentions salariales. Quelle est la meilleure approche ?",
+        options: [
+          { text: "Donner un chiffre net fixe sans négociation possible.", correct: false, explanation: "Cela ferme immédiatement la discussion." },
+          { text: "Dire : « Payez-moi ce que vous voulez, je prends tout. »", correct: false, explanation: "Cela dévalorise vos compétences aux yeux du recruteur." },
+          { text: "Proposer une fourchette réaliste basée sur le marché congolais tout en restant ouvert aux avantages de l'entreprise.", correct: true, explanation: "Bravo ! Cela montre que vous connaissez votre valeur tout en étant flexible." }
+        ]
+      },
+      {
+        question: "Que devez-vous apporter avec vous le jour de l'entretien ?",
+        options: [
+          { text: "Uniquement mon téléphone pour noter les remarques.", correct: false, explanation: "Sortir son téléphone en entretien est très mal perçu." },
+          { text: "2 copies papier de mon CV, un carnet de notes avec stylo, et mes diplômes/attestations.", correct: true, explanation: "Excellente préparation professionnelle qui rassure le recruteur !" },
+          { text: "Rien du tout, le recruteur a déjà tout imprimé.", correct: false, explanation: "Prendre ses copies montre que vous êtes prévoyant." }
+        ]
+      },
+      {
+        question: "En fin d'entretien, le recruteur vous demande si vous avez des questions. Que faites-vous ?",
+        options: [
+          { text: "Je pose une question sur les objectifs du poste ou l'équipe pour montrer ma motivation.", correct: true, explanation: "Très bien ! Cela prouve que vous vous projetez déjà dans le travail." },
+          { text: "Je demande tout de suite quand est-ce que les congés payés commencent.", correct: false, explanation: "Aborder les congés avant même d'avoir été retenu donne une mauvaise impression." },
+          { text: "Je dis « Non merci, j'ai tout compris » pour en finir vite.", correct: false, explanation: "C'est dommage, car poser une question renforce l'intérêt mutuel." }
+        ]
+      }
+    ];
+
+    let currentQIdx = 0;
+    let score = 0;
+
+    const quizIntro = document.getElementById("quizIntro");
+    const quizPlay = document.getElementById("quizPlay");
+    const quizResult = document.getElementById("quizResult");
+    const btnStart = document.getElementById("btnStartQuiz");
+    const quizStep = document.getElementById("quizStep");
+    const quizScoreDisplay = document.getElementById("quizScoreDisplay");
+    const quizQText = document.getElementById("quizQuestionText");
+    const quizOptionsContainer = document.getElementById("quizOptionsContainer");
+    const quizFeedback = document.getElementById("quizFeedback");
+    const btnNextQ = document.getElementById("btnNextQuizQuestion");
+
+    btnStart.addEventListener("click", () => {
+      quizIntro.style.display = "none";
+      quizPlay.style.display = "block";
+      currentQIdx = 0;
+      score = 0;
+      loadQuestion(currentQIdx);
+    });
+
+    function loadQuestion(idx) {
+      const q = quizQuestions[idx];
+      quizStep.textContent = `Question ${idx + 1} / ${quizQuestions.length}`;
+      quizScoreDisplay.textContent = `Score : ${score} pt${score > 1 ? 's' : ''}`;
+      quizQText.textContent = q.question;
+      quizFeedback.style.display = "none";
+      btnNextQ.style.display = "none";
+
+      quizOptionsContainer.innerHTML = "";
+      q.options.forEach((opt, oIdx) => {
+        const div = document.createElement("div");
+        div.className = "quiz-option";
+        div.innerHTML = `<span class="badge bg-light text-dark border me-2">${String.fromCharCode(65 + oIdx)}</span> ${opt.text}`;
+        div.addEventListener("click", () => handleAnswer(opt, div, q));
+        quizOptionsContainer.appendChild(div);
+      });
+    }
+
+    function handleAnswer(selectedOpt, optDiv, q) {
+      // Bloquer tous les choix
+      const allOptions = quizOptionsContainer.querySelectorAll(".quiz-option");
+      allOptions.forEach(el => el.style.pointerEvents = "none");
+
+      if (selectedOpt.correct) {
+        score++;
+        optDiv.classList.add("correct");
+        quizFeedback.className = "alert alert-success mt-3 small";
+        quizFeedback.innerHTML = `<i class="fas fa-check-circle me-1"></i> <strong>Excellente réponse !</strong> ${selectedOpt.explanation}`;
+      } else {
+        optDiv.classList.add("incorrect");
+        quizFeedback.className = "alert alert-danger mt-3 small";
+        quizFeedback.innerHTML = `<i class="fas fa-times-circle me-1"></i> <strong>Pas tout à fait...</strong> ${selectedOpt.explanation}`;
+      }
+
+      quizFeedback.style.display = "block";
+      btnNextQ.style.display = "inline-block";
+    }
+
+    btnNextQ.addEventListener("click", () => {
+      currentQIdx++;
+      if (currentQIdx < quizQuestions.length) {
+        loadQuestion(currentQIdx);
+      } else {
+        showResults();
+      }
+    });
+
+    function showResults() {
+      quizPlay.style.display = "none";
+      quizResult.style.display = "block";
+      document.getElementById("quizFinalScore").textContent = `${score} / ${quizQuestions.length}`;
+
+      const titleEl = document.getElementById("quizFinalTitle");
+      const msgEl = document.getElementById("quizFinalMsg");
+      const iconEl = document.getElementById("quizResultIcon");
+
+      if (score >= 4) {
+        iconEl.innerHTML = '<i class="fas fa-trophy fa-4x text-warning mb-3"></i>';
+        titleEl.textContent = "Excellent ! Vous êtes fin prêt(e)";
+        msgEl.textContent = "Vous maîtrisez parfaitement la posture et les réponses attendues par les recruteurs congolais. Vous avez toutes les chances de réussir votre prochain entretien !";
+      } else if (score === 3) {
+        iconEl.innerHTML = '<i class="fas fa-thumbs-up fa-4x text-success mb-3"></i>';
+        titleEl.textContent = "Bon niveau, quelques détails à peaufiner";
+        msgEl.textContent = "Vous avez de bons réflexes professionnels. Relisez le guide des questions pour sécuriser les points où vous avez hésité.";
+      } else {
+        iconEl.innerHTML = '<i class="fas fa-book-reader fa-4x text-primary mb-3"></i>';
+        titleEl.textContent = "Prenez le temps d'étudier le guide";
+        msgEl.textContent = "L'entretien d'embauche obéit à des codes stricts. Consultez attentivement nos fiches de conseils ci-dessus pour vous entraîner à nouveau.";
+      }
+    }
+
+    document.getElementById("btnRestartQuiz").addEventListener("click", () => {
+      quizResult.style.display = "none";
+      quizIntro.style.display = "block";
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+
+  <script type="module">
+    import { loadSiteSettings, applyNavVisibility } from "./js/site-settings.js";
+    loadSiteSettings().then(applyNavVisibility);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — Sala</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/sala-theme.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- coleur sala 
+    vert : #3b9452
+    rouge: #e30613
+    jaune: #f8ea1b
+  -->
+
+  <style>
+    body {
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .login-container {
+      background: #fff;
+      display: flex;
+      width: 900px;
+      height: 550px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0px 8px 24px rgba(6, 100, 2, 0.5);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      opacity: 1;
+      transition: opacity 0.8s ease, transform 0.4s ease;
+    }
+
+    .login-container.fade-out {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+
+    .login-container:hover {
+      box-shadow: 0px 12px 36px rgba(245, 10, 2, 0.5);
+    }
+
+    .login-left, .login-right {
+      flex: 1;
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-left {
+      background: #ffffff;
+      color: #3b9452;
+      text-align: center;
+    }
+
+    .login-left h1 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    .login-left p {
+      font-size: 18px;
+      color: #555;
+    }
+
+    .login-right {
+      background: linear-gradient(to bottom right, #3b9452, #3b9452);
+      color: white;
+      position: relative;
+    }
+
+    .login-right h2 {
+      font-size: 28px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    input[type="email"], input[type="password"] {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 16px;
+      background-color: rgba(255, 255, 255, 0.9);
+      color: #333;
+      transition: all 0.3s ease;
+    }
+
+    input[type="email"]:focus, input[type="password"]:focus {
+      background-color: #ffffff;
+      box-shadow: 0px 0px 8px rgba(67, 100, 247, 0.5);
+      transform: scale(1.02);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      background-color: white;
+      border: none;
+      border-radius: 8px;
+      color: #e30613;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-login:hover {
+      background-color: #f1f1f1;
+      transform: translateY(-2px);
+    }
+
+    .login-links {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .login-links a {
+      color: #f8ea1b;
+      text-decoration: underline;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .login-links a:hover {
+      text-decoration: none;
+    }
+
+    .loader {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #4364f7;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+        width: 90%;
+        height: auto;
+      }
+      .login-left, .login-right {
+        padding: 30px;
+      }
+      .login-left {
+        order: 2;
+      }
+      .login-right {
+        order: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container" id="login-container">
+  <div class="login-left">
+    <h1>Bienvenue !</h1>
+    <p>Connectez-vous pour gérer vos offres d'emploi simplement et rapidement.</p>
+    <p><a href="index.html"><img src="img/logo_transparent.png" style="width: 200px; height: 200px;"></a></p>
+  </div>
+  <div class="login-right">
+    <h2>Connexion</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <input type="email" id="email" placeholder="Adresse Email" required>
+      </div>
+      <div class="form-group">
+        <input type="password" id="password" placeholder="Mot de Passe" required>
+      </div>
+      <div id="login-error" style="display:none; background: #fee2e2; color: #b9050f; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: center;"></div>
+      <div id="login-success" style="display:none; background: #eaf6ed; color: #1e6b31; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: center;"></div>
+      <button type="submit" class="btn-login" id="login-button">Se connecter</button>
+      <div class="loader" id="loader"></div>
+      <div class="login-links">
+        <a id="reset-password-link" style="cursor:pointer;">Mot de passe oublié ?</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+  import { 
+    auth, 
+    db, 
+    doc, 
+    getDoc, 
+    signInWithEmailAndPassword, 
+    sendPasswordResetEmail, 
+    signOut 
+  } from "./js/firebase-config.js";
+
+  const loginForm = document.getElementById("login-form");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const loader = document.getElementById("loader");
+  const loginContainer = document.getElementById("login-container");
+  const errorEl = document.getElementById("login-error");
+  const successEl = document.getElementById("login-success");
+  const resetLink = document.getElementById("reset-password-link");
+
+  function showError(msg) {
+    if (successEl) successEl.style.display = "none";
+    if (errorEl) {
+      errorEl.textContent = msg;
+      errorEl.style.display = "block";
+    }
+  }
+
+  function showSuccess(msg) {
+    if (errorEl) errorEl.style.display = "none";
+    if (successEl) {
+      successEl.textContent = msg;
+      successEl.style.display = "block";
+    }
+  }
+
+  async function login() {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!email || !password) {
+      showError("Veuillez renseigner votre email et mot de passe.");
+      return;
+    }
+
+    try {
+      loader.style.display = "block";
+      errorEl.style.display = "none";
+
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const user = result.user;
+
+      const roleDocRef = doc(db, "roles", user.uid);
+      const roleDoc = await getDoc(roleDocRef);
+      const role = roleDoc.exists() ? roleDoc.data().role : "user";
+
+      if (role === "admin") {
+        showSuccess("Connexion réussie ! Redirection...");
+        loginContainer.classList.add('fade-out');
+        setTimeout(() => {
+          window.location.href = "admin.html";
+        }, 800);
+      } else {
+        showError("Accès réservé aux administrateurs de l'ONG Sala.");
+        await signOut(auth);
+      }
+    } catch (err) {
+      console.error("Erreur login :", err);
+      let message = "Erreur de connexion : " + err.message;
+      if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+        message = "Identifiants invalides. Vérifiez votre adresse email et mot de passe.";
+      }
+      showError(message);
+    } finally {
+      loader.style.display = "none";
+    }
+  }
+
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    login();
+  });
+
+  resetLink.addEventListener("click", async () => {
+    const email = emailInput.value.trim();
+    if (!email) {
+      showError("Veuillez entrer votre adresse email pour réinitialiser votre mot de passe.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showSuccess("Un email de réinitialisation vous a été envoyé à : " + email);
+    } catch (err) {
+      showError("Erreur : " + err.message);
+    }
+  });
+</script>
+
+</body>
+</html>

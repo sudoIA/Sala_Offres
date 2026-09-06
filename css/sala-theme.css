@@ -1,0 +1,698 @@
+/* ==========================================================================
+   SALA DESIGN SYSTEM — SALA THEME CSS
+   Inspiré de l'application mobile Android et des maquettes Sala Web
+   Couleurs officielles :
+   - Vert Sala : #3b9452 (principal) / #1e6b31 (foncé)
+   - Rouge Sala : #e30613 (action/accent) / #c00410
+   - Jaune Sala : #f8ea1b (détails)
+   ========================================================================== */
+
+:root {
+  /* Palette officielle */
+  --sala-green: #3b9452;
+  --sala-green-dark: #1e6b31;
+  --sala-green-light: #eaf6ed;
+  --sala-green-subtle: #f0fdf4;
+  --sala-green-border: #bbf7d0;
+
+  --sala-red: #e30613;
+  --sala-red-dark: #b9050f;
+  --sala-red-light: #fee2e2;
+  --sala-red-subtle: #fff5f5;
+
+  --sala-yellow: #f8ea1b;
+  --sala-yellow-dark: #d4c70f;
+  --sala-yellow-light: #fefce8;
+
+  /* Neutres & Surfaces */
+  --sala-bg: #f8f9fa;
+  --sala-surface: #ffffff;
+  --sala-border: #e9ecef;
+  --sala-border-focus: #3b9452;
+  
+  --sala-text-primary: #1a1d20;
+  --sala-text-secondary: #555e68;
+  --sala-text-muted: #868e96;
+  --sala-text-inverse: #ffffff;
+
+  /* Ombres & Rayons */
+  --sala-radius-sm: 6px;
+  --sala-radius-md: 10px;
+  --sala-radius-lg: 16px;
+  --sala-radius-full: 9999px;
+
+  --sala-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --sala-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --sala-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --sala-shadow-green: 0 4px 14px rgba(59, 148, 82, 0.25);
+  --sala-shadow-red: 0 4px 14px rgba(227, 6, 19, 0.35);
+
+  /* Typographie */
+  --sala-font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --sala-font-display: 'Heebo', sans-serif;
+
+  /* Layout */
+  --sidebar-width: 260px;
+  --topbar-height: 64px;
+  --bottom-nav-height: 62px;
+}
+
+/* Base resets & typo */
+body {
+  font-family: var(--sala-font-sans);
+  background-color: var(--sala-bg);
+  color: var(--sala-text-primary);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--sala-font-display);
+  font-weight: 700;
+  color: var(--sala-text-primary);
+}
+
+/* ==========================================================================
+   BOUTONS SALA
+   ========================================================================== */
+.btn-sala-primary {
+  background-color: var(--sala-green);
+  color: var(--sala-text-inverse) !important;
+  border: none;
+  font-weight: 600;
+  border-radius: var(--sala-radius-md);
+  padding: 10px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: var(--sala-shadow-green);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-sala-primary:hover {
+  background-color: var(--sala-green-dark);
+  color: var(--sala-text-inverse) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(30, 107, 49, 0.35);
+}
+
+.btn-sala-accent {
+  background-color: var(--sala-red);
+  color: var(--sala-text-inverse) !important;
+  border: none;
+  font-weight: 600;
+  border-radius: var(--sala-radius-md);
+  padding: 10px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: var(--sala-shadow-red);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-sala-accent:hover {
+  background-color: var(--sala-red-dark);
+  color: var(--sala-text-inverse) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(227, 6, 19, 0.45);
+}
+
+.btn-sala-outline {
+  background: transparent;
+  color: var(--sala-green) !important;
+  border: 1.5px solid var(--sala-green);
+  font-weight: 600;
+  border-radius: var(--sala-radius-md);
+  padding: 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-sala-outline:hover {
+  background: var(--sala-green-light);
+  color: var(--sala-green-dark) !important;
+}
+
+.btn-sala-outline-red {
+  background: transparent;
+  color: var(--sala-red) !important;
+  border: 1.5px solid var(--sala-red-light);
+  font-weight: 600;
+  border-radius: var(--sala-radius-md);
+  padding: 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-sala-outline-red:hover {
+  background: var(--sala-red-subtle);
+  border-color: var(--sala-red);
+}
+
+/* ==========================================================================
+   BADGES & TAGS
+   ========================================================================== */
+.badge-sala-green {
+  background-color: var(--sala-green-light);
+  color: var(--sala-green-dark);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--sala-radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-sala-red {
+  background-color: var(--sala-red-light);
+  color: var(--sala-red);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--sala-radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-sala-contract {
+  background-color: #f1f3f5;
+  color: var(--sala-text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: var(--sala-radius-sm);
+  border: 1px solid var(--sala-border);
+}
+
+/* ==========================================================================
+   FLOATING ACTION BUTTON (FAB) — FAIRE UN CV
+   Identique au bouton d'action rouge de l'application mobile
+   ========================================================================== */
+.sala-fab-cv {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 58px;
+  height: 58px;
+  background-color: var(--sala-red);
+  color: #ffffff !important;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: var(--sala-shadow-red);
+  z-index: 1050;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.sala-fab-cv:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 8px 24px rgba(227, 6, 19, 0.5);
+  color: #ffffff !important;
+}
+
+.sala-fab-cv .tooltip-text {
+  position: absolute;
+  right: 68px;
+  background: #1a1d20;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: var(--sala-radius-sm);
+  font-size: 0.82rem;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.sala-fab-cv:hover .tooltip-text {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-4px);
+}
+
+/* ==========================================================================
+   CARTES D'OFFRES D'EMPLOI
+   ========================================================================== */
+.sala-job-card {
+  background: var(--sala-surface);
+  border: 1px solid var(--sala-border);
+  border-radius: var(--sala-radius-md);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.sala-job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sala-shadow-md);
+  border-color: var(--sala-green-border);
+}
+
+.sala-job-card.active {
+  border-color: var(--sala-green-border);
+  background: #fafdfa;
+}
+
+.sala-job-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sala-text-primary);
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.sala-job-card-company {
+  font-weight: 600;
+  color: var(--sala-green-dark);
+  font-size: 0.92rem;
+}
+
+.sala-job-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--sala-text-secondary);
+}
+
+.sala-job-card-meta i {
+  color: var(--sala-green);
+  margin-right: 4px;
+}
+
+.sala-job-card-expiry {
+  font-weight: 600;
+  color: var(--sala-red);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ==========================================================================
+   MASTER-DETAIL LAYOUT (DESKTOP)
+   ========================================================================== */
+.sala-layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar gauche */
+.sala-sidebar {
+  width: var(--sidebar-width);
+  background: var(--sala-surface);
+  border-right: 1px solid var(--sala-border);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 1000;
+}
+
+.sala-sidebar-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--sala-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sala-sidebar-header img {
+  height: 42px;
+  width: auto;
+}
+
+.sala-sidebar-nav {
+  padding: 16px 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sala-nav-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sala-text-muted);
+  padding: 12px 14px 6px;
+}
+
+.sala-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  color: var(--sala-text-secondary);
+  font-weight: 500;
+  font-size: 0.92rem;
+  border-radius: var(--sala-radius-md);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  margin-bottom: 3px;
+}
+
+.sala-nav-item i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+  color: var(--sala-text-muted);
+}
+
+.sala-nav-item:hover {
+  background-color: var(--sala-green-light);
+  color: var(--sala-green-dark);
+}
+
+.sala-nav-item:hover i {
+  color: var(--sala-green);
+}
+
+.sala-nav-item.active {
+  background-color: var(--sala-green-light);
+  color: var(--sala-green-dark);
+  font-weight: 700;
+}
+
+.sala-nav-item.active i {
+  color: var(--sala-green);
+}
+
+/* Master-detail container */
+.sala-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sala-topbar {
+  height: var(--topbar-height);
+  background: var(--sala-surface);
+  border-bottom: 1px solid var(--sala-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 990;
+}
+
+.sala-master-detail-row {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - var(--topbar-height));
+}
+
+.sala-master-list-col {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  border-right: 1px solid var(--sala-border);
+}
+
+.sala-detail-pane-col {
+  width: 480px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 24px;
+  background: var(--sala-surface);
+  position: sticky;
+  top: 0;
+}
+
+/* ==========================================================================
+   MOBILE BOTTOM NAVIGATION BAR (Calquée sur l'app Android)
+   ========================================================================== */
+.sala-bottom-nav {
+  display: none; /* Par défaut masqué sur desktop */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--bottom-nav-height);
+  background: var(--sala-surface);
+  border-top: 1px solid var(--sala-border);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  z-index: 1040;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 6px;
+}
+
+.sala-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--sala-text-muted);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 500;
+  position: relative;
+  padding: 4px 8px;
+  transition: color 0.15s ease;
+}
+
+.sala-bottom-nav-item i {
+  font-size: 1.25rem;
+  margin-bottom: 2px;
+}
+
+.sala-bottom-nav-item.active {
+  color: var(--sala-green);
+  font-weight: 700;
+}
+
+.sala-bottom-nav-item .badge-count {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  background: var(--sala-red);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: var(--sala-radius-full);
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+/* FAB central dans la bottom nav */
+.sala-bottom-fab {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--sala-red);
+  color: #fff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: var(--sala-shadow-red);
+  margin-top: -24px;
+  border: 3px solid var(--sala-surface);
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.sala-bottom-fab:active {
+  transform: scale(0.92);
+}
+
+/* Media Queries Responsive */
+@media (max-width: 991px) {
+  .sala-sidebar {
+    display: none; /* Remplacé par le Drawer mobile */
+  }
+
+  .sala-detail-pane-col {
+    display: none; /* Sur tablette/mobile, le détail s'ouvre en page ou modal */
+  }
+
+  .sala-master-detail-row {
+    height: auto;
+  }
+
+  .sala-bottom-nav {
+    display: flex;
+  }
+
+  body {
+    padding-bottom: var(--bottom-nav-height);
+  }
+
+  .sala-fab-cv {
+    display: none; /* Remplacé par le FAB central de la bottom nav */
+  }
+}
+
+/* ==========================================================================
+   PANNEAU DE DÉTAIL D'OFFRE — Compte à rebours & Onglets
+   (Maquette validée : fusion des vues bureau/mobile Offres d'emploi)
+   ========================================================================== */
+.sala-job-card {
+  border-left: 4px solid transparent;
+}
+
+.sala-job-card.is-urgent {
+  border-left-color: var(--sala-red);
+}
+
+.sala-company-tile {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--sala-radius-md);
+  font-weight: 800;
+  font-size: 0.72rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.sala-company-tile-lg {
+  width: 52px;
+  height: 52px;
+  font-size: 0.9rem;
+  border-radius: var(--sala-radius-lg);
+}
+
+.sala-countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sala-countdown-box {
+  background: var(--sala-green-light);
+  border: 1px solid var(--sala-green-border);
+  border-radius: var(--sala-radius-md);
+  padding: 12px 0;
+  text-align: center;
+}
+
+.sala-countdown-box .num {
+  font-family: var(--sala-font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--sala-green-dark);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sala-countdown-box .label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--sala-green-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+.sala-countdown-box.urgent {
+  background: var(--sala-red-subtle);
+  border-color: var(--sala-red-light);
+}
+
+.sala-countdown-box.urgent .num,
+.sala-countdown-box.urgent .label {
+  color: var(--sala-red-dark);
+}
+
+.sala-detail-tabs {
+  display: flex;
+  gap: 22px;
+  border-bottom: 1px solid var(--sala-border);
+  margin-bottom: 18px;
+}
+
+.sala-detail-tab {
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--sala-text-muted);
+  padding-bottom: 10px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  transition: color 0.15s ease;
+}
+
+.sala-detail-tab:hover {
+  color: var(--sala-green-dark);
+}
+
+.sala-detail-tab.active {
+  font-weight: 700;
+  color: var(--sala-green-dark);
+  border-bottom-color: var(--sala-green);
+}
+
+.sala-detail-field-label {
+  font-size: 0.7rem;
+  color: var(--sala-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sala-detail-field-value {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--sala-text-primary);
+  margin-top: 2px;
+}
+
+.sala-bookmark-btn {
+  background: none;
+  border: none;
+  color: var(--sala-text-muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.sala-bookmark-btn:hover {
+  transform: scale(1.1);
+}
+
+.sala-bookmark-btn.active {
+  color: var(--sala-green);
+}

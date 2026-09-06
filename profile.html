@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon Profil Candidat — Sala République du Congo</title>
+  <meta name="description" content="Gérez votre profil, vos compétences, vos candidatures et vos CV sur la plateforme Sala.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/logo_100.png">
+
+  <!-- Polices Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/sala-theme.css" rel="stylesheet">
+
+  <style>
+    .profile-banner {
+      height: 160px;
+      background: linear-gradient(135deg, #1e6b31 0%, #3b9452 70%, #f8ea1b 140%);
+      border-radius: 16px 16px 0 0;
+      position: relative;
+    }
+
+    .profile-card {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid var(--sala-border);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .profile-avatar-wrapper {
+      position: relative;
+      margin-top: -60px;
+      margin-left: 30px;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .profile-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 4px solid #ffffff;
+      object-fit: cover;
+      background-color: #eaf6ed;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-tab-nav {
+      display: flex;
+      gap: 15px;
+      border-bottom: 1px solid var(--sala-border);
+      padding: 0 30px;
+      overflow-x: auto;
+    }
+
+    .profile-tab-link {
+      padding: 14px 4px;
+      font-weight: 600;
+      color: #718096;
+      border-bottom: 3px solid transparent;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .profile-tab-link.active {
+      color: var(--sala-green);
+      border-bottom-color: var(--sala-green);
+    }
+
+    .skill-badge {
+      background: #eaf6ed;
+      color: var(--sala-green-dark);
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 4px;
+    }
+  </style>
+</head>
+<body style="background-color: #f8f9fa;">
+
+  <!-- Header -->
+  <header class="sala-topbar">
+    <a href="index.html" class="d-flex align-items-center text-decoration-none">
+      <img src="img/logo_transparent.png" alt="Logo Sala" style="height: 38px; width: auto;" class="me-2">
+      <span style="font-weight: 800; font-size: 1.25rem; color: var(--sala-green);">SALA</span>
+    </a>
+
+    <div class="d-flex align-items-center gap-2">
+      <a href="offres.html" class="btn-sala-outline py-1 px-3" style="font-size: 0.85rem;">
+        <i class="fas fa-briefcase me-1"></i> Offres
+      </a>
+      <button id="logoutBtn" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+        <i class="fas fa-sign-out-alt me-1"></i> Déconnexion
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenu Profil -->
+  <div class="container py-4" style="max-width: 920px;">
+    
+    <!-- Carte En-tête profil -->
+    <div class="profile-card">
+      <div class="profile-banner"></div>
+      
+      <div class="d-flex justify-content-between align-items-end flex-wrap pe-4">
+        <div class="profile-avatar-wrapper">
+          <img src="img/com-logo-1.jpg" id="userAvatar" class="profile-avatar" alt="Photo de profil">
+        </div>
+        <div class="mb-3 ms-auto pe-2">
+          <button class="btn-sala-outline btn-sm" id="btnEditProfile" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <i class="fas fa-pen me-1"></i> Modifier le profil
+          </button>
+        </div>
+      </div>
+
+      <div class="px-4 pb-3">
+        <h2 class="h4 fw-bold mb-1" id="userName">Chargement du profil...</h2>
+        <div class="d-flex flex-wrap gap-3 text-muted small mt-2">
+          <span><i class="fas fa-envelope text-success me-1"></i> <span id="userEmail">...</span></span>
+          <span><i class="fas fa-map-marker-alt text-success me-1"></i> <span id="userCity">Brazzaville</span></span>
+          <span><i class="fas fa-phone text-success me-1"></i> <span id="userPhone">Non renseigné</span></span>
+        </div>
+      </div>
+
+      <!-- Navigation Onglets -->
+      <div class="profile-tab-nav">
+        <div class="profile-tab-link active" data-tab="tab-about">À propos</div>
+        <div class="profile-tab-link" data-tab="tab-cv">CV enregistrés</div>
+        <div class="profile-tab-link" data-tab="tab-applications">Mes candidatures</div>
+        <div class="profile-tab-link" data-tab="tab-favorites">Favoris</div>
+      </div>
+    </div>
+
+    <!-- Contenu des Onglets -->
+    <div class="profile-card p-4">
+      
+      <!-- Onglet À propos -->
+      <div id="tab-about" class="tab-pane-content">
+        <h5 class="fw-bold mb-3">Objectif professionnel & Bio</h5>
+        <p class="text-secondary" id="userBio" style="line-height: 1.6;">
+          Aucune bio renseignée pour le moment. Cliquez sur "Modifier le profil" pour vous présenter aux recruteurs.
+        </p>
+
+        <hr class="my-4">
+
+        <h5 class="fw-bold mb-3">Compétences clés</h5>
+        <div id="skillsContainer" class="d-flex flex-wrap">
+          <span class="skill-badge"><i class="fas fa-check-circle"></i> Français courant</span>
+          <span class="skill-badge"><i class="fas fa-check-circle"></i> Pack Office</span>
+        </div>
+
+        <hr class="my-4">
+
+        <h5 class="fw-bold mb-3">CV par défaut</h5>
+        <div class="d-flex align-items-center justify-content-between p-3 rounded-3" style="background-color: #f8f9fa; border: 1px solid var(--sala-border);">
+          <div class="d-flex align-items-center gap-3">
+            <div style="width: 44px; height: 44px; background: #fee2e2; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+              <i class="fas fa-file-pdf text-danger fa-lg"></i>
+            </div>
+            <div>
+              <div class="fw-bold" id="cvDefaultTitle">Mon CV Sala (Moderne)</div>
+              <small class="text-muted">Prêt à être envoyé aux recruteurs</small>
+            </div>
+          </div>
+          <a href="cv-builder.html" class="btn-sala-primary btn-sm">
+            <i class="fas fa-magic me-1"></i> Créer / Mettre à jour
+          </a>
+        </div>
+      </div>
+
+      <!-- Onglet CV enregistrés -->
+      <div id="tab-cv" class="tab-pane-content" style="display:none;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold mb-0">Mes CVs professionnels</h5>
+          <a href="cv-builder.html" class="btn-sala-accent btn-sm">
+            <i class="fas fa-plus me-1"></i> Nouveau CV
+          </a>
+        </div>
+        <div class="text-center py-4 text-muted">
+          <i class="fas fa-file-invoice fa-3x text-muted mb-3 opacity-50"></i>
+          <p class="mb-2">Vous n'avez pas encore généré de CV en ligne.</p>
+          <a href="cv-builder.html" class="btn-sala-primary btn-sm mt-1">Lancer le Générateur de CV</a>
+        </div>
+      </div>
+
+      <!-- Onglet Candidatures -->
+      <div id="tab-applications" class="tab-pane-content" style="display:none;">
+        <h5 class="fw-bold mb-3">Historique des candidatures</h5>
+        <div class="text-center py-4 text-muted">
+          <i class="fas fa-paper-plane fa-3x text-muted mb-3 opacity-50"></i>
+          <p class="mb-2">Aucune candidature envoyée via Sala pour l'instant.</p>
+          <a href="offres.html" class="btn-sala-outline btn-sm mt-1">Explorer les offres disponibles</a>
+        </div>
+      </div>
+
+      <!-- Onglet Favoris -->
+      <div id="tab-favorites" class="tab-pane-content" style="display:none;">
+        <h5 class="fw-bold mb-3">Offres sauvegardées</h5>
+        <div class="text-center py-4 text-muted">
+          <i class="fas fa-bookmark fa-3x text-muted mb-3 opacity-50"></i>
+          <p class="mb-2">Vous n'avez pas encore d'offres en favoris.</p>
+          <a href="offres.html" class="btn-sala-outline btn-sm mt-1">Découvrir les offres</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal Modifier le Profil -->
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 border-0 shadow">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="editProfileModalLabel">Modifier mes informations</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editProfileForm">
+            <div class="mb-3">
+              <label for="editFullName" class="form-label small fw-bold">Nom complet</label>
+              <input type="text" class="form-control" id="editFullName" required>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label for="editCity" class="form-label small fw-bold">Ville</label>
+                <select class="form-select" id="editCity">
+                  <option value="Brazzaville">Brazzaville</option>
+                  <option value="Pointe-Noire">Pointe-Noire</option>
+                  <option value="Dolisie">Dolisie</option>
+                  <option value="Nkayi">Nkayi</option>
+                  <option value="Oyo">Oyo</option>
+                  <option value="Autre">Autre</option>
+                </select>
+              </div>
+              <div class="col-6 mb-3">
+                <label for="editPhone" class="form-label small fw-bold">Téléphone</label>
+                <input type="tel" class="form-control" id="editPhone" placeholder="+242...">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="editBio" class="form-label small fw-bold">Bio / Objectif professionnel</label>
+              <textarea class="form-control" id="editBio" rows="3" placeholder="Présentez brièvement vos atouts et votre recherche d'emploi..."></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editSkills" class="form-label small fw-bold">Compétences (séparées par des virgules)</label>
+              <input type="text" class="form-control" id="editSkills" placeholder="Ex: Comptabilité, Excel, Vente, Permis B">
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Annuler</button>
+              <button type="submit" class="btn-sala-primary rounded-pill px-4" id="saveProfileBtn">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bouton Flottant FAB "Faire un CV" -->
+  <a href="cv-builder.html" class="sala-fab-cv" title="Faire un CV">
+    <i class="fas fa-pen"></i>
+    <span class="tooltip-text">Faire un CV professionnel</span>
+  </a>
+
+  <!-- Barre de navigation mobile inférieure (Bottom Navigation) -->
+  <nav class="sala-bottom-nav">
+    <a href="offres.html" class="sala-bottom-nav-item">
+      <i class="fas fa-briefcase"></i>
+      <span>Emplois</span>
+    </a>
+    <a href="evenements.html" data-nav-key="evenements" class="sala-bottom-nav-item">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Événements</span>
+    </a>
+    <a href="cv-builder.html" class="sala-bottom-fab" title="Faire un CV">
+      <i class="fas fa-pen"></i>
+    </a>
+    <a href="entretiens.html" data-nav-key="entretiens" class="sala-bottom-nav-item">
+      <i class="fas fa-user-tie"></i>
+      <span>Entretiens</span>
+    </a>
+    <a href="legislation.html" data-nav-key="legislation" class="sala-bottom-nav-item">
+      <i class="fas fa-balance-scale"></i>
+      <span>Droit</span>
+    </a>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Script Contrôleur Profil -->
+  <script type="module">
+    import { auth, onAuthStateChanged } from "./js/firebase-config.js";
+    import { loadSiteSettings, applyNavVisibility } from "./js/site-settings.js";
+    loadSiteSettings().then(applyNavVisibility);
+    import { loadUserProfile, updateUserProfile, logoutUser } from "./js/profile-controller.js";
+
+    let currentUser = null;
+
+    // Détection de l'utilisateur connecté
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // Non connecté -> rediriger vers auth.html
+        window.location.href = "auth.html";
+        return;
+      }
+
+      currentUser = user;
+      const profile = await loadUserProfile(user.uid);
+
+      if (profile) {
+        document.getElementById("userName").textContent = profile.fullName || user.displayName || "Candidat Sala";
+        document.getElementById("userEmail").textContent = profile.email || user.email;
+        document.getElementById("userCity").textContent = profile.city || "Brazzaville";
+        document.getElementById("userPhone").textContent = profile.phone || "Non renseigné";
+        
+        if (profile.bio) {
+          document.getElementById("userBio").textContent = profile.bio;
+        }
+
+        if (profile.photoURL || user.photoURL) {
+          document.getElementById("userAvatar").src = profile.photoURL || user.photoURL;
+        }
+
+        if (profile.skills && profile.skills.length > 0) {
+          const container = document.getElementById("skillsContainer");
+          container.innerHTML = profile.skills.map(s => `<span class="skill-badge"><i class="fas fa-check-circle"></i> ${s}</span>`).join("");
+        }
+
+        // Remplissage du formulaire modal d'édition
+        document.getElementById("editFullName").value = profile.fullName || "";
+        document.getElementById("editCity").value = profile.city || "Brazzaville";
+        document.getElementById("editPhone").value = profile.phone || "";
+        document.getElementById("editBio").value = profile.bio || "";
+        document.getElementById("editSkills").value = (profile.skills || []).join(", ");
+      }
+    });
+
+    // Gestion des onglets
+    const tabLinks = document.querySelectorAll(".profile-tab-link");
+    const tabPanes = document.querySelectorAll(".tab-pane-content");
+
+    tabLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        tabLinks.forEach(l => l.classList.remove("active"));
+        tabPanes.forEach(p => p.style.display = "none");
+
+        link.classList.add("active");
+        const targetId = link.dataset.tab;
+        const targetPane = document.getElementById(targetId);
+        if (targetPane) targetPane.style.display = "block";
+      });
+    });
+
+    // Sauvegarde des modifications du profil
+    const editForm = document.getElementById("editProfileForm");
+    editForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+
+      const saveBtn = document.getElementById("saveProfileBtn");
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Enregistrement...";
+
+      const rawSkills = document.getElementById("editSkills").value;
+      const skillsArray = rawSkills.split(",").map(s => s.trim()).filter(s => s.length > 0);
+
+      const updateData = {
+        fullName: document.getElementById("editFullName").value.trim(),
+        city: document.getElementById("editCity").value,
+        phone: document.getElementById("editPhone").value.trim(),
+        bio: document.getElementById("editBio").value.trim(),
+        skills: skillsArray
+      };
+
+      try {
+        await updateUserProfile(currentUser.uid, updateData);
+
+        // Mettre à jour l'affichage
+        document.getElementById("userName").textContent = updateData.fullName;
+        document.getElementById("userCity").textContent = updateData.city;
+        document.getElementById("userPhone").textContent = updateData.phone || "Non renseigné";
+        document.getElementById("userBio").textContent = updateData.bio || "Aucune bio renseignée pour le moment.";
+
+        const container = document.getElementById("skillsContainer");
+        container.innerHTML = skillsArray.length > 0 
+          ? skillsArray.map(s => `<span class="skill-badge"><i class="fas fa-check-circle"></i> ${s}</span>`).join("")
+          : `<span class="text-muted small">Aucune compétence listée</span>`;
+
+        // Fermer la modal
+        const modalEl = document.getElementById("editProfileModal");
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+      } catch (err) {
+        console.error("Erreur mise à jour profil :", err);
+        alert("Erreur lors de la mise à jour : " + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Enregistrer";
+      }
+    });
+
+    // Déconnexion
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      logoutUser();
+    });
+  </script>
+
+</body>
+</html>

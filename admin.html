@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administration — Sala</title>
+  <link rel="manifest" href="manifest.json">
+  <link href="img/logo_100.png" rel="icon">
+
+  <!-- Icons & Polices (identiques au reste du site) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap (chargé avant les feuilles Sala pour que le style maison ait la priorité) -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/sala-theme.css">
+</head>
+
+<body class="dashboard-body">
+
+  <!-- Écran de vérification des droits -->
+  <div id="authChecking" class="admin-auth-checking">
+    <div class="spinner-border text-success"></div>
+    <p>Vérification de vos droits administrateur...</p>
+  </div>
+
+  <div class="sala-layout-wrapper" id="dashboardShell" style="display:none;">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sala-sidebar">
+      <div class="sala-sidebar-header" style="justify-content:space-between;">
+        <a href="index.html" class="d-flex align-items-center text-decoration-none gap-2">
+          <img src="img/logo_transparent.png" alt="Logo Sala" style="height:34px; width:auto;">
+          <span style="font-weight:800; font-size:1.05rem; color:var(--sala-green-dark);">SALA</span>
+        </a>
+        <span class="sala-sidebar-brand-tag">Admin</span>
+      </div>
+
+      <div class="sala-sidebar-nav">
+        <div class="sala-nav-section-title">Vue</div>
+        <a href="#" data-section="overview" class="sala-nav-item active"><i class="fas fa-chart-pie"></i> Vue d'ensemble</a>
+
+        <div class="sala-nav-section-title">Contenu</div>
+        <a href="#" data-section="jobs" class="sala-nav-item"><i class="fas fa-briefcase"></i> Offres d'emploi</a>
+        <a href="#" data-section="events" class="sala-nav-item"><i class="fas fa-calendar-alt"></i> Événements</a>
+        <a href="#" data-section="annuaire" class="sala-nav-item"><i class="fas fa-address-book"></i> Annuaires</a>
+        <a href="#" data-section="legislation" class="sala-nav-item"><i class="fas fa-balance-scale"></i> Droit du Travail</a>
+        <a href="#" data-section="users" class="sala-nav-item"><i class="fas fa-users"></i> Utilisateurs</a>
+        <a href="#" data-section="settings" class="sala-nav-item"><i class="fas fa-cog"></i> Paramètres</a>
+
+        <div class="sala-nav-section-title">Bientôt disponible</div>
+        <span class="sala-nav-item disabled"><i class="fas fa-newspaper"></i> News Sala</span>
+        <span class="sala-nav-item disabled"><i class="fas fa-gamepad"></i> Jeux</span>
+      </div>
+
+      <div class="admin-sidebar-footer">
+        <button id="darkModeToggle" class="btn-sala-outline w-100 justify-content-center">
+          <i class="fas fa-moon"></i> Mode sombre
+        </button>
+      </div>
+    </aside>
+
+    <!-- ================= CONTENU PRINCIPAL ================= -->
+    <div class="sala-main-content">
+
+      <header class="sala-topbar admin-topbar">
+        <div>
+          <div class="admin-topbar-title" id="pageTitle">Vue d'ensemble</div>
+          <div class="admin-topbar-subtitle" id="pageSubtitle">Un coup d'œil sur l'activité de la plateforme</div>
+        </div>
+        <div class="admin-topbar-actions">
+          <a href="index.html" target="_blank" class="admin-icon-btn" title="Voir le site public">
+            <i class="fas fa-external-link-alt"></i>
+          </a>
+          <span id="userStatus" class="admin-user-chip"></span>
+          <button id="logoutBtn" class="btn-sala-outline-red">
+            <i class="fas fa-sign-out-alt"></i> Déconnexion
+          </button>
+        </div>
+      </header>
+
+      <!-- Navigation mobile (remplace la sidebar sous 992px) -->
+      <nav class="admin-mobile-tabs">
+        <button class="admin-mobile-tab active" data-section="overview"><i class="fas fa-chart-pie"></i> Vue d'ensemble</button>
+        <button class="admin-mobile-tab" data-section="jobs"><i class="fas fa-briefcase"></i> Offres</button>
+        <button class="admin-mobile-tab" data-section="events"><i class="fas fa-calendar-alt"></i> Événements</button>
+        <button class="admin-mobile-tab" data-section="annuaire"><i class="fas fa-address-book"></i> Annuaires</button>
+        <button class="admin-mobile-tab" data-section="legislation"><i class="fas fa-balance-scale"></i> Droit du Travail</button>
+        <button class="admin-mobile-tab" data-section="users"><i class="fas fa-users"></i> Utilisateurs</button>
+        <button class="admin-mobile-tab" data-section="settings"><i class="fas fa-cog"></i> Paramètres</button>
+      </nav>
+
+      <main class="admin-main">
+
+        <!-- SECTION VUE D'ENSEMBLE -->
+        <section class="admin-section active" id="section-overview">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-icon" style="background:var(--sala-green-light); color:var(--sala-green-dark);"><i class="fas fa-briefcase"></i></div>
+              <div>
+                <div class="stat-value" id="statJobsVisible">—</div>
+                <div class="stat-label">Offres visibles publiquement</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#f1f3f5; color:var(--sala-text-secondary);"><i class="fas fa-layer-group"></i></div>
+              <div>
+                <div class="stat-value" id="statJobsTotal">—</div>
+                <div class="stat-label">Offres au total (tous statuts)</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#e0f2fe; color:#0284c7;"><i class="fas fa-calendar-alt"></i></div>
+              <div>
+                <div class="stat-value" id="statEvents">—</div>
+                <div class="stat-label">Événements publiés</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#f3e8ff; color:#7e22ce;"><i class="fas fa-address-book"></i></div>
+              <div>
+                <div class="stat-value" id="statAnnuaire">—</div>
+                <div class="stat-label">Fiches annuaires (3 catégories)</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#fee2e2; color:#b9050f;"><i class="fas fa-balance-scale"></i></div>
+              <div>
+                <div class="stat-value" id="statLegislation">—</div>
+                <div class="stat-label">Fiches Droit du Travail</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon" style="background:#fefce8; color:#b45309;"><i class="fas fa-users"></i></div>
+              <div>
+                <div class="stat-value" id="statUsers">—</div>
+                <div class="stat-label">Comptes candidats inscrits</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-panel">
+            <h2>Actions rapides</h2>
+            <div class="quick-actions">
+              <button class="btn-sala-primary" id="quickNewJob"><i class="fas fa-plus"></i> Nouvelle offre d'emploi</button>
+              <button class="btn-sala-outline" id="quickNewEvent"><i class="fas fa-plus"></i> Ajouter un événement</button>
+              <button class="btn-sala-outline" id="quickNewAnnuaire"><i class="fas fa-plus"></i> Ajouter une fiche annuaire</button>
+              <button class="btn-sala-outline" id="quickNewLegislation"><i class="fas fa-plus"></i> Ajouter une fiche Droit du Travail</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION OFFRES D'EMPLOI -->
+        <section class="admin-section" id="section-jobs">
+          <div class="admin-section-header">
+            <div>
+              <h1 class="admin-page-title">Offres d'emploi</h1>
+              <p class="admin-page-subtitle">Publiez, modifiez ou masquez les offres visibles sur le site.</p>
+            </div>
+            <button class="btn-sala-primary" id="btnNewJob"><i class="fas fa-plus me-1"></i> Nouvelle offre</button>
+          </div>
+          <div class="admin-toolbar">
+            <div class="admin-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" class="admin-search-input" id="jobsSearchInput" placeholder="Rechercher par titre, entreprise, ville...">
+            </div>
+          </div>
+          <div class="admin-card-grid" id="jobsGrid">
+            <div class="admin-card-empty admin-empty"><div class="spinner-border text-success"></div></div>
+          </div>
+        </section>
+
+        <!-- SECTION ÉVÉNEMENTS -->
+        <section class="admin-section" id="section-events">
+          <div class="admin-section-header">
+            <div>
+              <h1 class="admin-page-title">Événements</h1>
+              <p class="admin-page-subtitle">Salons, ateliers et webinaires affichés sur la page Événements.</p>
+            </div>
+            <button class="btn-sala-primary" id="btnNewEvent"><i class="fas fa-plus me-1"></i> Ajouter un événement</button>
+          </div>
+          <div class="admin-toolbar">
+            <div class="admin-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" class="admin-search-input" id="eventsSearchInput" placeholder="Rechercher par titre, organisateur, ville...">
+            </div>
+          </div>
+          <div class="admin-card-grid" id="eventsGrid">
+            <div class="admin-card-empty admin-empty"><div class="spinner-border text-success"></div></div>
+          </div>
+        </section>
+
+        <!-- SECTION ANNUAIRES -->
+        <section class="admin-section" id="section-annuaire">
+          <div class="admin-section-header">
+            <div>
+              <h1 class="admin-page-title">Annuaires Sala</h1>
+              <p class="admin-page-subtitle">Universités, entreprises partenaires et clubs d'anglais.</p>
+            </div>
+            <button class="btn-sala-primary" id="btnNewAnnuaire"><i class="fas fa-plus me-1"></i> Ajouter une fiche</button>
+          </div>
+          <div class="annuaire-subtabs">
+            <button class="annuaire-subtab active" data-category="universities"><i class="fas fa-graduation-cap"></i> Universités & Écoles</button>
+            <button class="annuaire-subtab" data-category="companies"><i class="fas fa-building"></i> Entreprises</button>
+            <button class="annuaire-subtab" data-category="clubs"><i class="fas fa-comments"></i> Clubs d'Anglais</button>
+          </div>
+          <div class="admin-toolbar">
+            <div class="admin-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" class="admin-search-input" id="annuaireSearchInput" placeholder="Rechercher par nom, ville...">
+            </div>
+          </div>
+          <div class="admin-card-grid" id="annuaireGrid">
+            <div class="admin-card-empty admin-empty"><div class="spinner-border text-success"></div></div>
+          </div>
+        </section>
+
+        <!-- SECTION DROIT DU TRAVAIL -->
+        <section class="admin-section" id="section-legislation">
+          <div class="admin-section-header">
+            <div>
+              <h1 class="admin-page-title">Droit du Travail</h1>
+              <p class="admin-page-subtitle">Fiches thématiques affichées sur la page Législation (legislation.html).</p>
+            </div>
+            <button class="btn-sala-primary" id="btnNewLegislation"><i class="fas fa-plus me-1"></i> Ajouter une fiche</button>
+          </div>
+          <div class="admin-toolbar">
+            <div class="admin-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" class="admin-search-input" id="legislationSearchInput" placeholder="Rechercher par titre, thème...">
+            </div>
+          </div>
+          <div class="admin-card-grid" id="legislationGrid">
+            <div class="admin-card-empty admin-empty"><div class="spinner-border text-success"></div></div>
+          </div>
+        </section>
+
+        <!-- SECTION UTILISATEURS -->
+        <section class="admin-section" id="section-users">
+          <div class="admin-section-header">
+            <div>
+              <h1 class="admin-page-title">Utilisateurs</h1>
+              <p class="admin-page-subtitle">Comptes candidats inscrits. Promouvoir un compte donne accès à ce tableau de bord.</p>
+            </div>
+          </div>
+          <div class="admin-toolbar">
+            <div class="admin-search-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" class="admin-search-input" id="usersSearchInput" placeholder="Rechercher par nom, email, ville...">
+            </div>
+          </div>
+          <div class="admin-card-grid" id="usersGrid">
+            <div class="admin-card-empty admin-empty"><div class="spinner-border text-success"></div></div>
+          </div>
+        </section>
+
+        <!-- SECTION PARAMÈTRES -->
+        <section class="admin-section" id="section-settings">
+          <div class="admin-section-header">
+            <div>
+              <h1 class="admin-page-title">Paramètres</h1>
+              <p class="admin-page-subtitle">Votre compte administrateur et les réglages généraux du site.</p>
+            </div>
+          </div>
+
+          <!-- Mon compte -->
+          <div class="admin-panel">
+            <h2><i class="fas fa-user-circle me-2"></i>Mon compte</h2>
+            <form id="accountForm">
+              <div class="form-grid">
+                <div class="form-group"><label for="accountName">Nom affiché</label><input type="text" id="accountName" placeholder="Ex: Jean-Paul Moukoko"></div>
+                <div class="form-group"><label for="accountPhoto">Photo de profil (URL)</label><input type="url" id="accountPhoto" placeholder="https://..."></div>
+                <div class="form-group"><label>Email</label><input type="email" id="accountEmail" disabled></div>
+              </div>
+              <div class="form-actions" style="text-align:left;">
+                <button type="submit" class="btn-sala-primary">Enregistrer mon profil</button>
+              </div>
+            </form>
+            <hr style="border-color:var(--sala-border); margin:20px 0;">
+            <h2 style="font-size:0.95rem;"><i class="fas fa-key me-2"></i>Changer mon mot de passe</h2>
+            <form id="passwordForm">
+              <div class="form-grid">
+                <div class="form-group"><label for="currentPassword">Mot de passe actuel</label><input type="password" id="currentPassword" required></div>
+                <div class="form-group"><label for="newPassword">Nouveau mot de passe</label><input type="password" id="newPassword" minlength="6" required></div>
+              </div>
+              <div class="form-actions" style="text-align:left;">
+                <button type="submit" class="btn-sala-outline">Mettre à jour le mot de passe</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Coordonnées du site -->
+          <div class="admin-panel">
+            <h2><i class="fas fa-address-card me-2"></i>Coordonnées affichées sur le site</h2>
+            <form id="contactSettingsForm">
+              <div class="form-grid">
+                <div class="form-group"><label for="setContactEmail">Email de contact public</label><input type="email" id="setContactEmail" required></div>
+                <div class="form-group"><label for="setContactCities">Villes / zone d'action</label><input type="text" id="setContactCities" required></div>
+                <div class="form-group"><label for="setFacebook">Facebook (optionnel)</label><input type="url" id="setFacebook" placeholder="https://facebook.com/..."></div>
+                <div class="form-group"><label for="setWhatsapp">WhatsApp (optionnel)</label><input type="url" id="setWhatsapp" placeholder="https://wa.me/242..."></div>
+                <div class="form-group"><label for="setInstagram">Instagram (optionnel)</label><input type="url" id="setInstagram" placeholder="https://instagram.com/..."></div>
+              </div>
+              <div class="form-actions" style="text-align:left;">
+                <button type="submit" class="btn-sala-primary">Enregistrer les coordonnées</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Visibilité des sections -->
+          <div class="admin-panel">
+            <h2><i class="fas fa-eye me-2"></i>Sections visibles sur le site</h2>
+            <p class="admin-page-subtitle" style="margin-bottom:16px;">Décochez une section pour masquer son lien dans les menus (Offres d'emploi et Créer un CV restent toujours visibles).</p>
+            <form id="visibilitySettingsForm">
+              <div class="d-flex flex-column gap-2 mb-3">
+                <label class="visibility-toggle"><input type="checkbox" id="visEvenements"> Événements</label>
+                <label class="visibility-toggle"><input type="checkbox" id="visAnnuaires"> Annuaires</label>
+                <label class="visibility-toggle"><input type="checkbox" id="visEntretiens"> Entretiens</label>
+                <label class="visibility-toggle"><input type="checkbox" id="visLegislation"> Législation / Droit du Travail</label>
+              </div>
+              <div class="form-actions" style="text-align:left;">
+                <button type="submit" class="btn-sala-primary">Enregistrer la visibilité</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL OFFRE D'EMPLOI ===================== -->
+  <div class="modal fade" id="jobModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="jobModalTitle">Publier une nouvelle offre</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="jobForm" class="job-form">
+            <input type="hidden" id="jobEditId">
+            <div class="form-grid">
+              <div class="form-group"><label for="title">Titre</label><input type="text" id="title" required></div>
+              <div class="form-group"><label for="company">Entreprise</label><input type="text" id="company" required></div>
+              <div class="form-group"><label for="city">Ville</label><input type="text" id="city" required></div>
+              <div class="form-group">
+                <label for="contract">Contrat</label>
+                <select id="contract" required>
+                  <option value="">Sélectionner</option>
+                  <option value="CDI">CDI</option>
+                  <option value="CDD">CDD</option>
+                  <option value="Stage">Stage</option>
+                </select>
+              </div>
+              <div class="form-group"><label for="jobEmail">Email de contact</label><input type="email" id="jobEmail" required></div>
+              <div class="form-group"><label for="site">Site Web</label><input type="url" id="site"></div>
+              <div class="form-group"><label for="tel">Téléphone</label><input type="tel" id="tel"></div>
+              <div class="form-group"><label for="image">Image (URL)</label><input type="url" id="image"></div>
+              <div class="form-group"><label for="timestamp">Date de publication</label><input type="datetime-local" id="timestamp" required></div>
+              <div class="form-group"><label for="deadline">Date limite</label><input type="datetime-local" id="deadline" required></div>
+              <div class="form-group"><label for="languages">Exigences linguistiques</label><input type="text" id="languages" placeholder="Ex: Français (courant), Anglais (intermédiaire)"></div>
+            </div>
+            <div class="form-group full-width">
+              <label for="body">Description de l'offre</label>
+              <textarea id="body" rows="6" required></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label for="competences">Compétences requises (séparées par des virgules)</label>
+              <input type="text" id="competences" placeholder="Ex: Excel, Gestion de caisse, Communication">
+            </div>
+            <div class="visibility-toggle mb-3">
+              <input type="checkbox" id="visibility"> <label for="visibility" style="margin:0;">Offre visible publiquement</label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-sala-primary">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL ÉVÉNEMENT ===================== -->
+  <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventModalTitle">Ajouter un événement</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="eventForm" class="job-form">
+            <input type="hidden" id="eventEditId">
+            <div class="form-grid">
+              <div class="form-group"><label for="eventTitle">Titre</label><input type="text" id="eventTitle" required></div>
+              <div class="form-group">
+                <label for="eventCategory">Catégorie</label>
+                <select id="eventCategory">
+                  <option value="Salon">Salon</option>
+                  <option value="Atelier">Atelier</option>
+                  <option value="Webinaire">Webinaire</option>
+                </select>
+              </div>
+              <div class="form-group"><label for="eventOrganizer">Organisateur</label><input type="text" id="eventOrganizer" required></div>
+              <div class="form-group"><label for="eventDateDisplay">Date affichée</label><input type="text" id="eventDateDisplay" placeholder="Ex: 25 Octobre 2026" required></div>
+              <div class="form-group"><label for="eventIsoDate">Date & heure de début</label><input type="datetime-local" id="eventIsoDate" required></div>
+              <div class="form-group"><label for="eventTime">Horaires affichés</label><input type="text" id="eventTime" placeholder="Ex: 09h00 - 17h00" required></div>
+              <div class="form-group"><label for="eventCity">Ville</label><input type="text" id="eventCity" required></div>
+              <div class="form-group"><label for="eventLocation">Lieu</label><input type="text" id="eventLocation" required></div>
+              <div class="form-group"><label for="eventPrice">Prix affiché</label><input type="text" id="eventPrice" placeholder="Ex: Entrée Gratuite"></div>
+              <div class="form-group">
+                <label for="eventBadgeColor">Couleur du badge</label>
+                <select id="eventBadgeColor">
+                  <option value="success">Vert</option>
+                  <option value="primary">Bleu</option>
+                  <option value="info">Cyan</option>
+                  <option value="warning">Jaune</option>
+                  <option value="danger">Rouge</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group full-width">
+              <label for="eventDescription">Description</label>
+              <textarea id="eventDescription" rows="4" required></textarea>
+            </div>
+            <div class="form-group full-width">
+              <label for="eventHighlights">Points forts (séparés par des virgules)</label>
+              <input type="text" id="eventHighlights" placeholder="Ex: Stands recruteurs, Speed-recruiting">
+            </div>
+            <div class="visibility-toggle mb-3">
+              <input type="checkbox" id="eventRegistrationRequired"> <label for="eventRegistrationRequired" style="margin:0;">Inscription requise</label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-sala-primary">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL FICHE ANNUAIRE ===================== -->
+  <div class="modal fade" id="annuaireModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="annuaireModalTitle">Ajouter une fiche</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="annuaireForm" class="job-form">
+            <input type="hidden" id="annuaireEditId">
+            <input type="hidden" id="annuaireModalCategory" value="universities">
+            <div id="annuaireFormFields"></div>
+            <div class="form-actions">
+              <button type="submit" class="btn-sala-primary">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL FICHE DROIT DU TRAVAIL ===================== -->
+  <div class="modal fade" id="legislationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="legislationModalTitle">Ajouter une fiche</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="legislationForm" class="job-form">
+            <input type="hidden" id="legislationEditId">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="legTopic">Thème (filtre affiché sur la page)</label>
+                <select id="legTopic" required>
+                  <option value="contrat">Contrat de Travail</option>
+                  <option value="salaire">Salaire & SMIG</option>
+                  <option value="horaires">Horaires & Heures sup</option>
+                  <option value="conges">Congés & Maternité</option>
+                  <option value="rupture">Rupture & Préavis</option>
+                </select>
+              </div>
+              <div class="form-group"><label for="legTopicLabel">Étiquette affichée</label><input type="text" id="legTopicLabel" placeholder="Ex: Contrat de Travail" required></div>
+              <div class="form-group"><label for="legArticleRef">Référence d'article</label><input type="text" id="legArticleRef" placeholder="Ex: Art. 10 à 35"></div>
+              <div class="form-group"><label for="legOrder">Ordre d'affichage</label><input type="number" id="legOrder" min="1" value="1"></div>
+            </div>
+            <div class="form-group full-width"><label for="legTitle">Titre de la fiche</label><input type="text" id="legTitle" required></div>
+            <div class="form-group full-width"><label for="legIntro">Introduction (1-2 phrases)</label><textarea id="legIntro" rows="2"></textarea></div>
+            <div class="form-group full-width">
+              <label for="legBody">Contenu détaillé (HTML autorisé : &lt;div class="law-highlight"&gt; ou &lt;div class="law-warning"&gt; pour les encarts colorés)</label>
+              <textarea id="legBody" rows="7" placeholder='<div class="law-highlight"><strong>Point clé :</strong><p class="mb-0 mt-1 small text-muted">...</p></div>'></textarea>
+            </div>
+            <div class="form-grid">
+              <div class="form-group full-width"><label for="legFaqQuestion">Question FAQ (optionnel)</label><input type="text" id="legFaqQuestion"></div>
+              <div class="form-group full-width"><label for="legFaqAnswer">Réponse FAQ (optionnel)</label><textarea id="legFaqAnswer" rows="2"></textarea></div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-sala-primary">Enregistrer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL INSCRIPTIONS ÉVÉNEMENT ===================== -->
+  <div class="modal fade" id="registrationsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registrationsModalTitle">Inscrits</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="registrationsModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SweetAlert2 pour les alertes -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Bootstrap JS (modals) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script type="module" src="js/admin-controller.js"></script>
+  <script src="darkmode.js" defer></script>
+</body>
+</html>

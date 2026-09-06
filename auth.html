@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion & Inscription — Sala République du Congo</title>
+  <meta name="description" content="Rejoignez Sala pour accéder aux offres d'emploi, créer votre CV professionnel et postuler facilement.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/logo_100.png">
+
+  <!-- Polices Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/sala-theme.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f4f6f8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .auth-container {
+      max-width: 960px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--sala-border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (min-width: 768px) {
+      .auth-container {
+        flex-direction: row;
+        min-height: 600px;
+      }
+    }
+
+    .auth-banner {
+      background: linear-gradient(135deg, #1e6b31 0%, #3b9452 100%);
+      color: #ffffff;
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+    }
+
+    .auth-form-side {
+      flex: 1.2;
+      padding: 40px 35px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid #edf2f7;
+      margin-bottom: 25px;
+    }
+
+    .auth-tab-btn {
+      padding: 10px 16px;
+      font-weight: 600;
+      color: #718096;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+    }
+
+    .auth-tab-btn.active {
+      color: var(--sala-green);
+      border-bottom-color: var(--sala-green);
+    }
+
+    .form-floating-label {
+      margin-bottom: 18px;
+    }
+
+    .form-floating-label label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .form-floating-label input, .form-floating-label select {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1.5px solid #e2e8f0;
+      outline: none;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-floating-label input:focus, .form-floating-label select:focus {
+      border-color: var(--sala-green);
+      box-shadow: 0 0 0 3px rgba(59, 148, 82, 0.15);
+    }
+
+    .btn-google {
+      background: #ffffff;
+      color: #3c4043;
+      border: 1.5px solid #dadce0;
+      font-weight: 600;
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-google:hover {
+      background: #f8f9fa;
+      border-color: #c0c4c9;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+      color: #a0aec0;
+      font-size: 0.85rem;
+    }
+
+    .auth-divider::before, .auth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .auth-divider::before { margin-right: 12px; }
+    .auth-divider::after { margin-left: 12px; }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+
+    .feature-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar simple -->
+  <header class="sala-topbar">
+    <a href="index.html" class="d-flex align-items-center text-decoration-none">
+      <img src="img/logo_transparent.png" alt="Logo Sala" style="height: 38px; width: auto;" class="me-2">
+      <span style="font-weight: 800; font-size: 1.25rem; color: var(--sala-green);">SALA</span>
+    </a>
+    <a href="offres.html" class="btn-sala-outline py-1 px-3" style="font-size: 0.85rem;">
+      <i class="fas fa-briefcase me-1"></i> Voir les offres
+    </a>
+  </header>
+
+  <div class="container my-auto">
+    <div class="auth-container">
+      
+      <!-- Bannière latérale gauche -->
+      <div class="auth-banner">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="badge bg-white text-success fw-bold px-3 py-1 rounded-pill">Espace Candidat</span>
+          </div>
+          <h2 class="text-white fw-bold mb-3">Votre tremplin pour l'emploi au Congo</h2>
+          <p class="text-white-50 mb-4">Créez votre compte en quelques secondes pour postuler en 1 clic et générer un CV prêt pour les recruteurs.</p>
+
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-check text-white"></i></div>
+            <span>Offres quotidiennes à Brazzaville & Pointe-Noire</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-file-alt text-white"></i></div>
+            <span>Générateur de CV professionnel 100% gratuit</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-bell text-white"></i></div>
+            <span>Alertes opportunités et conseils d'entretiens</span>
+          </div>
+        </div>
+
+        <div class="pt-4 border-top border-white-50 mt-4">
+          <small class="text-white-50">Une initiative sociale de l'<strong>ONG Sala</strong> pour la jeunesse congolaise.</small>
+        </div>
+      </div>
+
+      <!-- Formulaire droit -->
+      <div class="auth-form-side">
+        
+        <!-- Onglets Connexion / Inscription -->
+        <div class="auth-tabs">
+          <button class="auth-tab-btn active" id="tab-login-btn">Se connecter</button>
+          <button class="auth-tab-btn" id="tab-register-btn">Créer un compte</button>
+        </div>
+
+        <!-- Alertes retour -->
+        <div id="auth-alert-error" class="alert alert-danger py-2 px-3 small" style="display:none;" role="alert"></div>
+        <div id="auth-alert-success" class="alert alert-success py-2 px-3 small" style="display:none;" role="alert"></div>
+
+        <!-- Bouton Google Sign-In universel -->
+        <button class="btn-google mb-2" id="btnGoogleAuth" type="button">
+          <svg width="18" height="18" viewBox="0 0 18 18">
+            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+            <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.039l3.007-2.332z"/>
+            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/>
+          </svg>
+          <span id="google-btn-text">Continuer avec Google</span>
+        </button>
+
+        <div class="auth-divider">ou avec votre adresse email</div>
+
+        <!-- Formulaire de Connexion -->
+        <form id="form-login">
+          <div class="form-floating-label">
+            <label for="login-email">Adresse Email</label>
+            <input type="email" id="login-email" placeholder="nom@exemple.cg" required autocomplete="email">
+          </div>
+
+          <div class="form-floating-label">
+            <div class="d-flex justify-content-between align-items-center">
+              <label for="login-password">Mot de passe</label>
+              <a href="#" id="link-forgot-pwd" class="small text-decoration-none" style="color: var(--sala-green);">Oublié ?</a>
+            </div>
+            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+
+          <button type="submit" class="btn-sala-primary w-100 py-2 mt-2" id="submit-login-btn">
+            <i class="fas fa-sign-in-alt me-2"></i> Se connecter
+          </button>
+        </form>
+
+        <!-- Formulaire d'Inscription -->
+        <form id="form-register" style="display:none;">
+          <div class="form-floating-label">
+            <label for="reg-fullname">Nom complet</label>
+            <input type="text" id="reg-fullname" placeholder="Ex: Jean Paul MOUKOKO" required autocomplete="name">
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-floating-label">
+                <label for="reg-city">Ville de résidence</label>
+                <select id="reg-city">
+                  <option value="Brazzaville" selected>Brazzaville</option>
+                  <option value="Pointe-Noire">Pointe-Noire</option>
+                  <option value="Dolisie">Dolisie</option>
+                  <option value="Nkayi">Nkayi</option>
+                  <option value="Oyo">Oyo</option>
+                  <option value="Autre">Autre localité</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-floating-label">
+                <label for="reg-phone">Téléphone (facultatif)</label>
+                <input type="tel" id="reg-phone" placeholder="+242 06 ...">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-floating-label">
+            <label for="reg-email">Adresse Email</label>
+            <input type="email" id="reg-email" placeholder="nom@exemple.cg" required autocomplete="email">
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-floating-label">
+                <label for="reg-password">Mot de passe</label>
+                <input type="password" id="reg-password" placeholder="Min. 6 caractères" required minlength="6" autocomplete="new-password">
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-floating-label">
+                <label for="reg-password-confirm">Confirmer</label>
+                <input type="password" id="reg-password-confirm" placeholder="Retapez le mot de passe" required minlength="6" autocomplete="new-password">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-sala-accent w-100 py-2 mt-2" id="submit-register-btn">
+            <i class="fas fa-user-plus me-2"></i> Créer mon compte
+          </button>
+        </form>
+
+        <div class="text-center mt-4 pt-3 border-top">
+          <small class="text-muted">Vous êtes administrateur de l'ONG ? <a href="connexion.html" class="text-decoration-none fw-bold" style="color: var(--sala-green);">Accès Admin</a></small>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="py-3 text-center text-muted small">
+    © 2025 ONG Sala — République du Congo • <a href="index.html" class="text-muted text-decoration-none">Retour au site</a>
+  </footer>
+
+  <!-- Script d'interaction & Firebase Auth -->
+  <script type="module">
+    import { registerCandidate, loginCandidate, loginWithGoogle, sendResetEmail } from "./js/auth-controller.js";
+    import { auth, onAuthStateChanged } from "./js/firebase-config.js";
+
+    const tabLoginBtn = document.getElementById("tab-login-btn");
+    const tabRegisterBtn = document.getElementById("tab-register-btn");
+    const formLogin = document.getElementById("form-login");
+    const formRegister = document.getElementById("form-register");
+    const errorAlert = document.getElementById("auth-alert-error");
+    const successAlert = document.getElementById("auth-alert-success");
+    const btnGoogleAuth = document.getElementById("btnGoogleAuth");
+    const linkForgotPwd = document.getElementById("link-forgot-pwd");
+
+    function showError(msg) {
+      successAlert.style.display = "none";
+      errorAlert.textContent = msg;
+      errorAlert.style.display = "block";
+    }
+
+    function showSuccess(msg) {
+      errorAlert.style.display = "none";
+      successAlert.textContent = msg;
+      successAlert.style.display = "block";
+    }
+
+    function clearAlerts() {
+      errorAlert.style.display = "none";
+      successAlert.style.display = "none";
+    }
+
+    // Bascule des onglets
+    tabLoginBtn.addEventListener("click", () => {
+      tabLoginBtn.classList.add("active");
+      tabRegisterBtn.classList.remove("active");
+      formLogin.style.display = "block";
+      formRegister.style.display = "none";
+      clearAlerts();
+    });
+
+    tabRegisterBtn.addEventListener("click", () => {
+      tabRegisterBtn.classList.add("active");
+      tabLoginBtn.classList.remove("active");
+      formRegister.style.display = "block";
+      formLogin.style.display = "none";
+      clearAlerts();
+    });
+
+    // Si déjà connecté, rediriger vers profile.html
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        window.location.href = "profile.html";
+      }
+    });
+
+    // Connexion Email / MDP
+    formLogin.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlerts();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+      const btn = document.getElementById("submit-login-btn");
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Connexion...';
+        await loginCandidate(email, password);
+        showSuccess("Connexion réussie ! Redirection...");
+        setTimeout(() => window.location.href = "profile.html", 800);
+      } catch (err) {
+        console.error(err);
+        let msg = "Identifiants incorrects ou compte inexistant.";
+        if (err.code === "auth/too-many-requests") {
+          msg = "Trop de tentatives. Veuillez patienter un instant.";
+        }
+        showError(msg);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Se connecter';
+      }
+    });
+
+    // Inscription
+    formRegister.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlerts();
+
+      const fullName = document.getElementById("reg-fullname").value.trim();
+      const city = document.getElementById("reg-city").value;
+      const phone = document.getElementById("reg-phone").value.trim();
+      const email = document.getElementById("reg-email").value.trim();
+      const password = document.getElementById("reg-password").value;
+      const passwordConfirm = document.getElementById("reg-password-confirm").value;
+      const btn = document.getElementById("submit-register-btn");
+
+      if (password !== passwordConfirm) {
+        showError("Les mots de passe ne correspondent pas.");
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Création du compte...';
+        await registerCandidate(email, password, fullName, city, phone);
+        showSuccess("Compte créé avec succès ! Bienvenue sur Sala.");
+        setTimeout(() => window.location.href = "profile.html", 1000);
+      } catch (err) {
+        console.error(err);
+        let msg = "Erreur lors de la création du compte : " + err.message;
+        if (err.code === "auth/email-already-in-use") {
+          msg = "Cette adresse email est déjà associée à un compte Sala.";
+        } else if (err.code === "auth/weak-password") {
+          msg = "Le mot de passe doit contenir au moins 6 caractères.";
+        }
+        showError(msg);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus me-2"></i> Créer mon compte';
+      }
+    });
+
+    // Google Sign-In
+    btnGoogleAuth.addEventListener("click", async () => {
+      clearAlerts();
+      try {
+        btnGoogleAuth.disabled = true;
+        btnGoogleAuth.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Connexion avec Google...';
+        await loginWithGoogle();
+        showSuccess("Connexion Google réussie !");
+        setTimeout(() => window.location.href = "profile.html", 800);
+      } catch (err) {
+        console.error(err);
+        if (err.code !== "auth/popup-closed-by-user") {
+          showError("Erreur Google Sign-In : " + err.message);
+        }
+      } finally {
+        btnGoogleAuth.disabled = false;
+        btnGoogleAuth.innerHTML = `
+          <svg width="18" height="18" viewBox="0 0 18 18">
+            <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.616z"/>
+            <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+            <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.039l3.007-2.332z"/>
+            <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/>
+          </svg>
+          <span>Continuer avec Google</span>
+        `;
+      }
+    });
+
+    // Mot de passe oublié
+    linkForgotPwd.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      if (!email) {
+        showError("Veuillez saisir votre adresse email pour réinitialiser le mot de passe.");
+        return;
+      }
+      try {
+        await sendResetEmail(email);
+        showSuccess("Un email de réinitialisation vous a été envoyé à : " + email);
+      } catch (err) {
+        showError("Erreur : " + err.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

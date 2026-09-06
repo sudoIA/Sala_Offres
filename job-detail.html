@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Détail de l'offre — Sala Congo</title>
+  <meta name="description" content="Détail d'une offre d'emploi ou de stage sur Sala, la plateforme d'aide à l'emploi de l'ONG Sala en République du Congo.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/logo_100.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/sala-theme.css" rel="stylesheet">
+
+  <style>
+    .detail-card {
+      max-width: 720px;
+      margin: 24px auto;
+      background: #ffffff;
+      border: 1px solid var(--sala-border);
+      border-radius: var(--sala-radius-lg);
+      box-shadow: var(--sala-shadow-sm);
+      padding: 28px 30px;
+    }
+
+    .detail-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .detail-topline a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--sala-text-secondary);
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+    }
+
+    .detail-topline a:hover { color: var(--sala-green-dark); }
+
+    .skill-chip {
+      display: inline-flex;
+      align-items: center;
+      background: var(--sala-green-light);
+      color: var(--sala-green-dark);
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      border-radius: var(--sala-radius-full);
+      margin: 0 6px 6px 0;
+    }
+  </style>
+</head>
+<body style="background-color:#f8f9fa; padding-bottom: 85px;">
+
+  <!-- Barre supérieure Sala -->
+  <header class="sala-topbar">
+    <div class="d-flex align-items-center gap-3">
+      <a href="index.html" class="d-flex align-items-center text-decoration-none">
+        <img src="img/logo_transparent.png" alt="Logo Sala" style="height: 40px; width: auto;" class="me-2">
+        <span style="font-weight: 800; font-size: 1.3rem; color: var(--sala-green);">SALA</span>
+      </a>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <a href="offres.html" class="btn-sala-outline py-1 px-3" style="font-size: 0.85rem;">
+        <i class="fas fa-arrow-left me-1"></i> Retour aux offres
+      </a>
+    </div>
+  </header>
+
+  <div id="detailContainer">
+    <div class="detail-card text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <p class="text-muted mt-3 mb-0">Chargement de l'offre...</p>
+    </div>
+  </div>
+
+  <!-- Bouton Flottant FAB "Faire un CV" -->
+  <a href="cv-builder.html" class="sala-fab-cv" title="Faire un CV">
+    <i class="fas fa-pen"></i>
+    <span class="tooltip-text">Faire un CV professionnel</span>
+  </a>
+
+  <!-- Barre de navigation mobile inférieure -->
+  <nav class="sala-bottom-nav">
+    <a href="offres.html" class="sala-bottom-nav-item active">
+      <i class="fas fa-briefcase"></i>
+      <span>Emplois</span>
+    </a>
+    <a href="evenements.html" data-nav-key="evenements" class="sala-bottom-nav-item">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Événements</span>
+    </a>
+    <a href="cv-builder.html" class="sala-bottom-fab" title="Faire un CV">
+      <i class="fas fa-pen"></i>
+    </a>
+    <a href="entretiens.html" data-nav-key="entretiens" class="sala-bottom-nav-item">
+      <i class="fas fa-user-tie"></i>
+      <span>Entretiens</span>
+    </a>
+    <a href="legislation.html" data-nav-key="legislation" class="sala-bottom-nav-item">
+      <i class="fas fa-balance-scale"></i>
+      <span>Droit</span>
+    </a>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.min.js"></script>
+
+  <script type="module">
+    import { db, doc, getDoc } from "./js/firebase-config.js";
+    import { getInitials, getCompanyTileColor, computeCountdown, isFavori, toggleFavori } from "./js/job-ui-helpers.js";
+    import { loadSiteSettings, applyNavVisibility } from "./js/site-settings.js";
+    loadSiteSettings().then(applyNavVisibility);
+
+    const params = new URLSearchParams(window.location.search);
+    const jobId = params.get("id");
+    const container = document.getElementById("detailContainer");
+
+    function notFound() {
+      container.innerHTML = `
+        <div class="detail-card text-center py-5">
+          <i class="fas fa-briefcase fa-2x text-muted mb-3"></i>
+          <h5 class="fw-bold text-dark">Offre introuvable</h5>
+          <p class="text-muted mb-3">Cette offre n'existe plus ou a été retirée.</p>
+          <a href="offres.html" class="btn-sala-primary py-2 px-4 rounded-pill">Voir toutes les offres</a>
+        </div>
+      `;
+    }
+
+    if (!jobId) {
+      notFound();
+    } else {
+      const docRef = doc(db, "emplois", jobId);
+      getDoc(docRef).then((docSnap) => {
+        if (!docSnap.exists()) { notFound(); return; }
+
+        const data = docSnap.data();
+        const deadlineDate = data.deadline?.toDate ? data.deadline.toDate() : null;
+        const publishedDate = data.timestamp?.toDate ? data.timestamp.toDate() : null;
+        const tile = getCompanyTileColor(data.company);
+
+        const safeTitle = DOMPurify.sanitize(data.title || "Offre d'emploi");
+        const safeCompany = DOMPurify.sanitize(data.company || "Entreprise au Congo");
+        const safeCity = DOMPurify.sanitize(data.city || "Congo");
+        const safeContract = DOMPurify.sanitize(data.contract || "Contrat");
+        const safeBody = DOMPurify.sanitize(data.body || "Pas de description disponible pour cette offre.");
+        const safeLanguages = data.languages ? DOMPurify.sanitize(data.languages) : null;
+        const email = data.email || null;
+        const mailtoLink = email
+          ? `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent("Candidature - " + (data.title || "Offre Sala"))}`
+          : null;
+
+        const skillsHtml = (data.competences && data.competences.length > 0)
+          ? data.competences.map(c => `<span class="skill-chip">${DOMPurify.sanitize(c)}</span>`).join("")
+          : `<p class="text-muted small mb-0">Compétences non renseignées par le recruteur pour cette offre.</p>`;
+
+        const companyInfoRows = [
+          data.city ? `<div class="mb-2"><i class="fas fa-map-marker-alt text-success me-2"></i>${safeCity}</div>` : "",
+          data.site ? `<div class="mb-2"><i class="fas fa-globe text-success me-2"></i><a href="${DOMPurify.sanitize(data.site)}" target="_blank" rel="noopener">${DOMPurify.sanitize(data.site)}</a></div>` : "",
+          data.tel ? `<div class="mb-2"><i class="fas fa-phone-alt text-success me-2"></i>${DOMPurify.sanitize(data.tel)}</div>` : "",
+          email ? `<div class="mb-0"><i class="fas fa-envelope text-success me-2"></i>${DOMPurify.sanitize(email)}</div>` : ""
+        ].filter(Boolean).join("");
+
+        container.innerHTML = `
+          <div class="detail-card">
+            <div class="detail-topline">
+              <a href="offres.html"><i class="fas fa-arrow-left"></i> Retour à la liste</a>
+              <div class="d-flex gap-3">
+                <button class="sala-bookmark-btn" id="favBtn" title="Ajouter aux favoris"><i class="fas fa-bookmark"></i></button>
+                <button class="sala-bookmark-btn" id="shareBtn" title="Partager"><i class="fas fa-share-alt"></i></button>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3 mb-3">
+              <div class="sala-company-tile sala-company-tile-lg" style="background:${tile.bg}; color:${tile.color};">${getInitials(data.company)}</div>
+              <div>
+                <h1 class="h4 fw-bold mb-1" style="font-family:var(--sala-font-display);">${safeTitle}</h1>
+                <div class="fw-bold" style="color: var(--sala-green-dark); font-size:0.92rem;">${safeCompany}</div>
+                <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
+                  <span class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${safeCity}</span>
+                  <span class="badge-sala-contract">${safeContract}</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="countdownGrid" class="sala-countdown-grid mb-4"></div>
+
+            <div class="sala-detail-tabs">
+              <button class="sala-detail-tab active" data-tab="description">Description</button>
+              <button class="sala-detail-tab" data-tab="competences">Compétences</button>
+              <button class="sala-detail-tab" data-tab="entreprise">Entreprise</button>
+            </div>
+
+            <div class="tab-pane" data-pane="description">
+              ${safeLanguages ? `
+                <div class="mb-3">
+                  <div class="sala-detail-field-label">Exigences linguistiques</div>
+                  <div class="sala-detail-field-value">${safeLanguages}</div>
+                </div>
+              ` : ""}
+              <div class="mb-2" style="font-family:var(--sala-font-display); font-weight:700; font-size:0.95rem;">Description du poste</div>
+              <div style="color:var(--sala-text-secondary); line-height:1.65; font-size:0.92rem;">${safeBody}</div>
+              ${publishedDate ? `<p class="text-muted small mt-3 mb-0">Publiée le ${publishedDate.toLocaleDateString('fr-FR')}${deadlineDate ? ` — Date limite : ${deadlineDate.toLocaleDateString('fr-FR')}` : ''}</p>` : ""}
+            </div>
+
+            <div class="tab-pane" data-pane="competences" style="display:none;">
+              ${skillsHtml}
+            </div>
+
+            <div class="tab-pane" data-pane="entreprise" style="display:none;">
+              <div class="fw-bold mb-2">${safeCompany}</div>
+              ${companyInfoRows || '<p class="text-muted small mb-0">Aucune coordonnée supplémentaire renseignée.</p>'}
+            </div>
+
+            <div class="mt-4">
+              ${mailtoLink
+                ? `<a href="${mailtoLink}" class="btn-sala-primary w-100 py-3 fw-bold"><i class="fas fa-paper-plane me-2"></i>Postuler en 1 clic</a>`
+                : `<button class="btn-sala-primary w-100 py-3 fw-bold" disabled><i class="fas fa-paper-plane me-2"></i>Contact recruteur indisponible</button>`}
+            </div>
+          </div>
+        `;
+
+        // Onglets
+        container.querySelectorAll(".sala-detail-tab").forEach(tab => {
+          tab.addEventListener("click", () => {
+            container.querySelectorAll(".sala-detail-tab").forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            const target = tab.dataset.tab;
+            container.querySelectorAll(".tab-pane").forEach(p => {
+              p.style.display = (p.dataset.pane === target) ? "block" : "none";
+            });
+          });
+        });
+
+        // Compte à rebours
+        const countdownGrid = document.getElementById("countdownGrid");
+        function renderCountdown() {
+          const c = computeCountdown(deadlineDate);
+          if (!c) { countdownGrid.style.display = "none"; return; }
+          const cls = c.urgent ? "urgent" : "";
+          countdownGrid.innerHTML = c.expired ? `
+            <div class="sala-countdown-box urgent" style="grid-column:1 / -1;"><div class="num">Expirée</div></div>
+          ` : `
+            <div class="sala-countdown-box ${cls}"><div class="num">${String(c.days).padStart(2, '0')}</div><div class="label">Jours</div></div>
+            <div class="sala-countdown-box ${cls}"><div class="num">${String(c.hours).padStart(2, '0')}</div><div class="label">Heures</div></div>
+            <div class="sala-countdown-box ${cls}"><div class="num">${String(c.minutes).padStart(2, '0')}</div><div class="label">Minutes</div></div>
+          `;
+        }
+        renderCountdown();
+        setInterval(renderCountdown, 60000);
+
+        // Favoris (locaux à l'appareil)
+        const favBtn = document.getElementById("favBtn");
+        function refreshFavBtn() {
+          favBtn.classList.toggle("active", isFavori(jobId));
+        }
+        refreshFavBtn();
+        favBtn.addEventListener("click", () => {
+          toggleFavori(jobId);
+          refreshFavBtn();
+        });
+
+        // Partage
+        document.getElementById("shareBtn").addEventListener("click", () => {
+          const shareUrl = window.location.href;
+          if (navigator.share) {
+            navigator.share({ title: data.title, text: `Offre d'emploi Sala : ${data.title} chez ${data.company}`, url: shareUrl }).catch(() => {});
+          } else {
+            navigator.clipboard.writeText(shareUrl).then(() => alert("Lien de l'offre copié dans le presse-papier !"));
+          }
+        });
+
+      }).catch((error) => {
+        console.error("Erreur en récupérant l'offre :", error);
+        notFound();
+      });
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

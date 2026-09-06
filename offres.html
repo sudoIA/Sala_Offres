@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Offres d'emploi — Sala République du Congo</title>
+  <meta name="description" content="Trouvez les meilleures offres d'emploi, de stage et opportunités professionnelles au Congo Brazzaville et Pointe-Noire sur Sala.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/logo_100.png">
+
+  <!-- Polices Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/sala-theme.css" rel="stylesheet">
+
+  <style>
+    .sala-page-header {
+      background: linear-gradient(135deg, #1e6b31 0%, #3b9452 100%);
+      color: #ffffff;
+      padding: 30px 20px;
+      margin-bottom: 25px;
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 4px 15px rgba(30, 107, 49, 0.2);
+    }
+
+    .sala-search-bar {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 6px 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .sala-search-bar input {
+      border: none;
+      outline: none;
+      width: 100%;
+      font-size: 0.95rem;
+      color: #333;
+      padding: 8px 4px;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .filter-chip.active, .filter-chip:hover {
+      background: var(--sala-green-light);
+      border-color: var(--sala-green);
+      color: var(--sala-green-dark);
+      font-weight: 600;
+    }
+
+    .sala-card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .sala-card-link:hover {
+      color: inherit;
+    }
+
+    .job-action-btn {
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 1.1rem;
+      padding: 6px;
+      cursor: pointer;
+      border-radius: 50%;
+      transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .job-action-btn:hover {
+      color: var(--sala-green);
+      background-color: var(--sala-green-light);
+    }
+
+    /* Skeleton Loader */
+    .skeleton-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 14px;
+      border: 1px solid #eee;
+    }
+
+    .skeleton-line {
+      height: 14px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Panneau de détail (bureau) */
+    .detail-empty-state {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--sala-text-muted);
+      padding: 40px 20px;
+    }
+
+    .skill-chip {
+      display: inline-flex;
+      align-items: center;
+      background: var(--sala-green-light);
+      color: var(--sala-green-dark);
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      border-radius: var(--sala-radius-full);
+      margin: 0 6px 6px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sala-layout-wrapper">
+
+    <!-- ================= SIDEBAR (bureau) ================= -->
+    <aside class="sala-sidebar">
+      <div class="sala-sidebar-header">
+        <a href="index.html" class="d-flex align-items-center text-decoration-none gap-2">
+          <img src="img/logo_transparent.png" alt="Logo Sala" style="height:36px; width:auto;">
+          <span style="font-weight:800; font-size:1.1rem; color:var(--sala-green-dark);">SALA</span>
+        </a>
+      </div>
+      <div class="sala-sidebar-nav">
+        <div class="sala-nav-section-title">Navigation</div>
+        <a href="index.html" class="sala-nav-item"><i class="fas fa-home"></i> Accueil</a>
+        <a href="offres.html" class="sala-nav-item active"><i class="fas fa-briefcase"></i> Emplois</a>
+        <a href="evenements.html" data-nav-key="evenements" class="sala-nav-item"><i class="fas fa-calendar-alt"></i> Événements</a>
+        <a href="annuaires.html" data-nav-key="annuaires" class="sala-nav-item"><i class="fas fa-address-book"></i> Annuaires</a>
+        <a href="entretiens.html" data-nav-key="entretiens" class="sala-nav-item"><i class="fas fa-user-tie"></i> Entretiens</a>
+        <a href="legislation.html" data-nav-key="legislation" class="sala-nav-item"><i class="fas fa-balance-scale"></i> Législation</a>
+
+        <div class="sala-nav-section-title">Candidat</div>
+        <a href="cv-builder.html" class="sala-nav-item"><i class="fas fa-file-invoice"></i> Faire un CV</a>
+        <a href="auth.html" id="sidebarAuthLink" class="sala-nav-item"><i class="fas fa-user"></i> Connexion</a>
+      </div>
+    </aside>
+
+    <!-- ================= CONTENU PRINCIPAL ================= -->
+    <div class="sala-main-content">
+
+      <!-- Header Mobile & Desktop -->
+      <header class="sala-topbar">
+        <div class="d-flex align-items-center gap-3">
+          <a href="index.html" class="d-flex align-items-center text-decoration-none">
+            <img src="img/logo_transparent.png" alt="Logo Sala" style="height: 42px; width: auto;" class="me-2">
+            <span style="font-weight: 800; font-size: 1.3rem; color: var(--sala-green);">SALA</span>
+          </a>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <div id="userNavSlot">
+            <a href="auth.html" class="btn-sala-outline py-1 px-3" style="font-size: 0.85rem;">
+              <i class="fas fa-user me-1"></i> Connexion
+            </a>
+          </div>
+          <a href="onboarding.html" class="btn btn-light py-1 px-2 text-muted" title="Découvrir Sala (Tutoriel)" style="font-size: 0.85rem;">
+            <i class="fas fa-question-circle"></i>
+          </a>
+          <a href="connexion.html" class="btn btn-sm text-muted" title="Administration" style="font-size: 0.85rem;">
+            <i class="fas fa-lock"></i>
+          </a>
+        </div>
+      </header>
+
+      <div class="sala-master-detail-row">
+
+        <!-- ================= LISTE DES OFFRES ================= -->
+        <div class="sala-master-list-col">
+          <div class="sala-page-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <h1 class="h3 mb-1 text-white fw-bold">Offres d'emploi & Stages</h1>
+                <p class="mb-0 text-white-50" style="font-size: 0.95rem;">Votre avenir professionnel commence ici en République du Congo</p>
+              </div>
+              <span class="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold" id="job-count-badge">
+                <i class="fas fa-briefcase text-success me-1"></i> Chargement...
+              </span>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="sala-search-bar">
+              <i class="fas fa-search text-muted ms-2"></i>
+              <input type="text" id="searchInput" placeholder="Rechercher par poste, entreprise, ville (ex: Total, Brazzaville)..." aria-label="Rechercher">
+              <button id="clearSearchBtn" class="btn btn-sm text-muted" style="display:none;" aria-label="Effacer">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filtres rapides -->
+          <div class="d-flex gap-2 overflow-auto pb-2 mb-3" id="filters-container">
+            <span class="filter-chip active" data-filter="all">Toutes</span>
+            <span class="filter-chip" data-city="Brazzaville">📍 Brazzaville</span>
+            <span class="filter-chip" data-city="Pointe-Noire">📍 Pointe-Noire</span>
+            <span class="filter-chip" data-contract="CDI">💼 CDI</span>
+            <span class="filter-chip" data-contract="CDD">📄 CDD</span>
+            <span class="filter-chip" data-contract="Stage">🎓 Stage</span>
+          </div>
+
+          <!-- Conteneur de la liste des offres -->
+          <div id="offres-list" style="max-width: 860px; margin: 0 auto;">
+            <!-- Skeletons pendant le chargement -->
+            <div class="skeleton-card">
+              <div class="skeleton-line" style="width: 60%; height: 20px;"></div>
+              <div class="skeleton-line" style="width: 40%;"></div>
+              <div class="skeleton-line" style="width: 80%;"></div>
+            </div>
+            <div class="skeleton-card">
+              <div class="skeleton-line" style="width: 55%; height: 20px;"></div>
+              <div class="skeleton-line" style="width: 35%;"></div>
+              <div class="skeleton-line" style="width: 75%;"></div>
+            </div>
+            <div class="skeleton-card">
+              <div class="skeleton-line" style="width: 70%; height: 20px;"></div>
+              <div class="skeleton-line" style="width: 45%;"></div>
+              <div class="skeleton-line" style="width: 65%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= PANNEAU DE DÉTAIL (bureau uniquement) ================= -->
+        <div class="sala-detail-pane-col" id="detailPaneCol">
+          <div id="detailPaneContent">
+            <div class="detail-empty-state">
+              <div class="spinner-border text-success mb-3" role="status"></div>
+              <p class="mb-0">Chargement des offres...</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bouton Flottant FAB "Faire un CV" (comme sur l'application mobile) -->
+  <a href="cv-builder.html" class="sala-fab-cv" title="Faire un CV">
+    <i class="fas fa-pen"></i>
+    <span class="tooltip-text">Faire un CV professionnel</span>
+  </a>
+
+  <!-- Barre de navigation mobile inférieure (Bottom Navigation calquée sur l'app Android) -->
+  <nav class="sala-bottom-nav">
+    <a href="offres.html" class="sala-bottom-nav-item active">
+      <i class="fas fa-briefcase"></i>
+      <span>Emplois</span>
+      <span class="badge-count" id="mobile-badge-count">0</span>
+    </a>
+    <a href="evenements.html" data-nav-key="evenements" class="sala-bottom-nav-item">
+      <i class="fas fa-calendar-alt"></i>
+      <span>Événements</span>
+    </a>
+    <a href="cv-builder.html" class="sala-bottom-fab" title="Faire un CV">
+      <i class="fas fa-pen"></i>
+    </a>
+    <a href="entretiens.html" data-nav-key="entretiens" class="sala-bottom-nav-item">
+      <i class="fas fa-user-tie"></i>
+      <span>Entretiens</span>
+    </a>
+    <a href="legislation.html" data-nav-key="legislation" class="sala-bottom-nav-item">
+      <i class="fas fa-balance-scale"></i>
+      <span>Droit</span>
+    </a>
+  </nav>
+
+  <!-- Librairie DOMPurify pour la sécurité XSS -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.min.js"></script>
+
+  <!-- Script Firebase Modulaire v10 -->
+  <script type="module">
+    import { auth, db, collection, query, orderBy, onSnapshot, onAuthStateChanged } from "./js/firebase-config.js";
+    import { getInitials, getCompanyTileColor, computeCountdown, isFavori, toggleFavori } from "./js/job-ui-helpers.js";
+    import { loadSiteSettings, applyNavVisibility } from "./js/site-settings.js";
+    loadSiteSettings().then(applyNavVisibility);
+
+    const offresList = document.getElementById("offres-list");
+    const countBadge = document.getElementById("job-count-badge");
+    const mobileBadge = document.getElementById("mobile-badge-count");
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+    const filterChips = document.querySelectorAll(".filter-chip");
+    const userNavSlot = document.getElementById("userNavSlot");
+    const sidebarAuthLink = document.getElementById("sidebarAuthLink");
+    const detailPaneContent = document.getElementById("detailPaneContent");
+
+    // Afficher le profil si connecté
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const displayName = user.displayName ? user.displayName.split(" ")[0] : "Mon profil";
+        if (userNavSlot) {
+          userNavSlot.innerHTML = `
+            <a href="profile.html" class="btn-sala-primary py-1 px-3" style="font-size: 0.85rem;">
+              <i class="fas fa-user-circle me-1"></i> ${displayName}
+            </a>
+          `;
+        }
+        if (sidebarAuthLink) {
+          sidebarAuthLink.href = "profile.html";
+          sidebarAuthLink.innerHTML = `<i class="fas fa-user-circle"></i> ${displayName}`;
+        }
+      }
+    });
+
+    let allOffers = [];
+    let activeFilterType = "all";
+    let activeFilterValue = "";
+    let selectedJobId = null;
+    let hasAutoSelected = false;
+    let countdownIntervalId = null;
+    const isDesktop = () => window.matchMedia("(min-width: 992px)").matches;
+
+    // Calcul du délai d'expiration lisible
+    function formatExpiry(deadlineDate) {
+      if (!deadlineDate) return null;
+      const now = new Date();
+      const diffMs = deadlineDate.getTime() - now.getTime();
+      if (diffMs <= 0) return { expired: true, text: "Expiré" };
+
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      if (diffDays === 1) return { expired: false, text: "Expire aujourd'hui", urgent: true };
+      if (diffDays <= 7) return { expired: false, text: `Expire dans ${diffDays} jrs`, urgent: true };
+      if (diffDays <= 14) return { expired: false, text: "Expire dans 2 semaines", urgent: false };
+      if (diffDays <= 30) return { expired: false, text: `Expire dans ${Math.ceil(diffDays / 7)} semaines`, urgent: false };
+      return { expired: false, text: `Date limite : ${deadlineDate.toLocaleDateString('fr-FR')}`, urgent: false };
+    }
+
+    // ============================================================
+    // PANNEAU DE DÉTAIL (bureau)
+    // ============================================================
+    function renderEmptyDetailPane(message) {
+      if (countdownIntervalId) clearInterval(countdownIntervalId);
+      detailPaneContent.innerHTML = `
+        <div class="detail-empty-state">
+          <i class="fas fa-briefcase fa-2x mb-3"></i>
+          <p class="mb-0">${message}</p>
+        </div>
+      `;
+    }
+
+    function selectJob(job) {
+      selectedJobId = job.id;
+      if (countdownIntervalId) clearInterval(countdownIntervalId);
+
+      // Mettre en surbrillance la carte correspondante
+      document.querySelectorAll(".sala-job-card").forEach(c => c.classList.remove("active"));
+      const activeCard = document.querySelector(`.sala-job-card[data-job-id="${CSS.escape(job.id)}"]`);
+      if (activeCard) activeCard.classList.add("active");
+
+      const tile = getCompanyTileColor(job.company);
+      const safeTitle = DOMPurify.sanitize(job.title || "Offre d'emploi");
+      const safeCompany = DOMPurify.sanitize(job.company || "Entreprise au Congo");
+      const safeCity = DOMPurify.sanitize(job.city || "Congo");
+      const safeContract = DOMPurify.sanitize(job.contract || "Contrat");
+      const safeBody = DOMPurify.sanitize(job.body || "Pas de description disponible pour cette offre.");
+      const safeLanguages = job.languages ? DOMPurify.sanitize(job.languages) : null;
+      const email = job.email || null;
+      const mailtoLink = email
+        ? `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent("Candidature - " + (job.title || "Offre Sala"))}`
+        : null;
+
+      const skillsHtml = (job.competences && job.competences.length > 0)
+        ? job.competences.map(c => `<span class="skill-chip">${DOMPurify.sanitize(c)}</span>`).join("")
+        : `<p class="text-muted small mb-0">Compétences non renseignées par le recruteur pour cette offre.</p>`;
+
+      const companyInfoRows = [
+        job.city ? `<div class="mb-2"><i class="fas fa-map-marker-alt text-success me-2"></i>${safeCity}</div>` : "",
+        job.site ? `<div class="mb-2"><i class="fas fa-globe text-success me-2"></i><a href="${DOMPurify.sanitize(job.site)}" target="_blank" rel="noopener">${DOMPurify.sanitize(job.site)}</a></div>` : "",
+        job.tel ? `<div class="mb-2"><i class="fas fa-phone-alt text-success me-2"></i>${DOMPurify.sanitize(job.tel)}</div>` : "",
+        email ? `<div class="mb-0"><i class="fas fa-envelope text-success me-2"></i>${DOMPurify.sanitize(email)}</div>` : ""
+      ].filter(Boolean).join("");
+
+      detailPaneContent.innerHTML = `
+        <div class="d-flex justify-content-end gap-3 mb-3">
+          <button class="sala-bookmark-btn" id="paneFavBtn" title="Ajouter aux favoris"><i class="fas fa-bookmark"></i></button>
+          <button class="sala-bookmark-btn" id="paneShareBtn" title="Partager"><i class="fas fa-share-alt"></i></button>
+        </div>
+
+        <div class="d-flex gap-3 mb-3">
+          <div class="sala-company-tile sala-company-tile-lg" style="background:${tile.bg}; color:${tile.color};">${getInitials(job.company)}</div>
+          <div>
+            <h2 class="h5 fw-bold mb-1">${safeTitle}</h2>
+            <div class="fw-bold" style="color: var(--sala-green-dark); font-size:0.9rem;">${safeCompany}</div>
+            <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
+              <span class="small text-muted"><i class="fas fa-map-marker-alt me-1"></i>${safeCity}</span>
+              <span class="badge-sala-contract">${safeContract}</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="paneCountdownGrid" class="sala-countdown-grid mb-4"></div>
+
+        <div class="sala-detail-tabs">
+          <button class="sala-detail-tab active" data-tab="description">Description</button>
+          <button class="sala-detail-tab" data-tab="competences">Compétences</button>
+          <button class="sala-detail-tab" data-tab="entreprise">Entreprise</button>
+        </div>
+
+        <div class="tab-pane" data-pane="description">
+          ${safeLanguages ? `
+            <div class="mb-3">
+              <div class="sala-detail-field-label">Exigences linguistiques</div>
+              <div class="sala-detail-field-value">${safeLanguages}</div>
+            </div>
+          ` : ""}
+          <div class="mb-2" style="font-family:var(--sala-font-display); font-weight:700; font-size:0.92rem;">Description du poste</div>
+          <div style="color:var(--sala-text-secondary); line-height:1.6; font-size:0.88rem;">${safeBody}</div>
+        </div>
+
+        <div class="tab-pane" data-pane="competences" style="display:none;">
+          ${skillsHtml}
+        </div>
+
+        <div class="tab-pane" data-pane="entreprise" style="display:none;">
+          <div class="fw-bold mb-2">${safeCompany}</div>
+          ${companyInfoRows || '<p class="text-muted small mb-0">Aucune coordonnée supplémentaire renseignée.</p>'}
+        </div>
+
+        <div class="mt-4">
+          ${mailtoLink
+            ? `<a href="${mailtoLink}" class="btn-sala-primary w-100 py-3 fw-bold"><i class="fas fa-paper-plane me-2"></i>Postuler en 1 clic</a>`
+            : `<button class="btn-sala-primary w-100 py-3 fw-bold" disabled><i class="fas fa-paper-plane me-2"></i>Contact recruteur indisponible</button>`}
+        </div>
+      `;
+
+      // Onglets
+      detailPaneContent.querySelectorAll(".sala-detail-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          detailPaneContent.querySelectorAll(".sala-detail-tab").forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          const target = tab.dataset.tab;
+          detailPaneContent.querySelectorAll(".tab-pane").forEach(p => {
+            p.style.display = (p.dataset.pane === target) ? "block" : "none";
+          });
+        });
+      });
+
+      // Compte à rebours
+      const countdownGrid = document.getElementById("paneCountdownGrid");
+      function renderCountdown() {
+        const c = computeCountdown(job.deadlineDate);
+        if (!c) { countdownGrid.style.display = "none"; return; }
+        const cls = c.urgent ? "urgent" : "";
+        countdownGrid.innerHTML = c.expired ? `
+          <div class="sala-countdown-box urgent" style="grid-column:1 / -1;"><div class="num">Expirée</div></div>
+        ` : `
+          <div class="sala-countdown-box ${cls}"><div class="num">${String(c.days).padStart(2, '0')}</div><div class="label">Jours</div></div>
+          <div class="sala-countdown-box ${cls}"><div class="num">${String(c.hours).padStart(2, '0')}</div><div class="label">Heures</div></div>
+          <div class="sala-countdown-box ${cls}"><div class="num">${String(c.minutes).padStart(2, '0')}</div><div class="label">Minutes</div></div>
+        `;
+      }
+      renderCountdown();
+      countdownIntervalId = setInterval(renderCountdown, 60000);
+
+      // Favoris
+      const paneFavBtn = document.getElementById("paneFavBtn");
+      function refreshFavBtn() { paneFavBtn.classList.toggle("active", isFavori(job.id)); }
+      refreshFavBtn();
+      paneFavBtn.addEventListener("click", () => { toggleFavori(job.id); refreshFavBtn(); });
+
+      // Partage
+      document.getElementById("paneShareBtn").addEventListener("click", () => {
+        const shareUrl = `${window.location.origin}/job-detail.html?id=${job.id}`;
+        if (navigator.share) {
+          navigator.share({ title: job.title, text: `Offre d'emploi Sala : ${job.title} chez ${job.company}`, url: shareUrl }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(shareUrl).then(() => alert("Lien de l'offre copié dans le presse-papier !"));
+        }
+      });
+    }
+
+    // ============================================================
+    // LISTE DES OFFRES
+    // ============================================================
+    function renderOffers() {
+      const searchTerm = searchInput.value.trim().toLowerCase();
+
+      const filtered = allOffers.filter(job => {
+        const matchText = !searchTerm ||
+          (job.title && job.title.toLowerCase().includes(searchTerm)) ||
+          (job.company && job.company.toLowerCase().includes(searchTerm)) ||
+          (job.city && job.city.toLowerCase().includes(searchTerm)) ||
+          (job.contract && job.contract.toLowerCase().includes(searchTerm));
+
+        if (!matchText) return false;
+
+        if (activeFilterType === "city") {
+          return job.city && job.city.toLowerCase().includes(activeFilterValue.toLowerCase());
+        }
+        if (activeFilterType === "contract") {
+          return job.contract && job.contract.toLowerCase().includes(activeFilterValue.toLowerCase());
+        }
+
+        return true;
+      });
+
+      countBadge.innerHTML = `<i class="fas fa-briefcase text-success me-1"></i> ${filtered.length} offre${filtered.length > 1 ? 's' : ''}`;
+      if (mobileBadge) mobileBadge.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        offresList.innerHTML = `
+          <div class="text-center py-5 bg-white rounded-3 p-4 shadow-sm">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h5 class="fw-bold text-dark">Aucune offre ne correspond à votre recherche</h5>
+            <p class="text-muted mb-3">Essayez d'ajuster vos mots-clés ou réinitialisez les filtres.</p>
+            <button class="btn-sala-outline btn-sm" id="resetFiltersBtn">Réinitialiser les filtres</button>
+          </div>
+        `;
+        document.getElementById("resetFiltersBtn")?.addEventListener("click", () => {
+          searchInput.value = "";
+          clearSearchBtn.style.display = "none";
+          setActiveChip("all");
+          renderOffers();
+        });
+        if (allOffers.length === 0) {
+          renderEmptyDetailPane("Aucune offre disponible actuellement.");
+        }
+        return;
+      }
+
+      offresList.innerHTML = "";
+
+      filtered.forEach(job => {
+        const card = document.createElement("div");
+        card.className = "sala-job-card";
+        card.dataset.jobId = job.id;
+
+        const expiry = formatExpiry(job.deadlineDate);
+        if (expiry && expiry.urgent) card.classList.add("is-urgent");
+        if (job.id === selectedJobId) card.classList.add("active");
+
+        const expiryHtml = expiry
+          ? `<span class="sala-job-card-expiry ${expiry.urgent ? 'text-danger fw-bold' : 'text-muted'}">
+              <i class="far fa-clock"></i> ${DOMPurify.sanitize(expiry.text)}
+             </span>`
+          : "";
+
+        const tile = getCompanyTileColor(job.company);
+        const safeTitle = DOMPurify.sanitize(job.title || "Offre sans titre");
+        const safeCompany = DOMPurify.sanitize(job.company || "Entreprise non précisée");
+        const safeCity = DOMPurify.sanitize(job.city || "Congo");
+        const safeContract = DOMPurify.sanitize(job.contract || "Contrat");
+
+        card.innerHTML = `
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <div class="d-flex gap-2 flex-grow-1">
+              <div class="sala-company-tile" style="background:${tile.bg}; color:${tile.color};">${getInitials(job.company)}</div>
+              <a href="job-detail.html?id=${encodeURIComponent(job.id)}" class="sala-card-link">
+                <div class="sala-job-card-title">${safeTitle}</div>
+                <div class="sala-job-card-company mb-1">${safeCompany}</div>
+              </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-1">
+              <button class="job-action-btn fav-btn ${isFavori(job.id) ? 'text-success' : ''}" title="Ajouter aux favoris" aria-label="Favori">
+                <i class="fas fa-bookmark"></i>
+              </button>
+              <button class="job-action-btn share-btn" title="Partager cette offre" aria-label="Partager">
+                <i class="fas fa-share-alt"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="sala-job-card-meta">
+            <span><i class="fas fa-map-marker-alt"></i> ${safeCity}</span>
+            <span class="badge-sala-contract">${safeContract}</span>
+            ${expiryHtml}
+          </div>
+        `;
+
+        // Bouton Favori
+        const favBtn = card.querySelector(".fav-btn");
+        favBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const active = toggleFavori(job.id);
+          favBtn.classList.toggle("text-success", active);
+        });
+
+        // Bouton Partage
+        const shareBtn = card.querySelector(".share-btn");
+        shareBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const shareUrl = `${window.location.origin}/job-detail.html?id=${job.id}`;
+          if (navigator.share) {
+            navigator.share({
+              title: job.title,
+              text: `Offre d'emploi Sala : ${job.title} chez ${job.company}`,
+              url: shareUrl
+            }).catch(() => {});
+          } else {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+              alert("Lien de l'offre copié dans le presse-papier !");
+            });
+          }
+        });
+
+        // Clic sur la carte : panneau de détail sur bureau, page dédiée sur mobile
+        card.addEventListener("click", (e) => {
+          if (e.target.closest(".share-btn") || e.target.closest(".fav-btn")) return;
+          if (isDesktop()) {
+            e.preventDefault();
+            selectJob(job);
+          } else {
+            window.location.href = `job-detail.html?id=${encodeURIComponent(job.id)}`;
+          }
+        });
+
+        offresList.appendChild(card);
+      });
+
+      // Sélection automatique de la première offre sur bureau (une seule fois)
+      if (isDesktop() && !hasAutoSelected && filtered.length > 0) {
+        hasAutoSelected = true;
+        selectJob(filtered[0]);
+      } else if (selectedJobId) {
+        // Rafraîchir la mise en surbrillance si la liste a été redessinée
+        const stillSelected = filtered.find(j => j.id === selectedJobId);
+        if (stillSelected) {
+          document.querySelector(`.sala-job-card[data-job-id="${CSS.escape(selectedJobId)}"]`)?.classList.add("active");
+        }
+      }
+    }
+
+    // Écoute en temps réel de la collection 'emplois'
+    // NB: pas de orderBy() ici — Firestore exclurait silencieusement toute offre
+    // sans champ "timestamp" au lieu de simplement la trier en dernier. Le tri
+    // se fait donc côté client, en tolérant les offres sans timestamp.
+    const q = collection(db, "emplois");
+
+    onSnapshot(q, (snapshot) => {
+      const now = new Date();
+      allOffers = [];
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const deadlineDate = data.deadline?.toDate ? data.deadline.toDate() : null;
+        const isNotExpired = !deadlineDate || deadlineDate > now;
+        const isVisible = data.visibility !== false;
+
+        if (isVisible && isNotExpired) {
+          allOffers.push({
+            id: doc.id,
+            ...data,
+            deadlineDate: deadlineDate
+          });
+        }
+      });
+
+      allOffers.sort((a, b) => (b.timestamp?.toMillis?.() || 0) - (a.timestamp?.toMillis?.() || 0));
+
+      renderOffers();
+    }, (error) => {
+      console.error("Erreur Firestore :", error);
+      offresList.innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i> Impossible de charger les offres pour le moment.
+        </div>
+      `;
+    });
+
+    // Événements de recherche
+    searchInput.addEventListener("input", () => {
+      clearSearchBtn.style.display = searchInput.value ? "block" : "none";
+      renderOffers();
+    });
+
+    clearSearchBtn.addEventListener("click", () => {
+      searchInput.value = "";
+      clearSearchBtn.style.display = "none";
+      renderOffers();
+    });
+
+    // Événements des filtres chips
+    function setActiveChip(chipType, chipValue = "") {
+      activeFilterType = chipType;
+      activeFilterValue = chipValue;
+      filterChips.forEach(chip => {
+        if (chipType === "all" && chip.dataset.filter === "all") {
+          chip.classList.add("active");
+        } else if (chip.dataset.city === chipValue || chip.dataset.contract === chipValue) {
+          chip.classList.add("active");
+        } else {
+          chip.classList.remove("active");
+        }
+      });
+    }
+
+    filterChips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        if (chip.dataset.filter === "all") {
+          setActiveChip("all");
+        } else if (chip.dataset.city) {
+          setActiveChip("city", chip.dataset.city);
+        } else if (chip.dataset.contract) {
+          setActiveChip("contract", chip.dataset.contract);
+        }
+        renderOffers();
+      });
+    });
+
+    // Redessine si la fenêtre franchit le seuil bureau/mobile (ex: rotation tablette)
+    let lastIsDesktop = isDesktop();
+    window.addEventListener("resize", () => {
+      const nowDesktop = isDesktop();
+      if (nowDesktop !== lastIsDesktop) {
+        lastIsDesktop = nowDesktop;
+        renderOffers();
+      }
+    });
+
+    // PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
