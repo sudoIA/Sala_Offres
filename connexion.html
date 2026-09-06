@@ -3,304 +3,539 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connexion — Sala</title>
+  <title>Connexion Administration — Sala</title>
+  <meta name="robots" content="noindex, nofollow">
   <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="css/sala-theme.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="img/logo_100.png" rel="icon">
 
-  <!-- coleur sala 
-    vert : #3b9452
-    rouge: #e30613
-    jaune: #f8ea1b
-  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/sala-theme.css">
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      background: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: 'Poppins', sans-serif;
       margin: 0;
-      overflow: hidden;
-    }
-
-    .login-container {
-      background: #fff;
+      min-height: 100vh;
+      background: var(--sala-bg);
+      font-family: var(--sala-font-sans);
       display: flex;
-      width: 900px;
-      height: 550px;
-      border-radius: 20px;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .auth-shell {
+      display: flex;
+      width: 100%;
+      max-width: 920px;
+      min-height: 560px;
+      background: #ffffff;
+      border-radius: var(--sala-radius-lg);
+      box-shadow: var(--sala-shadow-lg);
       overflow: hidden;
-      box-shadow: 0px 8px 24px rgba(6, 100, 2, 0.5);
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
       opacity: 1;
-      transition: opacity 0.8s ease, transform 0.4s ease;
+      transform: scale(1);
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    .login-container.fade-out {
+    .auth-shell.fade-out {
       opacity: 0;
-      transform: scale(0.85);
+      transform: scale(0.97);
     }
 
-    .login-container:hover {
-      box-shadow: 0px 12px 36px rgba(245, 10, 2, 0.5);
-    }
-
-    .login-left, .login-right {
+    /* ================= PANNEAU DE MARQUE ================= */
+    .auth-brand-panel {
       flex: 1;
-      padding: 50px;
+      background: linear-gradient(160deg, #1e6b31 0%, #3b9452 100%);
+      color: #ffffff;
+      padding: 48px 44px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-brand-panel::before {
+      content: "";
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      top: -140px;
+      right: -120px;
+    }
+
+    .auth-brand-panel::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      bottom: -100px;
+      left: -80px;
+    }
+
+    .auth-brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-brand-logo img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
+    }
+
+    .auth-brand-logo span {
+      font-family: var(--sala-font-display);
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+
+    .auth-brand-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-brand-body h1 {
+      font-family: var(--sala-font-display);
+      font-size: 1.7rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin: 0 0 14px;
+    }
+
+    .auth-brand-body p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 0 0 26px;
+      max-width: 340px;
+    }
+
+    .auth-brand-features {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-brand-features div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .auth-brand-features i {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+
+    /* ================= PANNEAU DU FORMULAIRE ================= */
+    .auth-form-panel {
+      flex: 1;
+      padding: 48px 44px;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
 
-    .login-left {
+    .auth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-start;
+      background: var(--sala-green-light);
+      color: var(--sala-green-dark);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: var(--sala-radius-full);
+      margin-bottom: 18px;
+    }
+
+    .auth-form-panel h2 {
+      font-family: var(--sala-font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--sala-text-primary);
+      margin: 0 0 6px;
+    }
+
+    .auth-form-panel > p {
+      color: var(--sala-text-muted);
+      font-size: 0.9rem;
+      margin: 0 0 28px;
+    }
+
+    .auth-field {
+      margin-bottom: 18px;
+    }
+
+    .auth-field label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--sala-text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .auth-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .auth-input-wrap i.icon-left {
+      position: absolute;
+      left: 14px;
+      color: var(--sala-text-muted);
+      font-size: 0.9rem;
+      pointer-events: none;
+    }
+
+    .auth-input-wrap input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border: 1.5px solid var(--sala-border);
+      border-radius: var(--sala-radius-md);
+      font-family: var(--sala-font-sans);
+      font-size: 0.95rem;
+      color: var(--sala-text-primary);
       background: #ffffff;
-      color: #3b9452;
-      text-align: center;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .login-left h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
-
-    .login-left p {
-      font-size: 18px;
-      color: #555;
-    }
-
-    .login-right {
-      background: linear-gradient(to bottom right, #3b9452, #3b9452);
-      color: white;
-      position: relative;
-    }
-
-    .login-right h2 {
-      font-size: 28px;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-      position: relative;
-    }
-
-    input[type="email"], input[type="password"] {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 8px;
+    .auth-input-wrap input:focus {
       outline: none;
-      font-size: 16px;
-      background-color: rgba(255, 255, 255, 0.9);
-      color: #333;
-      transition: all 0.3s ease;
+      border-color: var(--sala-green);
+      box-shadow: 0 0 0 3px var(--sala-green-light);
     }
 
-    input[type="email"]:focus, input[type="password"]:focus {
-      background-color: #ffffff;
-      box-shadow: 0px 0px 8px rgba(67, 100, 247, 0.5);
-      transform: scale(1.02);
-    }
-
-    .btn-login {
-      width: 100%;
-      padding: 15px;
-      background-color: white;
+    .auth-toggle-password {
+      position: absolute;
+      right: 12px;
+      background: none;
       border: none;
-      border-radius: 8px;
-      color: #e30613;
-      font-size: 18px;
-      font-weight: bold;
+      color: var(--sala-text-muted);
       cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.3s ease, transform 0.3s ease;
+      font-size: 0.9rem;
+      padding: 4px;
     }
 
-    .btn-login:hover {
-      background-color: #f1f1f1;
-      transform: translateY(-2px);
+    .auth-toggle-password:hover {
+      color: var(--sala-text-secondary);
     }
 
-    .login-links {
+    .auth-alert {
+      display: none;
+      padding: 11px 14px;
+      border-radius: var(--sala-radius-md);
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+    }
+
+    .auth-alert.error {
+      background: var(--sala-red-subtle);
+      color: var(--sala-red-dark);
+    }
+
+    .auth-alert.success {
+      background: var(--sala-green-light);
+      color: var(--sala-green-dark);
+    }
+
+    .auth-submit {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px;
+      border: none;
+      border-radius: var(--sala-radius-md);
+      background: var(--sala-green);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .auth-submit:hover {
+      background: var(--sala-green-dark);
+      transform: translateY(-1px);
+    }
+
+    .auth-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .auth-links {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 18px;
+      font-size: 0.85rem;
     }
 
-    .login-links a {
-      color: #f8ea1b;
-      text-decoration: underline;
-      font-size: 14px;
+    .auth-links a {
+      color: var(--sala-green-dark);
+      font-weight: 600;
+      text-decoration: none;
       cursor: pointer;
     }
 
-    .login-links a:hover {
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+
+    .auth-back-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 26px;
+      padding-top: 20px;
+      border-top: 1px solid var(--sala-border);
+      font-size: 0.85rem;
+      color: var(--sala-text-muted);
       text-decoration: none;
     }
 
-    .loader {
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid #4364f7;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-      display: none;
+    .auth-back-link:hover {
+      color: var(--sala-text-secondary);
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    @media (max-width: 768px) {
-      .login-container {
+    @media (max-width: 767px) {
+      .auth-shell {
         flex-direction: column;
-        width: 90%;
-        height: auto;
+        min-height: 0;
       }
-      .login-left, .login-right {
-        padding: 30px;
+
+      .auth-brand-panel {
+        padding: 28px 26px;
       }
-      .login-left {
-        order: 2;
+
+      .auth-brand-body {
+        justify-content: flex-start;
       }
-      .login-right {
-        order: 1;
+
+      .auth-brand-body h1 {
+        font-size: 1.3rem;
+      }
+
+      .auth-brand-body p {
+        margin-bottom: 16px;
+      }
+
+      .auth-brand-features {
+        display: none;
+      }
+
+      .auth-form-panel {
+        padding: 32px 26px;
       }
     }
   </style>
 </head>
 <body>
 
-<div class="login-container" id="login-container">
-  <div class="login-left">
-    <h1>Bienvenue !</h1>
-    <p>Connectez-vous pour gérer vos offres d'emploi simplement et rapidement.</p>
-    <p><a href="index.html"><img src="img/logo_transparent.png" style="width: 200px; height: 200px;"></a></p>
+  <div class="auth-shell" id="auth-shell">
+
+    <div class="auth-brand-panel">
+      <div class="auth-brand-logo">
+        <img src="img/logo_transparent.png" alt="Logo Sala">
+        <span>SALA</span>
+      </div>
+      <div class="auth-brand-body">
+        <h1>Espace Administration</h1>
+        <p>Gérez les offres d'emploi, les événements, les annuaires et le contenu de la plateforme Sala en toute simplicité.</p>
+        <div class="auth-brand-features">
+          <div><i class="fas fa-check"></i> Réservé à l'équipe de l'ONG Sala</div>
+          <div><i class="fas fa-check"></i> Connexion sécurisée par Firebase</div>
+          <div><i class="fas fa-check"></i> Toutes vos modifications en temps réel</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-form-panel">
+      <span class="auth-badge"><i class="fas fa-lock"></i> Accès réservé</span>
+      <h2>Connexion</h2>
+      <p>Connectez-vous avec vos identifiants administrateur.</p>
+
+      <div class="auth-alert error" id="login-error"></div>
+      <div class="auth-alert success" id="login-success"></div>
+
+      <form id="login-form" novalidate>
+        <div class="auth-field">
+          <label for="email">Adresse email</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-envelope icon-left"></i>
+            <input type="email" id="email" placeholder="admin@sala.cg" autocomplete="username" required>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label for="password">Mot de passe</label>
+          <div class="auth-input-wrap">
+            <i class="fas fa-lock icon-left"></i>
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required style="padding-right: 40px;">
+            <button type="button" class="auth-toggle-password" id="togglePassword" title="Afficher / masquer le mot de passe">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-submit" id="login-button">
+          <span id="loginButtonText">Se connecter</span>
+          <i class="fas fa-spinner fa-spin" id="loginSpinner" style="display:none;"></i>
+        </button>
+
+        <div class="auth-links">
+          <a id="reset-password-link">Mot de passe oublié ?</a>
+        </div>
+      </form>
+
+      <a href="index.html" class="auth-back-link">
+        <i class="fas fa-arrow-left"></i> Retour au site Sala
+      </a>
+    </div>
+
   </div>
-  <div class="login-right">
-    <h2>Connexion</h2>
-    <form id="login-form">
-      <div class="form-group">
-        <input type="email" id="email" placeholder="Adresse Email" required>
-      </div>
-      <div class="form-group">
-        <input type="password" id="password" placeholder="Mot de Passe" required>
-      </div>
-      <div id="login-error" style="display:none; background: #fee2e2; color: #b9050f; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: center;"></div>
-      <div id="login-success" style="display:none; background: #eaf6ed; color: #1e6b31; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 14px; text-align: center;"></div>
-      <button type="submit" class="btn-login" id="login-button">Se connecter</button>
-      <div class="loader" id="loader"></div>
-      <div class="login-links">
-        <a id="reset-password-link" style="cursor:pointer;">Mot de passe oublié ?</a>
-      </div>
-    </form>
-  </div>
-</div>
 
-<script type="module">
-  import { 
-    auth, 
-    db, 
-    doc, 
-    getDoc, 
-    signInWithEmailAndPassword, 
-    sendPasswordResetEmail, 
-    signOut 
-  } from "./js/firebase-config.js";
+  <script type="module">
+    import {
+      auth,
+      db,
+      doc,
+      getDoc,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail,
+      signOut
+    } from "./js/firebase-config.js";
 
-  const loginForm = document.getElementById("login-form");
-  const emailInput = document.getElementById("email");
-  const passwordInput = document.getElementById("password");
-  const loader = document.getElementById("loader");
-  const loginContainer = document.getElementById("login-container");
-  const errorEl = document.getElementById("login-error");
-  const successEl = document.getElementById("login-success");
-  const resetLink = document.getElementById("reset-password-link");
+    const loginForm = document.getElementById("login-form");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const loginButton = document.getElementById("login-button");
+    const loginButtonText = document.getElementById("loginButtonText");
+    const loginSpinner = document.getElementById("loginSpinner");
+    const authShell = document.getElementById("auth-shell");
+    const errorEl = document.getElementById("login-error");
+    const successEl = document.getElementById("login-success");
+    const resetLink = document.getElementById("reset-password-link");
+    const togglePasswordBtn = document.getElementById("togglePassword");
 
-  function showError(msg) {
-    if (successEl) successEl.style.display = "none";
-    if (errorEl) {
+    function showError(msg) {
+      successEl.style.display = "none";
       errorEl.textContent = msg;
       errorEl.style.display = "block";
     }
-  }
 
-  function showSuccess(msg) {
-    if (errorEl) errorEl.style.display = "none";
-    if (successEl) {
+    function showSuccess(msg) {
+      errorEl.style.display = "none";
       successEl.textContent = msg;
       successEl.style.display = "block";
     }
-  }
 
-  async function login() {
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-
-    if (!email || !password) {
-      showError("Veuillez renseigner votre email et mot de passe.");
-      return;
+    function setLoading(isLoading) {
+      loginButton.disabled = isLoading;
+      loginButtonText.style.display = isLoading ? "none" : "inline";
+      loginSpinner.style.display = isLoading ? "inline-block" : "none";
     }
 
-    try {
-      loader.style.display = "block";
-      errorEl.style.display = "none";
+    togglePasswordBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      togglePasswordBtn.innerHTML = isPassword ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+    });
 
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      const user = result.user;
+    async function login() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
 
-      const roleDocRef = doc(db, "roles", user.uid);
-      const roleDoc = await getDoc(roleDocRef);
-      const role = roleDoc.exists() ? roleDoc.data().role : "user";
-
-      if (role === "admin") {
-        showSuccess("Connexion réussie ! Redirection...");
-        loginContainer.classList.add('fade-out');
-        setTimeout(() => {
-          window.location.href = "admin.html";
-        }, 800);
-      } else {
-        showError("Accès réservé aux administrateurs de l'ONG Sala.");
-        await signOut(auth);
+      if (!email || !password) {
+        showError("Veuillez renseigner votre email et mot de passe.");
+        return;
       }
-    } catch (err) {
-      console.error("Erreur login :", err);
-      let message = "Erreur de connexion : " + err.message;
-      if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
-        message = "Identifiants invalides. Vérifiez votre adresse email et mot de passe.";
+
+      try {
+        setLoading(true);
+        errorEl.style.display = "none";
+
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        const user = result.user;
+
+        const roleDocRef = doc(db, "roles", user.uid);
+        const roleDoc = await getDoc(roleDocRef);
+        const role = roleDoc.exists() ? roleDoc.data().role : "user";
+
+        if (role === "admin") {
+          showSuccess("Connexion réussie ! Redirection...");
+          authShell.classList.add("fade-out");
+          setTimeout(() => {
+            window.location.href = "admin.html";
+          }, 500);
+        } else {
+          showError("Accès réservé aux administrateurs de l'ONG Sala.");
+          await signOut(auth);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Erreur login :", err);
+        let message = "Erreur de connexion : " + err.message;
+        if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+          message = "Identifiants invalides. Vérifiez votre adresse email et mot de passe.";
+        }
+        showError(message);
+        setLoading(false);
       }
-      showError(message);
-    } finally {
-      loader.style.display = "none";
     }
-  }
 
-  loginForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    login();
-  });
+    loginForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      login();
+    });
 
-  resetLink.addEventListener("click", async () => {
-    const email = emailInput.value.trim();
-    if (!email) {
-      showError("Veuillez entrer votre adresse email pour réinitialiser votre mot de passe.");
-      return;
-    }
-    try {
-      await sendPasswordResetEmail(auth, email);
-      showSuccess("Un email de réinitialisation vous a été envoyé à : " + email);
-    } catch (err) {
-      showError("Erreur : " + err.message);
-    }
-  });
-</script>
+    resetLink.addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+      if (!email) {
+        showError("Veuillez entrer votre adresse email pour réinitialiser votre mot de passe.");
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showSuccess("Un email de réinitialisation vous a été envoyé à : " + email);
+      } catch (err) {
+        showError("Erreur : " + err.message);
+      }
+    });
+  </script>
 
 </body>
 </html>
