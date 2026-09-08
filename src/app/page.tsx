@@ -24,7 +24,7 @@ export default function HomePage() {
         <div className="container">
           <div className="row align-items-center g-5">
             <div className="col-lg-6">
-              <span className="section-eyebrow">ONG Sala — Brazzaville &amp; Pointe-Noire</span>
+              <span className="section-eyebrow">ONG Sala — présente partout en République du Congo</span>
               <h1
                 className="hero-title fw-bold mb-3"
                 style={{ fontFamily: "var(--sala-font-display)", color: "var(--sala-text-primary)" }}
@@ -36,6 +36,9 @@ export default function HomePage() {
                 les ressources dont vous avez besoin pour décrocher un poste — entièrement gratuit.
               </p>
               <div className="d-flex flex-wrap gap-3">
+                <Link href="/onboarding" className="btn-sala-discover py-3 px-4 fw-bold">
+                  <i className="fas fa-compass me-2"></i>Découvrir Sala
+                </Link>
                 <Link href="/offres" className="btn-sala-primary py-3 px-4 fw-bold">
                   Explorer les offres <i className="fas fa-arrow-right ms-2"></i>
                 </Link>

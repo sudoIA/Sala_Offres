@@ -5,9 +5,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { baselineEvenements } from "@/lib/evenements-content";
+import { sortEventsByDate } from "@/lib/event-helpers";
 import type { EventDoc, SalaEvent } from "@/types/event";
 
 export function usePublicEvents() {
@@ -18,9 +19,17 @@ export function usePublicEvents() {
     let cancelled = false;
     (async () => {
       try {
-        const snap = await getDocs(query(collection(db, "evenements"), orderBy("date", "asc")));
+        // Pas d'orderBy() ici : Firestore exclurait silencieusement tout
+        // événement sans champ "date" (ex : créé avant la migration), ce qui
+        // ferait passer une collection non vide pour vide et basculerait à
+        // tort sur les événements de secours ci-dessous.
+        const snap = await getDocs(collection(db, "evenements"));
         if (!cancelled) {
-          setEvents(snap.empty ? baselineEvenements : snap.docs.map((d) => ({ id: d.id, ...(d.data() as EventDoc) })));
+          setEvents(
+            snap.empty
+              ? baselineEvenements
+              : sortEventsByDate(snap.docs.map((d) => ({ id: d.id, ...(d.data() as EventDoc) })))
+          );
         }
       } catch (err) {
         console.warn("Firestore collection 'evenements' non disponible, utilisation des événements de base Sala :", err);

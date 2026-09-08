@@ -1,13 +1,22 @@
 rules_version = '2';
 
-// L'application n'utilise pas encore Firebase Storage (les photos passent par
-// une simple URL saisie par l'utilisateur, pas par un upload). On verrouille
-// quand même l'espace de stockage par précaution, pour qu'il ne serve pas de
-// dépôt de fichiers ouvert si quelqu'un pointe directement dessus.
+// Le site Next.js n'uploade rien lui-même vers Firebase Storage, mais
+// l'application mobile Android du même projet Firebase (voir l'appId dans
+// src/lib/firebase.ts) y héberge des images affichées publiquement (ex :
+// logos, visuels) — un verrouillage total en lecture les rend invisibles
+// partout, y compris sur mobile. On rouvre donc la lecture au public, tout
+// en réservant l'écriture à l'équipe admin (même logique que Firestore).
 service firebase.storage {
   match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null &&
+        firestore.exists(/databases/(default)/documents/roles/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/roles/$(request.auth.uid)).data.role == 'admin';
+    }
+
     match /{allPaths=**} {
-      allow read, write: if false;
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

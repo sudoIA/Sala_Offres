@@ -4,8 +4,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { sortEventsByDate } from "@/lib/event-helpers";
 import type { EventDoc, SalaEvent } from "@/types/event";
 
 export function useEvents() {
@@ -13,11 +14,14 @@ export function useEvents() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const q = query(collection(db, "evenements"), orderBy("isoDate", "asc"));
+    // Pas d'orderBy() ici : Firestore exclurait silencieusement tout
+    // événement sans champ "isoDate" (ex : créé avant la migration). Le tri
+    // se fait donc côté client, en tolérant les événements sans date.
     const unsubscribe = onSnapshot(
-      q,
+      collection(db, "evenements"),
       (snapshot) => {
-        setEvents(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as EventDoc) })));
+        const events = snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as EventDoc) }));
+        setEvents(sortEventsByDate(events));
         setLoading(false);
       },
       (err) => {
