@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// L'application n'utilise pas encore Firebase Storage (les photos passent par
+// une simple URL saisie par l'utilisateur, pas par un upload). On verrouille
+// quand même l'espace de stockage par précaution, pour qu'il ne serve pas de
+// dépôt de fichiers ouvert si quelqu'un pointe directement dessus.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

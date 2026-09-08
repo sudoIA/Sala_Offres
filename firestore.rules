@@ -1,0 +1,103 @@
+rules_version = '2';
+
+// Règles de sécurité Firestore pour Sala.
+//
+// Principe : le contenu public du site (offres, événements, législation,
+// annuaires, réglages) reste lisible par tout le monde comme avant, mais
+// seule l'équipe admin (via la collection "roles") peut désormais le
+// modifier directement dans la base — jusqu'ici ce contrôle n'existait que
+// côté interface (React), donc contournable par n'importe qui appelant
+// l'API Firestore directement.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // get()/exists() ici ne redéclenchent pas l'évaluation des règles sur
+    // "roles" : c'est le mécanisme standard pour un contrôle de rôle basé
+    // sur un document (à défaut de custom claims Firebase Auth).
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/roles/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // --- Contenu public géré depuis le back-office ---
+    match /emplois/{jobId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /evenements/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /legislation/{ficheId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /universites/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /entreprises/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /clubs_anglais/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // --- Inscriptions aux événements ---
+    // Formulaire public (pas de compte requis) : on autorise la création
+    // d'une inscription avec un schéma restreint, mais seule l'équipe admin
+    // peut consulter ou gérer la liste des inscrits (données personnelles).
+    match /inscriptions_evenements/{regId} {
+      allow create: if request.resource.data.keys().hasOnly(
+          ['eventId', 'eventTitle', 'name', 'email', 'phone', 'registeredAt']
+        ) &&
+        request.resource.data.eventId is string &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() > 0;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // --- Profils candidats ---
+    // Chacun ne lit/écrit que son propre profil et ses propres CV ; l'admin
+    // peut lister tous les profils (page "Utilisateurs" du back-office).
+    match /users/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+      allow read: if isAdmin();
+
+      match /cvs/{cvId} {
+        allow read, write: if isSignedIn() && request.auth.uid == uid;
+      }
+    }
+
+    // --- Rôles admin ---
+    // Chacun peut savoir s'il est admin lui-même ; seule l'équipe admin peut
+    // lister tous les rôles ou en attribuer/retirer.
+    match /roles/{uid} {
+      allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+      allow list: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Tout le reste est refusé par défaut.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
