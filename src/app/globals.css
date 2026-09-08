@@ -2946,6 +2946,30 @@ body.dashboard-body {
   min-height: 0;
 }
 
+/* Aperçu du CV : la feuille (#cv-pdf-render) a une largeur A4 fixe, requise
+   pour l'export PDF. Sur les écrans plus étroits que cette largeur, on la
+   réduit visuellement (transform: scale, calculé en JS) au lieu de la
+   laisser déborder ou se comprimer. */
+.cv-preview-scale-wrap {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.cv-preview-scale-inner {
+  display: inline-block;
+  transform-origin: top left;
+}
+
+.cv-preview-scale-wrap.pdf-exporting-wrap {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.cv-preview-scale-wrap.pdf-exporting-wrap .cv-preview-scale-inner {
+  transform: none !important;
+}
+
 .cv-pdf-header {
   border-bottom: 2.5px solid #334155;
   padding-bottom: 18px;

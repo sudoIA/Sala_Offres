@@ -4,7 +4,7 @@
 
 "use client";
 
-import { type RefObject, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import type { CvState, CvTemplate } from "@/types/cv";
 import { CvCompletenessBox } from "@/components/cv/CvCompletenessBox";
 import { CvRenderRoot } from "@/components/cv/CvRenderRoot";
@@ -26,12 +26,46 @@ interface Step7Props {
 export function Step7Preview({ cv, onTemplateChange, renderRef, onDownloadPdf, onSaveOnline }: Step7Props) {
   const [downloading, setDownloading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const scaleWrapRef = useRef<HTMLDivElement>(null);
+  const [previewScale, setPreviewScale] = useState(1);
+  const [previewHeight, setPreviewHeight] = useState<number>();
+
+  // La feuille de CV a une largeur physique fixe (format A4, requis pour
+  // l'export PDF). Sur mobile, cette largeur dépasse celle de l'écran : on la
+  // réduit visuellement (transform: scale) sans toucher à sa taille réelle,
+  // et on ajuste la hauteur du conteneur en conséquence pour ne pas laisser
+  // de vide ni couper l'aperçu.
+  useEffect(() => {
+    const wrap = scaleWrapRef.current;
+    const renderEl = renderRef.current;
+    if (!wrap || !renderEl) return;
+
+    function update() {
+      if (!wrap || !renderEl) return;
+      const available = wrap.clientWidth;
+      const natural = renderEl.offsetWidth;
+      if (!available || !natural) return;
+      const nextScale = available < natural ? available / natural : 1;
+      setPreviewScale(nextScale);
+      setPreviewHeight(renderEl.offsetHeight * nextScale);
+    }
+
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(wrap);
+    ro.observe(renderEl);
+    return () => ro.disconnect();
+  }, [renderRef]);
 
   async function handleDownload() {
     setDownloading(true);
+    // Le PDF doit être capturé à la taille réelle, sans la réduction visuelle
+    // appliquée pour l'aperçu mobile.
+    scaleWrapRef.current?.classList.add("pdf-exporting-wrap");
     try {
       await onDownloadPdf();
     } finally {
+      scaleWrapRef.current?.classList.remove("pdf-exporting-wrap");
       setDownloading(false);
     }
   }
@@ -120,7 +154,11 @@ export function Step7Preview({ cv, onTemplateChange, renderRef, onDownloadPdf, o
         </div>
       </div>
 
-      <CvRenderRoot data={cv} ref={renderRef} />
+      <div className="cv-preview-scale-wrap" ref={scaleWrapRef} style={{ height: previewHeight }}>
+        <div className="cv-preview-scale-inner" style={{ transform: `scale(${previewScale})` }}>
+          <CvRenderRoot data={cv} ref={renderRef} />
+        </div>
+      </div>
     </div>
   );
 }
