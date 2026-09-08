@@ -343,6 +343,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   color: var(--sala-green-dark);
   font-size: 0.92rem;
+  text-transform: uppercase;
 }
 
 .sala-job-card-meta {
@@ -650,6 +651,19 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
 }
 
+.sala-company-tile-logo {
+  background: #ffffff;
+  border: 1px solid var(--sala-border);
+  padding: 4px;
+  overflow: hidden;
+}
+
+.sala-company-tile-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .sala-company-tile-lg {
   width: 52px;
   height: 52px;
@@ -864,6 +878,12 @@ h1, h2, h3, h4, h5, h6 {
   padding: 5px 12px;
   border-radius: var(--sala-radius-full);
   margin-bottom: 12px;
+}
+
+/* Bandeau du hero d'accueil : garde la casse d'origine ("ONG Sala"), pas de majuscules forcées. */
+.section-eyebrow-normal-case {
+  text-transform: none;
+  letter-spacing: 0.02em;
 }
 
 footer.sala-footer {
@@ -2430,6 +2450,27 @@ body.dashboard-body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 16px;
+}
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.admin-pagination-info {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sala-text-secondary);
+  min-width: 90px;
+  text-align: center;
+}
+
+.admin-pagination .btn-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .admin-card {

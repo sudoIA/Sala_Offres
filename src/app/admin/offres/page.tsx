@@ -8,8 +8,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAdminJobs } from "@/hooks/useAdminJobs";
+import { usePagination } from "@/hooks/usePagination";
 import { CompanyTile } from "@/components/CompanyTile";
 import { JobFormModal } from "@/components/admin/JobFormModal";
+import { Pagination } from "@/components/admin/Pagination";
 import { confirmDelete, notify } from "@/lib/notify";
 import type { Job } from "@/types/job";
 
@@ -33,6 +35,7 @@ export default function AdminJobsPage() {
   const filtered = jobs.filter(
     (job) => !term || [job.title, job.company, job.city].some((v) => (v || "").toLowerCase().includes(term))
   );
+  const { pageItems, page, totalPages, setPage } = usePagination(filtered, term);
 
   async function toggleVisibility(job: Job, visible: boolean) {
     try {
@@ -100,7 +103,7 @@ export default function AdminJobsPage() {
         )}
 
         {!loading &&
-          filtered.map((job) => {
+          pageItems.map((job) => {
             const deadline = job.deadlineDate ? job.deadlineDate.toLocaleDateString("fr-FR") : "Sans échéance";
             return (
               <div className="admin-card" key={job.id}>
@@ -148,6 +151,8 @@ export default function AdminJobsPage() {
             );
           })}
       </div>
+
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
 
       <JobFormModal open={modalOpen} job={editingJob} onClose={() => setModalOpen(false)} />
     </section>

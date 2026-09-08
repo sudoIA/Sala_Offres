@@ -13,6 +13,7 @@ import { JobCard } from "@/components/JobCard";
 import { JobDetailContent } from "@/components/JobDetailContent";
 import { FavShareButtons } from "@/components/FavShareButtons";
 import { useActiveJobs } from "@/hooks/useJobs";
+import { useCompanyLogos } from "@/hooks/useCompanyLogos";
 import type { Job } from "@/types/job";
 
 type FilterType = "all" | "city" | "contract";
@@ -59,6 +60,8 @@ export default function OffresPage() {
       setHasAutoSelected(true);
     }
   }, [filtered, hasAutoSelected]);
+
+  const logos = useCompanyLogos(filtered.map((j) => j.company));
 
   function resetFilters() {
     setSearchTerm("");
@@ -162,6 +165,7 @@ export default function OffresPage() {
                     interactive
                     active={selectedJob?.id === job.id}
                     onSelect={setSelectedJob}
+                    logoUrl={job.company ? logos[job.company] : null}
                   />
                 ))}
             </div>

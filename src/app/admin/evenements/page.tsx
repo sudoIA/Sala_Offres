@@ -8,9 +8,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useEvents } from "@/hooks/useEvents";
+import { usePagination } from "@/hooks/usePagination";
 import { CompanyTile } from "@/components/CompanyTile";
 import { EventFormModal } from "@/components/admin/EventFormModal";
 import { RegistrationsModal } from "@/components/admin/RegistrationsModal";
+import { Pagination } from "@/components/admin/Pagination";
 import { confirmDelete, notify } from "@/lib/notify";
 import type { SalaEvent } from "@/types/event";
 
@@ -35,6 +37,7 @@ export default function AdminEventsPage() {
   const filtered = events.filter(
     (evt) => !term || [evt.title, evt.host, evt.city].some((v) => (v || "").toLowerCase().includes(term))
   );
+  const { pageItems, page, totalPages, setPage } = usePagination(filtered, term);
 
   async function handleDelete(evt: SalaEvent) {
     if (await confirmDelete(evt.title || "cet événement")) {
@@ -93,7 +96,7 @@ export default function AdminEventsPage() {
         )}
 
         {!loading &&
-          filtered.map((evt) => (
+          pageItems.map((evt) => (
             <div className="admin-card" key={evt.id}>
               <div className="admin-card-top">
                 <div className="admin-row-identity">
@@ -141,6 +144,8 @@ export default function AdminEventsPage() {
             </div>
           ))}
       </div>
+
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
 
       <EventFormModal open={modalOpen} event={editingEvent} onClose={() => setModalOpen(false)} />
       <RegistrationsModal

@@ -8,8 +8,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAnnuaire } from "@/hooks/useAnnuaire";
+import { usePagination } from "@/hooks/usePagination";
 import { CompanyTile } from "@/components/CompanyTile";
 import { AnnuaireFormModal } from "@/components/admin/AnnuaireFormModal";
+import { Pagination } from "@/components/admin/Pagination";
 import { confirmDelete, notify } from "@/lib/notify";
 import { ANNUAIRE_COLLECTIONS, type AnnuaireCategory, type AnnuaireItem } from "@/types/annuaire";
 
@@ -69,6 +71,7 @@ export default function AdminAnnuairesPage() {
 
   const term = search.trim().toLowerCase();
   const filtered = items.filter((item) => !term || [item.name, item.city].some((v) => (v || "").toLowerCase().includes(term)));
+  const { pageItems, page, totalPages, setPage } = usePagination(filtered, `${category}|${term}`);
 
   async function handleDelete(item: AnnuaireItem) {
     if (await confirmDelete(item.name || "cette fiche")) {
@@ -142,7 +145,7 @@ export default function AdminAnnuairesPage() {
         )}
 
         {!loading &&
-          filtered.map((item) => (
+          pageItems.map((item) => (
             <div className="admin-card" key={item.id}>
               <div className="admin-card-top">
                 <div className="admin-row-identity">
@@ -172,6 +175,8 @@ export default function AdminAnnuairesPage() {
             </div>
           ))}
       </div>
+
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
 
       <AnnuaireFormModal open={modalOpen} category={category} item={editingItem} onClose={() => setModalOpen(false)} />
     </section>

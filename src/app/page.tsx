@@ -11,10 +11,12 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { FabCv } from "@/components/layout/FabCv";
 import { JobCard } from "@/components/JobCard";
 import { useActiveJobs } from "@/hooks/useJobs";
+import { useCompanyLogos } from "@/hooks/useCompanyLogos";
 
 export default function HomePage() {
   const { jobs, loading, error } = useActiveJobs();
   const latestJobs = jobs.slice(0, 5);
+  const logos = useCompanyLogos(latestJobs.map((j) => j.company));
 
   return (
     <>
@@ -24,12 +26,12 @@ export default function HomePage() {
         <div className="container">
           <div className="row align-items-center g-5">
             <div className="col-lg-6">
-              <span className="section-eyebrow">ONG Sala — présente partout en République du Congo</span>
+              <span className="section-eyebrow section-eyebrow-normal-case">ONG SALA - Partout en République du Congo</span>
               <h1
                 className="hero-title fw-bold mb-3"
                 style={{ fontFamily: "var(--sala-font-display)", color: "var(--sala-text-primary)" }}
               >
-                L&apos;emploi des jeunes au Congo, plus simple et plus juste.
+                SALA, Mosala na Tshombo
               </h1>
               <p className="text-secondary mb-4" style={{ fontSize: "1.05rem", maxWidth: 480 }}>
                 Sala rassemble les offres d&apos;emploi et de stage, un générateur de CV professionnel et
@@ -193,7 +195,9 @@ export default function HomePage() {
 
             {!loading &&
               !error &&
-              latestJobs.map((job) => <JobCard key={job.id} job={job} />)}
+              latestJobs.map((job) => (
+                <JobCard key={job.id} job={job} logoUrl={job.company ? logos[job.company] : null} />
+              ))}
           </div>
 
           <div className="text-center mt-5">

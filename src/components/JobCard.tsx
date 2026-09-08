@@ -18,9 +18,10 @@ interface JobCardProps {
   /** Affiche les actions favori/partage et gère la sélection bureau (page /offres). */
   interactive?: boolean;
   onSelect?: (job: Job) => void;
+  logoUrl?: string | null;
 }
 
-export function JobCard({ job, active = false, interactive = false, onSelect }: JobCardProps) {
+export function JobCard({ job, active = false, interactive = false, onSelect, logoUrl }: JobCardProps) {
   const [fav, setFav] = useState(false);
   useEffect(() => {
     if (interactive) setFav(isFavori(job.id));
@@ -50,7 +51,7 @@ export function JobCard({ job, active = false, interactive = false, onSelect }: 
     >
       <div className="d-flex justify-content-between align-items-start gap-2">
         <Link href={href} className="d-flex gap-2 flex-grow-1 sala-card-link" onClick={handleClick}>
-          <CompanyTile company={job.company} />
+          <CompanyTile company={job.company} logoUrl={logoUrl} />
           <div>
             <div className="sala-job-card-title" dangerouslySetInnerHTML={{ __html: safeTitle }} />
             <div className="sala-job-card-company mb-1" dangerouslySetInnerHTML={{ __html: safeCompany }} />

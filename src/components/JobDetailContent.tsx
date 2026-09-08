@@ -10,12 +10,15 @@ import { useState } from "react";
 import DOMPurify from "isomorphic-dompurify";
 import { CompanyTile } from "@/components/CompanyTile";
 import { CountdownGrid } from "@/components/CountdownGrid";
+import { useCompanyLogos } from "@/hooks/useCompanyLogos";
 import type { Job } from "@/types/job";
 
 type TabKey = "description" | "competences" | "entreprise";
 
 export function JobDetailContent({ job }: { job: Job }) {
   const [activeTab, setActiveTab] = useState<TabKey>("description");
+  const logos = useCompanyLogos([job.company]);
+  const logoUrl = job.company ? logos[job.company] : null;
 
   const safeTitle = DOMPurify.sanitize(job.title || "Offre d'emploi");
   const safeCompany = DOMPurify.sanitize(job.company || "Entreprise au Congo");
@@ -32,10 +35,10 @@ export function JobDetailContent({ job }: { job: Job }) {
   return (
     <>
       <div className="d-flex gap-3 mb-3">
-        <CompanyTile company={job.company} large />
+        <CompanyTile company={job.company} large logoUrl={logoUrl} />
         <div>
           <h2 className="h5 fw-bold mb-1" dangerouslySetInnerHTML={{ __html: safeTitle }} />
-          <div className="fw-bold" style={{ color: "var(--sala-green-dark)", fontSize: "0.9rem" }} dangerouslySetInnerHTML={{ __html: safeCompany }} />
+          <div className="fw-bold" style={{ color: "var(--sala-green-dark)", fontSize: "0.9rem", textTransform: "uppercase" }} dangerouslySetInnerHTML={{ __html: safeCompany }} />
           <div className="d-flex align-items-center gap-2 mt-2 flex-wrap">
             <span className="small text-muted">
               <i className="fas fa-map-marker-alt me-1"></i>
@@ -107,7 +110,7 @@ export function JobDetailContent({ job }: { job: Job }) {
 
       {activeTab === "entreprise" && (
         <div className="tab-pane">
-          <div className="fw-bold mb-2" dangerouslySetInnerHTML={{ __html: safeCompany }} />
+          <div className="fw-bold mb-2" style={{ textTransform: "uppercase" }} dangerouslySetInnerHTML={{ __html: safeCompany }} />
           {job.city && (
             <div className="mb-2">
               <i className="fas fa-map-marker-alt text-success me-2"></i>

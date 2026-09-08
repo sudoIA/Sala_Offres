@@ -2,6 +2,18 @@
 // Petits utilitaires partagés entre les pages Offres : pastilles colorées
 // d'entreprise, compte à rebours d'expiration, favoris locaux (localStorage).
 
+import { findStorageFileUrl } from "@/lib/storage-lookup";
+
+/**
+ * Cherche le logo d'une entreprise dans le dossier Storage "entreprises/"
+ * (partagé avec l'annuaire des entreprises) à partir de son nom. Renvoie
+ * null si aucun fichier ne correspond — CompanyTile affiche alors ses
+ * initiales comme avant.
+ */
+export function resolveCompanyLogoUrl(company?: string | null): Promise<string | null> {
+  return findStorageFileUrl("entreprises", company, { bidirectional: true });
+}
+
 const TILE_PALETTES = [
   { bg: "#e0f2fe", color: "#0284c7" }, // bleu
   { bg: "#fefce8", color: "#b45309" }, // ambre
