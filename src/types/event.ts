@@ -8,7 +8,8 @@ import type { Timestamp } from "firebase/firestore";
 
 export interface EventDoc {
   title?: string;
-  body?: string; // description (peut contenir des balises HTML simples : <b>, <br>...)
+  resume?: string; // court résumé en texte brut, affiché sur la carte de la liste
+  body?: string; // description complète (peut contenir des balises HTML simples : <b>, <br>...), affichée au clic
   host?: string; // organisateur
   city?: string;
   site?: string; // lien externe pour en savoir plus / s'inscrire (ex : groupe WhatsApp)

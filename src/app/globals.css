@@ -1055,6 +1055,16 @@ footer.sala-footer .footer-bottom {
   display: block;
 }
 
+/* Fenêtre de détail : l'affiche complète, jamais recadrée. */
+.event-poster-full {
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  border-radius: 12px;
+  background: var(--sala-bg);
+  display: block;
+}
+
 .event-body-clamp {
   display: -webkit-box;
   -webkit-line-clamp: 4;

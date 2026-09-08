@@ -58,6 +58,21 @@ export function sortEventsByDate(events: SalaEvent[]): SalaEvent[] {
   });
 }
 
+/**
+ * Résumé à afficher sur la carte de la liste : le champ "resume" s'il a été
+ * renseigné, sinon un repli en texte brut (balises HTML retirées) tronqué
+ * proprement — jamais le HTML de "body" coupé à mi-balise, qui rendait
+ * l'affichage sale.
+ */
+export function eventCardSummary(evt: Pick<SalaEvent, "resume" | "body">, max = 160): string {
+  const resume = (evt.resume || "").trim();
+  if (resume) return resume;
+
+  const plain = (evt.body || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (!plain) return "";
+  return plain.length > max ? `${plain.slice(0, max).trimEnd()}…` : plain;
+}
+
 /** Construit un objet SalaEvent à partir d'un document Firestore brut. */
 export function toSalaEvent(id: string, data: EventDoc): SalaEvent {
   return {

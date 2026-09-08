@@ -2,7 +2,8 @@
 // Formulaire de création/édition d'un événement (collection Firestore
 // "events", partagée avec l'app mobile — les noms de champs ci-dessous
 // reprennent exactement les siens : title, body, host, city, site, image,
-// deadline, deadline2, visibility).
+// deadline, deadline2, visibility. "resume" est propre au site web (aperçu
+// sur la carte de la liste, distinct de la description complète "body").
 
 "use client";
 
@@ -23,6 +24,7 @@ const EMPTY_FORM = {
   title: "",
   host: "",
   city: "",
+  resume: "",
   body: "",
   site: "",
   image: "",
@@ -48,6 +50,7 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
       title: event?.title || "",
       host: event?.host || "",
       city: event?.city || "",
+      resume: event?.resume || "",
       body: event?.body || "",
       site: event?.site || "",
       image: event?.image || "",
@@ -69,6 +72,7 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
       title: form.title.trim(),
       host: form.host.trim(),
       city: form.city.trim(),
+      resume: form.resume.trim(),
       body: form.body.trim(),
       site: form.site.trim(),
       image: form.image.trim(),
@@ -124,12 +128,28 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
             <input id="eventSite" type="url" placeholder="https://..." value={form.site} onChange={(e) => set("site", e.target.value)} />
           </div>
           <div className="form-group">
-            <label htmlFor="eventImage">Image (URL, optionnel)</label>
-            <input id="eventImage" type="url" placeholder="https://..." value={form.image} onChange={(e) => set("image", e.target.value)} />
+            <label htmlFor="eventImage">Image (nom de fichier ou URL, optionnel)</label>
+            <input
+              id="eventImage"
+              type="text"
+              placeholder="Ex: eco, ou https://..."
+              value={form.image}
+              onChange={(e) => set("image", e.target.value)}
+            />
           </div>
         </div>
         <div className="form-group full-width">
-          <label htmlFor="eventBody">Description</label>
+          <label htmlFor="eventResume">Résumé (affiché sur la carte)</label>
+          <textarea
+            id="eventResume"
+            rows={2}
+            placeholder="2-3 lignes maximum, pour l'aperçu dans la liste des événements."
+            value={form.resume}
+            onChange={(e) => set("resume", e.target.value)}
+          />
+        </div>
+        <div className="form-group full-width">
+          <label htmlFor="eventBody">Description complète (affichée quand on ouvre l&apos;événement)</label>
           <textarea id="eventBody" rows={5} value={form.body} onChange={(e) => set("body", e.target.value)} required />
         </div>
         <div className="visibility-toggle mb-3">

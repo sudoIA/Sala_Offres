@@ -16,6 +16,7 @@ import { FabCv } from "@/components/layout/FabCv";
 import { Modal } from "@/components/Modal";
 import { usePublicEvents } from "@/hooks/usePublicEvents";
 import { useEventImages } from "@/hooks/useEventImages";
+import { eventCardSummary } from "@/lib/event-helpers";
 import type { SalaEvent } from "@/types/event";
 
 function escapeIcsText(text: string): string {
@@ -81,7 +82,7 @@ export default function EvenementsPage() {
     const term = search.trim().toLowerCase();
     return events.filter((evt) => {
       const matchCity = city === "all" || (evt.city && evt.city.toLowerCase() === city.toLowerCase());
-      const matchSearch = !term || `${evt.title} ${evt.body} ${evt.host}`.toLowerCase().includes(term);
+      const matchSearch = !term || `${evt.title} ${evt.resume} ${evt.body} ${evt.host}`.toLowerCase().includes(term);
       return matchCity && matchSearch;
     });
   }, [events, search, city]);
@@ -185,7 +186,7 @@ export default function EvenementsPage() {
                   const month = evt.deadlineDate
                     ? evt.deadlineDate.toLocaleDateString("fr-FR", { month: "short" }).toUpperCase()
                     : "DATE";
-                  const safeBody = DOMPurify.sanitize(evt.body || "");
+                  const summary = eventCardSummary(evt);
                   const imageUrl = imageUrls[evt.id];
                   return (
                     <div className="col-md-6 col-lg-6" key={evt.id}>
@@ -222,21 +223,8 @@ export default function EvenementsPage() {
                           )}
                         </div>
 
-                        <div
-                          className="text-secondary small mb-3 flex-grow-1 event-body-clamp"
-                          dangerouslySetInnerHTML={{ __html: safeBody }}
-                        />
-
-                        {evt.site && (
-                          <a
-                            href={evt.site}
-                            target="_blank"
-                            rel="noopener"
-                            className="small mb-3 d-inline-block"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <i className="fas fa-link me-1"></i>Plus d&apos;infos
-                          </a>
+                        {summary && (
+                          <p className="text-secondary small mb-3 flex-grow-1 event-body-clamp">{summary}</p>
                         )}
 
                         <div className="pt-3 border-top d-flex gap-2 justify-content-between align-items-center mt-auto">
@@ -270,7 +258,7 @@ export default function EvenementsPage() {
               <img
                 src={imageUrls[registerTarget.id]}
                 alt={registerTarget.title || "Affiche de l'événement"}
-                className="event-poster mb-3"
+                className="event-poster-full mb-3"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
                 }}
@@ -296,12 +284,6 @@ export default function EvenementsPage() {
                 style={{ color: "var(--sala-text-secondary)", lineHeight: 1.6 }}
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(registerTarget.body) }}
               />
-            )}
-
-            {registerTarget.site && (
-              <a href={registerTarget.site} target="_blank" rel="noopener" className="small mb-3 d-inline-block">
-                <i className="fas fa-link me-1"></i>Plus d&apos;infos
-              </a>
             )}
 
             <a
