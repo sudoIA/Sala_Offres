@@ -6,6 +6,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { QUIZ_QUESTIONS, type QuizOption } from "@/lib/entretiens-content";
+import { Confetti } from "@/components/Confetti";
 
 type Phase = "intro" | "play" | "result";
 
@@ -95,19 +96,23 @@ export function InterviewQuiz() {
     );
   }
 
+  const percent = score / QUIZ_QUESTIONS.length;
   const icon =
-    score >= 4 ? { i: "fa-trophy text-warning", title: "Excellent ! Vous êtes fin prêt(e)", msg: "Vous maîtrisez parfaitement la posture et les réponses attendues par les recruteurs congolais. Vous avez toutes les chances de réussir votre prochain entretien !" }
-    : score === 3 ? { i: "fa-thumbs-up text-success", title: "Bon niveau, quelques détails à peaufiner", msg: "Vous avez de bons réflexes professionnels. Relisez le guide des questions pour sécuriser les points où vous avez hésité." }
+    percent >= 0.8 ? { i: "fa-trophy text-warning", title: "Excellent ! Vous êtes fin prêt(e)", msg: "Vous maîtrisez parfaitement la posture et les réponses attendues par les recruteurs congolais. Vous avez toutes les chances de réussir votre prochain entretien !" }
+    : percent >= 0.6 ? { i: "fa-thumbs-up text-success", title: "Bon niveau, quelques détails à peaufiner", msg: "Vous avez de bons réflexes professionnels. Relisez le guide des questions pour sécuriser les points où vous avez hésité." }
     : { i: "fa-book-reader text-primary", title: "Prenez le temps d'étudier le guide", msg: "L'entretien d'embauche obéit à des codes stricts. Consultez attentivement nos fiches de conseils ci-dessus pour vous entraîner à nouveau." };
 
   return (
     <div className="interview-card p-5 text-center">
+      {percent >= 0.8 && <Confetti />}
       <i className={`fas ${icon.i} fa-4x mb-3`}></i>
       <h3 className="fw-bold mb-2">{icon.title}</h3>
       <p className="text-muted mb-4">{icon.msg}</p>
       <div className="h2 fw-bold text-success mb-4">{score} / {QUIZ_QUESTIONS.length}</div>
-      <button className="btn-sala-outline rounded-pill px-4 me-2" onClick={() => setPhase("intro")}>Recommencer</button>
-      <Link href="/offres" className="btn-sala-primary rounded-pill px-4">Postuler à une offre</Link>
+      <div className="d-flex flex-wrap justify-content-center gap-3">
+        <button className="btn-sala-outline rounded-pill px-4" onClick={() => setPhase("intro")}>Recommencer</button>
+        <Link href="/offres" className="btn-sala-primary rounded-pill px-4">Postuler à une offre</Link>
+      </div>
     </div>
   );
 }

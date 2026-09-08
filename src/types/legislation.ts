@@ -2,7 +2,15 @@
 // Fiches thématiques du Droit du Travail (collection Firestore "legislation"),
 // affichées sur la page publique /legislation.
 
-export type LegislationTopic = "contrat" | "salaire" | "horaires" | "conges" | "rupture";
+export type LegislationTopic =
+  | "contrat"
+  | "salaire"
+  | "horaires"
+  | "conges"
+  | "rupture"
+  | "hygiene"
+  | "representation"
+  | "conflits";
 
 export const TOPIC_LABELS: Record<LegislationTopic, string> = {
   contrat: "Contrat de Travail",
@@ -10,6 +18,9 @@ export const TOPIC_LABELS: Record<LegislationTopic, string> = {
   horaires: "Temps de Travail",
   conges: "Congés & Repos",
   rupture: "Fin de Contrat",
+  hygiene: "Hygiène & Sécurité",
+  representation: "Représentation & Syndicats",
+  conflits: "Règlement des Conflits",
 };
 
 export interface LegislationDoc {
@@ -22,6 +33,9 @@ export interface LegislationDoc {
   bodyHtml?: string;
   faqQuestion?: string;
   faqAnswer?: string;
+  /** Lien vers le texte de loi source, quand disponible. */
+  sourceUrl?: string;
+  sourceLabel?: string;
 }
 
 export interface LegislationFiche extends LegislationDoc {

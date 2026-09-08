@@ -31,6 +31,16 @@ export function LegislationCard({ fiche }: { fiche: LegislationFiche }) {
           {faqOpen && <div className="faq-a">{fiche.faqAnswer || ""}</div>}
         </div>
       )}
+
+      {fiche.sourceUrl && (
+        <p className="text-muted small mt-3 mb-0">
+          <i className="fas fa-link me-1"></i>
+          Source :{" "}
+          <a href={fiche.sourceUrl} target="_blank" rel="noopener">
+            {fiche.sourceLabel || fiche.sourceUrl}
+          </a>
+        </p>
+      )}
     </div>
   );
 }

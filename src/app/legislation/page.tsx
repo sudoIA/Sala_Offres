@@ -13,7 +13,17 @@ import { LegislationCard } from "@/components/LegislationCard";
 import { usePublicLegislation } from "@/hooks/usePublicLegislation";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
-type TopicFilter = "all" | "contrat" | "salaire" | "horaires" | "conges" | "rupture" | "organismes";
+type TopicFilter =
+  | "all"
+  | "contrat"
+  | "salaire"
+  | "horaires"
+  | "conges"
+  | "rupture"
+  | "hygiene"
+  | "representation"
+  | "conflits"
+  | "organismes";
 
 const TOPIC_FILTERS: { key: TopicFilter; icon: string; label: string }[] = [
   { key: "all", icon: "fas fa-list-ul", label: "Tous les thèmes" },
@@ -22,6 +32,9 @@ const TOPIC_FILTERS: { key: TopicFilter; icon: string; label: string }[] = [
   { key: "horaires", icon: "fas fa-clock", label: "Horaires & Heures sup" },
   { key: "conges", icon: "fas fa-umbrella-beach", label: "Congés & Maternité" },
   { key: "rupture", icon: "fas fa-door-open", label: "Rupture & Préavis" },
+  { key: "hygiene", icon: "fas fa-hard-hat", label: "Hygiène & Sécurité" },
+  { key: "representation", icon: "fas fa-users", label: "Délégués & Syndicats" },
+  { key: "conflits", icon: "fas fa-gavel", label: "Conflits & Tribunal" },
   { key: "organismes", icon: "fas fa-landmark", label: "ACPE, CNSS & DGT" },
 ];
 
@@ -119,15 +132,24 @@ export default function LegislationPage() {
                       <span className="badge bg-light text-secondary border">Protection &amp; Recours</span>
                     </div>
                     <h4 className="fw-bold mb-2">ACPE, CNSS &amp; Inspection du Travail</h4>
-                    <p className="text-secondary small">Trois institutions congolaises clés accompagnent et protègent les jeunes travailleurs.</p>
+                    <p className="text-secondary small">Institutions congolaises clés qui accompagnent et protègent les jeunes travailleurs.</p>
 
                     <div className="p-3 bg-light rounded-3 mb-2 border">
                       <div className="d-flex align-items-center gap-2 mb-1">
                         <span className="badge bg-success">ACPE</span>
                         <strong className="small">Agence Congolaise Pour l&apos;Emploi (ex-ONEMO)</strong>
                       </div>
-                      <p className="small text-muted mb-0">
+                      <p className="small text-muted mb-1">
                         Enregistre les demandeurs d&apos;emploi, vise les contrats d&apos;apprentissage et centralise les offres d&apos;entreprises.
+                      </p>
+                      <p className="small text-muted mb-0">
+                        <i className="fas fa-map-marker-alt me-1"></i> Avenue Edith Lucie Bongo Ondimba, Zone Industrielle de Mpila, Brazzaville
+                        <br />
+                        <i className="fas fa-envelope me-1"></i> contact@acpe.cg
+                        {" — "}
+                        <a href="https://www.acpe.cg" target="_blank" rel="noopener">
+                          www.acpe.cg
+                        </a>
                       </p>
                     </div>
 
@@ -136,19 +158,37 @@ export default function LegislationPage() {
                         <span className="badge bg-primary">CNSS</span>
                         <strong className="small">Caisse Nationale de Sécurité Sociale</strong>
                       </div>
-                      <p className="small text-muted mb-0">
+                      <p className="small text-muted mb-1">
                         Assure la couverture sociale : retraite, allocations familiales, couverture des accidents du travail et maladies professionnelles.
+                      </p>
+                      <p className="small text-muted mb-0">
+                        <i className="fas fa-map-marker-alt me-1"></i> Bd Denis Sassou Nguesso, Rond-point de la Gare, Brazzaville
+                        <br />
+                        <i className="fas fa-phone me-1"></i> +242 06 719 62 62 — <i className="fas fa-envelope me-1"></i> infos@cnss.cg
+                        {" — "}
+                        <a href="https://www.cnss.cg" target="_blank" rel="noopener">
+                          www.cnss.cg
+                        </a>
                       </p>
                     </div>
 
                     <div className="p-3 bg-light rounded-3 border">
                       <div className="d-flex align-items-center gap-2 mb-1">
                         <span className="badge bg-danger">DGT / Inspection</span>
-                        <strong className="small">Inspection du Travail du Congo</strong>
+                        <strong className="small">Inspection du Travail (Ministère de la Fonction Publique, du Travail et de la Sécurité Sociale)</strong>
                       </div>
-                      <p className="small text-muted mb-0">
+                      <p className="small text-muted mb-1">
                         En cas de conflit avec votre employeur, saisissez gratuitement l&apos;Inspection du Travail de votre
                         arrondissement (Brazzaville ou Pointe-Noire) pour une tentative de <strong>conciliation amiable obligatoire</strong>.
+                      </p>
+                      <p className="small text-muted mb-0">
+                        <i className="fas fa-map-marker-alt me-1"></i> B.P. 131, Brazzaville
+                        <br />
+                        <i className="fas fa-phone me-1"></i> +242 05 51 35 62 — <i className="fas fa-envelope me-1"></i> contact@fonction-publique.gouv.cg
+                        {" — "}
+                        <a href="https://fonction-publique.gouv.cg" target="_blank" rel="noopener">
+                          fonction-publique.gouv.cg
+                        </a>
                       </p>
                     </div>
                   </div>

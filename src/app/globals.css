@@ -911,6 +911,30 @@ footer.sala-footer a {
 
 footer.sala-footer a:hover { color: #ffffff; }
 
+.footer-social-icons {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.footer-social-icons a {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #d7e4dc;
+  margin-bottom: 0 !important;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.footer-social-icons a:hover {
+  background: var(--sala-green);
+  color: #ffffff;
+}
+
 footer.sala-footer .footer-bottom {
   border-top: 1px solid rgba(255,255,255,0.1);
   margin-top: 32px;
@@ -1368,6 +1392,43 @@ footer.sala-footer .footer-bottom {
   border-color: #d32f2f !important;
   background: #fee2e2 !important;
   color: #b9050f;
+}
+
+/* Confettis affichés quand le score du quiz d'entretien atteint 80%. */
+.confetti-wrap {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2000;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 9px;
+  height: 14px;
+  opacity: 0.9;
+  animation-name: sala-confetti-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes sala-confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(105vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confetti-wrap {
+    display: none;
+  }
 }
 
 /* ==========================================================================

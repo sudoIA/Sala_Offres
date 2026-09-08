@@ -1,5 +1,5 @@
 // src/lib/legislation-content.ts
-// Guide Droit du Travail intégré (5 fiches thématiques), utilisé en repli si
+// Guide Droit du Travail intégré (8 fiches thématiques), utilisé en repli si
 // la collection Firestore "legislation" est vide/inaccessible. Éditable
 // depuis l'administration une fois des fiches publiées.
 
@@ -30,6 +30,8 @@ export const initialLegislationTopics: LegislationFiche[] = [
         </p>
       </div>
     `,
+    sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
+    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "Existe-t-il un contrat d'apprentissage ou de stage ?",
     faqAnswer:
       "Oui. Le contrat d'apprentissage doit obligatoirement être rédigé par écrit et enregistré auprès de l'ACPE (Agence Congolaise Pour l'Emploi). L'employeur s'engage à assurer une formation méthodique et complète au stagiaire.",
@@ -56,6 +58,8 @@ export const initialLegislationTopics: LegislationFiche[] = [
         </p>
       </div>
     `,
+    sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
+    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "Peut-on me faire des retenues sur salaire ?",
     faqAnswer:
       "Les retenues sont strictement encadrées par la loi : prélèvements fiscaux obligatoires, cotisations CNSS et cessions volontaires ou saisies ordonnées par un tribunal. Les amendes ou sanctions financières directes infligées unilatéralement par l'employeur sont interdites.",
@@ -86,6 +90,8 @@ export const initialLegislationTopics: LegislationFiche[] = [
         </ul>
       </div>
     `,
+    sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
+    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "",
     faqAnswer: "",
     order: 3,
@@ -113,6 +119,8 @@ export const initialLegislationTopics: LegislationFiche[] = [
         </ul>
       </div>
     `,
+    sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
+    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "",
     faqAnswer: "",
     order: 4,
@@ -143,8 +151,102 @@ export const initialLegislationTopics: LegislationFiche[] = [
         </ul>
       </div>
     `,
+    sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
+    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "",
     faqAnswer: "",
     order: 5,
+  },
+  {
+    id: "leg-hygiene",
+    topic: "hygiene",
+    topicLabel: "Hygiène & Sécurité",
+    articleRef: "Art. 136 à 158",
+    title: "Hygiène, Sécurité & Médecine du Travail",
+    intro: "Chaque entreprise doit garantir un environnement de travail sain et prévenir les risques professionnels.",
+    bodyHtml: `
+      <div class="law-highlight">
+        <strong><i class="fas fa-user-md text-success me-1"></i> Service de médecine du travail :</strong>
+        <p class="mb-0 mt-1 small text-muted">
+          Toute entreprise a l'obligation d'assurer un service de santé au travail (propre ou interentreprises), reconnu par la CNSS. Son rôle est préventif : surveillance médicale des travailleurs, suivi de l'état des lieux de travail et premiers secours en cas d'accident.
+        </p>
+      </div>
+      <div class="law-highlight">
+        <strong><i class="fas fa-hard-hat text-warning me-1"></i> Obligations de l'employeur :</strong>
+        <ul class="mb-0 mt-2 ps-3 small text-muted">
+          <li>Organiser un service dédié à l'hygiène, la sécurité et l'amélioration des conditions de travail.</li>
+          <li>Maintenir les locaux en état constant de propreté et de sécurité.</li>
+          <li>Prendre toutes les mesures utiles pour prévenir les risques professionnels (équipements de protection, formation...).</li>
+        </ul>
+      </div>
+    `,
+    sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
+    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    faqQuestion: "Qui prend en charge un accident survenu sur le lieu de travail ?",
+    faqAnswer:
+      "Les accidents du travail et maladies professionnelles sont couverts par la CNSS (Caisse Nationale de Sécurité Sociale). L'employeur doit déclarer tout accident dans les délais légaux pour que le travailleur soit indemnisé.",
+    order: 6,
+  },
+  {
+    id: "leg-representation",
+    topic: "representation",
+    topicLabel: "Représentation & Syndicats",
+    articleRef: "Art. 180 à 210",
+    title: "Délégués du Personnel & Liberté Syndicale",
+    intro: "Les travailleurs congolais ont le droit de se syndiquer librement et d'élire des représentants au sein de l'entreprise.",
+    bodyHtml: `
+      <div class="law-highlight">
+        <strong><i class="fas fa-users text-success me-1"></i> Délégués du personnel :</strong>
+        <p class="mb-0 mt-1 small text-muted">
+          Élus par les travailleurs, les délégués du personnel bénéficient d'un mandat de <strong>2 ans</strong>. Ils portent les réclamations individuelles et collectives auprès de l'employeur et bénéficient d'une protection renforcée contre le licenciement.
+        </p>
+      </div>
+      <div class="law-highlight">
+        <strong><i class="fas fa-flag text-primary me-1"></i> Liberté syndicale :</strong>
+        <p class="mb-0 mt-1 small text-muted">
+          Tout travailleur peut librement adhérer au syndicat de son choix, sans crainte de représailles. Les organisations syndicales peuvent négocier avec l'employeur les conditions de travail applicables dans leur secteur.
+        </p>
+      </div>
+    `,
+    sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
+    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    faqQuestion: "Un employeur peut-il licencier un délégué du personnel librement ?",
+    faqAnswer:
+      "Non. Les délégués du personnel et délégués syndicaux bénéficient d'une protection spécifique : leur licenciement obéit à une procédure renforcée, précisément pour éviter les représailles liées à leur mandat de représentation.",
+    order: 7,
+  },
+  {
+    id: "leg-conflits",
+    topic: "conflits",
+    topicLabel: "Règlement des Conflits",
+    articleRef: "Art. 240 et suivants",
+    title: "Conciliation, Médiation & Tribunal du Travail",
+    intro: "En cas de désaccord avec votre employeur, la loi prévoit un parcours précis avant tout recours judiciaire.",
+    bodyHtml: `
+      <div class="law-highlight">
+        <strong><i class="fas fa-handshake text-success me-1"></i> 1. Conciliation à l'Inspection du Travail :</strong>
+        <p class="mb-0 mt-1 small text-muted">
+          Le travailleur ou l'employeur saisit gratuitement l'Inspection du Travail. L'inspecteur convoque les deux parties et dresse un procès-verbal de conciliation ou de non-conciliation.
+        </p>
+      </div>
+      <div class="law-highlight">
+        <strong><i class="fas fa-people-arrows text-info me-1"></i> 2. Commission de médiation :</strong>
+        <p class="mb-0 mt-1 small text-muted">
+          En cas d'échec, le litige est soumis à une commission de médiation (président du tribunal de paix, un assesseur employeur, un assesseur travailleur), qui se réunit dans les 3 jours suivant la saisine.
+        </p>
+      </div>
+      <div class="law-warning">
+        <strong><i class="fas fa-balance-scale text-danger me-1"></i> 3. Tribunal du Travail :</strong>
+        <p class="mb-0 mt-1 small text-muted">
+          Si la médiation échoue également, le litige est porté devant le tribunal du travail compétent, qui tranche en dernier ressort.
+        </p>
+      </div>
+    `,
+    sourceUrl: "https://fonction-publique.gouv.cg/fr/mission-de-conciliation",
+    sourceLabel: "Mission de conciliation — Ministère de la Fonction Publique, du Travail et de la Sécurité Sociale",
+    faqQuestion: "Le délai pour agir en justice est-il suspendu pendant la conciliation ?",
+    faqAnswer:
+      "Oui. La prescription (délai légal pour agir, article 99) est suspendue jusqu'à la clôture du procès-verbal de conciliation, afin de ne pas pénaliser un travailleur qui tente d'abord un règlement amiable.",
+    order: 8,
   },
 ];

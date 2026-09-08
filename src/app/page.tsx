@@ -35,7 +35,7 @@ export default function HomePage() {
               </h1>
               <p className="text-secondary mb-4" style={{ fontSize: "1.05rem", maxWidth: 480 }}>
                 Sala rassemble les offres d&apos;emploi et de stage, un générateur de CV professionnel et
-                les ressources dont vous avez besoin pour décrocher un poste — entièrement gratuit.
+                les ressources dont vous avez besoin pour décrocher un poste - entièrement gratuit.
               </p>
               <div className="d-flex flex-wrap gap-3">
                 <Link href="/onboarding" className="btn-sala-discover py-3 px-4 fw-bold">

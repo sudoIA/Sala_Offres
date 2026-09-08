@@ -20,15 +20,17 @@ export interface SiteSettings {
   socialFacebook: string;
   socialWhatsapp: string;
   socialInstagram: string;
+  socialLinkedin: string;
   sectionsVisible: SectionsVisible;
 }
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   contactEmail: "contact.ongsala@gmail.com",
   contactCities: "Brazzaville & Pointe-Noire, République du Congo",
-  socialFacebook: "",
+  socialFacebook: "https://www.facebook.com/ongsala",
   socialWhatsapp: "",
-  socialInstagram: "",
+  socialInstagram: "https://www.instagram.com/ongsala20?stkn=MWh0eW8ybTBmNXFkNw==",
+  socialLinkedin: "https://www.linkedin.com/company/sala/",
   sectionsVisible: {
     evenements: true,
     annuaires: true,

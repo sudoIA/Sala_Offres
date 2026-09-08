@@ -87,6 +87,7 @@ export default function AdminSettingsPage() {
           socialFacebook: settings.socialFacebook.trim(),
           socialWhatsapp: settings.socialWhatsapp.trim(),
           socialInstagram: settings.socialInstagram.trim(),
+          socialLinkedin: settings.socialLinkedin.trim(),
         },
         { merge: true }
       );
@@ -220,6 +221,16 @@ export default function AdminSettingsPage() {
                 placeholder="https://instagram.com/..."
                 value={settings.socialInstagram}
                 onChange={(e) => setSettings((s) => ({ ...s, socialInstagram: e.target.value }))}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="setLinkedin">LinkedIn (optionnel)</label>
+              <input
+                id="setLinkedin"
+                type="url"
+                placeholder="https://linkedin.com/company/..."
+                value={settings.socialLinkedin}
+                onChange={(e) => setSettings((s) => ({ ...s, socialLinkedin: e.target.value }))}
               />
             </div>
           </div>
