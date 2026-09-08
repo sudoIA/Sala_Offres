@@ -1042,6 +1042,10 @@ footer.sala-footer .footer-bottom {
   border-color: var(--sala-green);
 }
 
+.event-card-clickable {
+  cursor: pointer;
+}
+
 .event-poster {
   width: calc(100% + 8px);
   max-height: 220px;

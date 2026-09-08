@@ -18,18 +18,48 @@ import { usePublicEvents } from "@/hooks/usePublicEvents";
 import { useEventImages } from "@/hooks/useEventImages";
 import type { SalaEvent } from "@/types/event";
 
-function googleCalendarUrl(evt: SalaEvent): string {
-  const text = encodeURIComponent(evt.title || "");
+function escapeIcsText(text: string): string {
+  return text.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+}
+
+function toIcsDate(date: Date): string {
+  return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+}
+
+/**
+ * Fichier .ics téléchargeable : plutôt qu'un lien vers Google Agenda
+ * uniquement, ceci ouvre l'application agenda par défaut de l'appareil
+ * (Agenda/Calendrier sur mobile, Outlook/Calendrier sur ordinateur...), quel
+ * qu'il soit.
+ */
+function eventIcsDataUrl(evt: SalaEvent): string {
   const plainBody = (evt.body || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-  const details = encodeURIComponent(`${plainBody} - Organisé par ${evt.host || ""}`);
-  const location = encodeURIComponent(evt.city || "");
-  const params = [`action=TEMPLATE`, `text=${text}`, `details=${details}`, `location=${location}`];
-  if (evt.deadlineDate) {
-    const toGCal = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-    const end = evt.deadline2Date || new Date(evt.deadlineDate.getTime() + 2 * 60 * 60 * 1000);
-    params.push(`dates=${toGCal(evt.deadlineDate)}/${toGCal(end)}`);
-  }
-  return `https://calendar.google.com/calendar/render?${params.join("&")}`;
+  const start = evt.deadlineDate || new Date();
+  const end = evt.deadline2Date || new Date(start.getTime() + 2 * 60 * 60 * 1000);
+
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Sala//Evenements//FR",
+    "BEGIN:VEVENT",
+    `UID:${evt.id}@sala-congo`,
+    `DTSTAMP:${toIcsDate(new Date())}`,
+    `DTSTART:${toIcsDate(start)}`,
+    `DTEND:${toIcsDate(end)}`,
+    `SUMMARY:${escapeIcsText(evt.title || "Événement Sala")}`,
+    `DESCRIPTION:${escapeIcsText(`${plainBody}${evt.host ? " - Organisé par " + evt.host : ""}`)}`,
+    `LOCATION:${escapeIcsText(evt.city || "")}`,
+    evt.site ? `URL:${evt.site}` : "",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].filter(Boolean);
+
+  return `data:text/calendar;charset=utf-8,${encodeURIComponent(lines.join("\r\n"))}`;
+}
+
+function icsFilename(evt: SalaEvent): string {
+  const slug = (evt.title || "evenement").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  return `${slug || "evenement"}.ics`;
 }
 
 export default function EvenementsPage() {
@@ -159,7 +189,7 @@ export default function EvenementsPage() {
                   const imageUrl = imageUrls[evt.id];
                   return (
                     <div className="col-md-6 col-lg-6" key={evt.id}>
-                      <div className="event-card">
+                      <div className="event-card event-card-clickable" onClick={() => openRegister(evt)} role="button" tabIndex={0}>
                         {imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -198,13 +228,25 @@ export default function EvenementsPage() {
                         />
 
                         {evt.site && (
-                          <a href={evt.site} target="_blank" rel="noopener" className="small mb-3 d-inline-block">
+                          <a
+                            href={evt.site}
+                            target="_blank"
+                            rel="noopener"
+                            className="small mb-3 d-inline-block"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <i className="fas fa-link me-1"></i>Plus d&apos;infos
                           </a>
                         )}
 
                         <div className="pt-3 border-top d-flex gap-2 justify-content-between align-items-center mt-auto">
-                          <a href={googleCalendarUrl(evt)} target="_blank" rel="noopener" className="btn btn-sm btn-outline-secondary rounded-pill" title="Ajouter à Google Agenda">
+                          <a
+                            href={eventIcsDataUrl(evt)}
+                            download={icsFilename(evt)}
+                            onClick={(e) => e.stopPropagation()}
+                            className="btn btn-sm btn-outline-secondary rounded-pill"
+                            title="Ajouter à mon agenda"
+                          >
                             <i className="far fa-calendar-plus me-1"></i> Agenda
                           </a>
                           <button className="btn btn-sm btn-success rounded-pill px-3 fw-bold" onClick={() => openRegister(evt)}>
@@ -220,12 +262,60 @@ export default function EvenementsPage() {
         </div>
       </div>
 
-      <Modal open={!!registerTarget} onClose={() => setRegisterTarget(null)} title="Inscription à l'événement" size="md">
+      <Modal open={!!registerTarget} onClose={() => setRegisterTarget(null)} title={registerTarget?.title || "Détails de l'événement"} size="md">
         {registerTarget && (
           <>
-            <p className="text-muted small">
-              {registerTarget.deadlineDate?.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })} — {registerTarget.city}
+            {imageUrls[registerTarget.id] && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imageUrls[registerTarget.id]}
+                alt={registerTarget.title || "Affiche de l'événement"}
+                className="event-poster mb-3"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            )}
+
+            <div className="text-muted small mb-2">
+              <i className="fas fa-users-cog me-1"></i> {registerTarget.host}
+            </div>
+            <p className="text-muted small mb-2">
+              <i className="fas fa-map-marker-alt text-danger me-1"></i> {registerTarget.city}
+              {registerTarget.deadlineDate && (
+                <>
+                  {" "}— <i className="far fa-clock text-primary me-1"></i>
+                  {registerTarget.deadlineDate.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
+                </>
+              )}
             </p>
+
+            {registerTarget.body && (
+              <div
+                className="small mb-3"
+                style={{ color: "var(--sala-text-secondary)", lineHeight: 1.6 }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(registerTarget.body) }}
+              />
+            )}
+
+            {registerTarget.site && (
+              <a href={registerTarget.site} target="_blank" rel="noopener" className="small mb-3 d-inline-block">
+                <i className="fas fa-link me-1"></i>Plus d&apos;infos
+              </a>
+            )}
+
+            <a
+              href={eventIcsDataUrl(registerTarget)}
+              download={icsFilename(registerTarget)}
+              className="btn btn-sm btn-outline-secondary rounded-pill mb-3 d-inline-flex"
+              title="Ajouter à mon agenda"
+            >
+              <i className="far fa-calendar-plus me-1"></i> Ajouter à mon agenda
+            </a>
+
+            <hr />
+            <h6 className="fw-bold mb-3">S&apos;inscrire à cet événement</h6>
+
             {!submitted ? (
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
