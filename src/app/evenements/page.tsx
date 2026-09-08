@@ -15,7 +15,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { FabCv } from "@/components/layout/FabCv";
 import { Modal } from "@/components/Modal";
 import { usePublicEvents } from "@/hooks/usePublicEvents";
-import { getEventImageUrl } from "@/lib/event-helpers";
+import { useEventImages } from "@/hooks/useEventImages";
 import type { SalaEvent } from "@/types/event";
 
 function googleCalendarUrl(evt: SalaEvent): string {
@@ -34,6 +34,7 @@ function googleCalendarUrl(evt: SalaEvent): string {
 
 export default function EvenementsPage() {
   const { events, loading } = usePublicEvents();
+  const imageUrls = useEventImages(events);
   const [search, setSearch] = useState("");
   const [city, setCity] = useState("all");
   const [registerTarget, setRegisterTarget] = useState<SalaEvent | null>(null);
@@ -155,7 +156,7 @@ export default function EvenementsPage() {
                     ? evt.deadlineDate.toLocaleDateString("fr-FR", { month: "short" }).toUpperCase()
                     : "DATE";
                   const safeBody = DOMPurify.sanitize(evt.body || "");
-                  const imageUrl = getEventImageUrl(evt.image);
+                  const imageUrl = imageUrls[evt.id];
                   return (
                     <div className="col-md-6 col-lg-6" key={evt.id}>
                       <div className="event-card">
