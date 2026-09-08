@@ -1042,6 +1042,23 @@ footer.sala-footer .footer-bottom {
   border-color: var(--sala-green);
 }
 
+.event-poster {
+  width: calc(100% + 8px);
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: -4px -4px 16px;
+  display: block;
+}
+
+.event-body-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
 .event-date-box {
   background: rgba(59, 148, 82, 0.1);
   border: 1px solid rgba(59, 148, 82, 0.25);

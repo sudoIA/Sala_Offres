@@ -1,11 +1,13 @@
 // src/app/evenements/page.tsx
-// Salons, ateliers et webinaires — recherche, filtres par catégorie/ville,
-// inscription rapide (enregistrée dans Firestore), ajout à Google Agenda.
+// Événements à venir — recherche, filtre par ville, inscription rapide
+// (enregistrée dans Firestore), ajout à Google Agenda, lien externe optionnel
+// (ex : groupe WhatsApp) fourni par l'organisateur.
 
 "use client";
 
 import { useMemo, useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
+import DOMPurify from "isomorphic-dompurify";
 import { db } from "@/lib/firebase";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
@@ -13,44 +15,45 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { FabCv } from "@/components/layout/FabCv";
 import { Modal } from "@/components/Modal";
 import { usePublicEvents } from "@/hooks/usePublicEvents";
+import { getEventImageUrl } from "@/lib/event-helpers";
 import type { SalaEvent } from "@/types/event";
-
-type CategoryFilter = "all" | "Salon" | "Atelier" | "Webinaire";
-
-const CATEGORY_FILTERS: { key: CategoryFilter; icon: string; label: string }[] = [
-  { key: "all", icon: "fas fa-th-large", label: "Tous les événements" },
-  { key: "Salon", icon: "fas fa-users", label: "Salons de l'Emploi" },
-  { key: "Atelier", icon: "fas fa-chalkboard-teacher", label: "Ateliers ONG Sala" },
-  { key: "Webinaire", icon: "fas fa-laptop", label: "Webinaires en ligne" },
-];
 
 function googleCalendarUrl(evt: SalaEvent): string {
   const text = encodeURIComponent(evt.title || "");
-  const details = encodeURIComponent(`${evt.description || ""} - Organisé par ${evt.organizer || ""}`);
-  const location = encodeURIComponent(`${evt.location || ""}, ${evt.city || ""}`);
-  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&details=${details}&location=${location}`;
+  const plainBody = (evt.body || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const details = encodeURIComponent(`${plainBody} - Organisé par ${evt.host || ""}`);
+  const location = encodeURIComponent(evt.city || "");
+  const params = [`action=TEMPLATE`, `text=${text}`, `details=${details}`, `location=${location}`];
+  if (evt.deadlineDate) {
+    const toGCal = (d: Date) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    const end = evt.deadline2Date || new Date(evt.deadlineDate.getTime() + 2 * 60 * 60 * 1000);
+    params.push(`dates=${toGCal(evt.deadlineDate)}/${toGCal(end)}`);
+  }
+  return `https://calendar.google.com/calendar/render?${params.join("&")}`;
 }
 
 export default function EvenementsPage() {
   const { events, loading } = usePublicEvents();
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<CategoryFilter>("all");
   const [city, setCity] = useState("all");
   const [registerTarget, setRegisterTarget] = useState<SalaEvent | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const cities = useMemo(() => {
+    const set = new Set(events.map((e) => e.city).filter(Boolean) as string[]);
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [events]);
+
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
     return events.filter((evt) => {
-      const matchCategory = category === "all" || evt.category === category;
       const matchCity = city === "all" || (evt.city && evt.city.toLowerCase() === city.toLowerCase());
-      const matchSearch =
-        !term || `${evt.title} ${evt.description} ${evt.location} ${evt.organizer}`.toLowerCase().includes(term);
-      return matchCategory && matchCity && matchSearch;
+      const matchSearch = !term || `${evt.title} ${evt.body} ${evt.host}`.toLowerCase().includes(term);
+      return matchCity && matchSearch;
     });
-  }, [events, search, category, city]);
+  }, [events, search, city]);
 
   function openRegister(evt: SalaEvent) {
     setRegisterTarget(evt);
@@ -105,7 +108,7 @@ export default function EvenementsPage() {
                     <input
                       type="text"
                       className="form-control border-0 shadow-none ps-2"
-                      placeholder="Rechercher un salon, atelier ou thématique..."
+                      placeholder="Rechercher un événement..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
@@ -116,24 +119,13 @@ export default function EvenementsPage() {
           </section>
 
           <section className="container mt-4 mb-3">
-            <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
-              <div className="d-flex gap-2 overflow-auto pb-2">
-                {CATEGORY_FILTERS.map((f) => (
-                  <button
-                    key={f.key}
-                    className={`event-filter-pill${category === f.key ? " active" : ""}`}
-                    onClick={() => setCategory(f.key)}
-                  >
-                    <i className={f.icon}></i> {f.label}
-                  </button>
-                ))}
-              </div>
+            <div className="d-flex flex-wrap justify-content-end align-items-center gap-2">
               <div style={{ minWidth: 170 }}>
                 <select className="form-select form-select-sm rounded-pill border-secondary-subtle" value={city} onChange={(e) => setCity(e.target.value)}>
                   <option value="all">📍 Toutes les villes</option>
-                  <option value="Brazzaville">Brazzaville</option>
-                  <option value="Pointe-Noire">Pointe-Noire</option>
-                  <option value="En ligne">100% En ligne</option>
+                  {cities.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -151,47 +143,63 @@ export default function EvenementsPage() {
               {!loading && filtered.length === 0 && (
                 <div className="col-12 text-center py-5">
                   <i className="fas fa-calendar-times fa-3x text-muted mb-3"></i>
-                  <h5 className="fw-bold">Aucun événement ne correspond à vos critères</h5>
-                  <p className="text-muted">Essayez d&apos;élargir votre recherche ou de changer de ville.</p>
+                  <h5 className="fw-bold">Aucun événement à venir pour le moment</h5>
+                  <p className="text-muted">Revenez bientôt, ou essayez d&apos;élargir votre recherche.</p>
                 </div>
               )}
 
               {!loading &&
                 filtered.map((evt) => {
-                  const [day, month] = (evt.date || "").split(" ");
+                  const day = evt.deadlineDate ? evt.deadlineDate.getDate() : "—";
+                  const month = evt.deadlineDate
+                    ? evt.deadlineDate.toLocaleDateString("fr-FR", { month: "short" }).toUpperCase()
+                    : "DATE";
+                  const safeBody = DOMPurify.sanitize(evt.body || "");
+                  const imageUrl = getEventImageUrl(evt.image);
                   return (
                     <div className="col-md-6 col-lg-6" key={evt.id}>
                       <div className="event-card">
+                        {imageUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={imageUrl}
+                            alt={evt.title || "Affiche de l'événement"}
+                            className="event-poster"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        )}
                         <div className="d-flex align-items-start gap-3 mb-3">
                           <div className="event-date-box">
                             <div className="fw-bold text-success" style={{ fontSize: "1.4rem", lineHeight: 1 }}>{day}</div>
-                            <div className="text-uppercase fw-bold text-muted small" style={{ fontSize: "0.72rem" }}>{month || "DATE"}</div>
+                            <div className="text-uppercase fw-bold text-muted small" style={{ fontSize: "0.72rem" }}>{month}</div>
                           </div>
                           <div>
-                            <div className="d-flex flex-wrap gap-1 mb-1">
-                              <span className={`badge bg-${evt.badgeColor || "success"} rounded-pill`} style={{ fontSize: "0.75rem" }}>{evt.category}</span>
-                              <span className="badge bg-light text-dark border rounded-pill" style={{ fontSize: "0.75rem" }}>{evt.price}</span>
-                            </div>
                             <h5 className="fw-bold mb-1" style={{ fontSize: "1.1rem", lineHeight: 1.35 }}>{evt.title}</h5>
-                            <div className="text-muted small"><i className="fas fa-users-cog me-1"></i> {evt.organizer}</div>
+                            <div className="text-muted small"><i className="fas fa-users-cog me-1"></i> {evt.host}</div>
                           </div>
                         </div>
 
-                        <div className="text-muted small mb-2">
-                          <i className="fas fa-map-marker-alt text-danger me-1"></i> <strong>{evt.city}</strong> — {evt.location}
-                        </div>
                         <div className="text-muted small mb-3">
-                          <i className="far fa-clock text-primary me-1"></i> {evt.time}
+                          <i className="fas fa-map-marker-alt text-danger me-1"></i> <strong>{evt.city}</strong>
+                          {evt.deadlineDate && (
+                            <>
+                              {" "}— <i className="far fa-clock text-primary me-1"></i>
+                              {evt.deadlineDate.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
+                            </>
+                          )}
                         </div>
 
-                        <p className="text-secondary small mb-3 flex-grow-1">{evt.description}</p>
+                        <div
+                          className="text-secondary small mb-3 flex-grow-1 event-body-clamp"
+                          dangerouslySetInnerHTML={{ __html: safeBody }}
+                        />
 
-                        {evt.highlights && evt.highlights.length > 0 && (
-                          <div className="d-flex flex-wrap gap-1 mb-3">
-                            {evt.highlights.map((h, i) => (
-                              <span className="badge bg-light text-secondary border small" key={i}>{h}</span>
-                            ))}
-                          </div>
+                        {evt.site && (
+                          <a href={evt.site} target="_blank" rel="noopener" className="small mb-3 d-inline-block">
+                            <i className="fas fa-link me-1"></i>Plus d&apos;infos
+                          </a>
                         )}
 
                         <div className="pt-3 border-top d-flex gap-2 justify-content-between align-items-center mt-auto">
@@ -215,7 +223,7 @@ export default function EvenementsPage() {
         {registerTarget && (
           <>
             <p className="text-muted small">
-              {registerTarget.date} — {registerTarget.city} ({registerTarget.location})
+              {registerTarget.deadlineDate?.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })} — {registerTarget.city}
             </p>
             {!submitted ? (
               <form onSubmit={handleSubmit}>

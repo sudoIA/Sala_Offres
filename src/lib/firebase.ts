@@ -17,6 +17,9 @@ const firebaseConfig = {
   appId: "1:329607043816:android:774a1bf373ca8cca",
 };
 
+/** Bucket Firebase Storage, réutilisé pour construire des URLs d'images publiques. */
+export const STORAGE_BUCKET = firebaseConfig.storageBucket;
+
 // Évite une double initialisation en mode développement (Fast Refresh).
 export const app: FirebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 

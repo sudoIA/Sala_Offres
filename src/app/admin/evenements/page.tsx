@@ -33,13 +33,13 @@ export default function AdminEventsPage() {
 
   const term = search.trim().toLowerCase();
   const filtered = events.filter(
-    (evt) => !term || [evt.title, evt.organizer, evt.city].some((v) => (v || "").toLowerCase().includes(term))
+    (evt) => !term || [evt.title, evt.host, evt.city].some((v) => (v || "").toLowerCase().includes(term))
   );
 
   async function handleDelete(evt: SalaEvent) {
     if (await confirmDelete(evt.title || "cet événement")) {
       try {
-        await deleteDoc(doc(db, "evenements", evt.id));
+        await deleteDoc(doc(db, "events", evt.id));
         notify("Événement supprimé.");
       } catch (err) {
         console.error("Erreur suppression événement :", err);
@@ -97,20 +97,28 @@ export default function AdminEventsPage() {
             <div className="admin-card" key={evt.id}>
               <div className="admin-card-top">
                 <div className="admin-row-identity">
-                  <CompanyTile company={evt.organizer || evt.title} />
+                  <CompanyTile company={evt.host || evt.title} />
                   <div>
                     <div className="title">{evt.title || "Événement sans titre"}</div>
-                    <div className="subtitle">{evt.organizer || "Organisateur non précisé"}</div>
+                    <div className="subtitle">{evt.host || "Organisateur non précisé"}</div>
                   </div>
                 </div>
               </div>
               <div className="admin-card-meta">
-                <span className="admin-badge">{evt.category || "—"}</span>
-                <span><i className="far fa-calendar"></i>{evt.date || "—"}</span>
+                <span className="admin-badge">{evt.visibility === false ? "Masqué" : "Visible"}</span>
+                <span><i className="far fa-calendar"></i>{evt.deadlineDate ? evt.deadlineDate.toLocaleString("fr-FR") : "—"}</span>
                 <span><i className="fas fa-map-marker-alt"></i>{evt.city || "—"}</span>
               </div>
               <div className="admin-card-footer">
-                <span className="text-muted small">{evt.location || ""}</span>
+                <span className="text-muted small">
+                  {evt.site ? (
+                    <a href={evt.site} target="_blank" rel="noopener">
+                      <i className="fas fa-link me-1"></i>Lien
+                    </a>
+                  ) : (
+                    ""
+                  )}
+                </span>
                 <div className="admin-actions">
                   <button className="btn-icon" title="Voir les inscriptions" onClick={() => setRegistrationsTarget(evt)}>
                     <i className="fas fa-users"></i>

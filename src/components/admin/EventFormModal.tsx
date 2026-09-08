@@ -1,10 +1,13 @@
 // src/components/admin/EventFormModal.tsx
-// Formulaire de création/édition d'un événement (collection "evenements").
+// Formulaire de création/édition d'un événement (collection Firestore
+// "events", partagée avec l'app mobile — les noms de champs ci-dessous
+// reprennent exactement les siens : title, body, host, city, site, image,
+// deadline, deadline2, visibility).
 
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
@@ -18,19 +21,22 @@ interface EventFormModalProps {
 
 const EMPTY_FORM = {
   title: "",
-  category: "Salon",
-  organizer: "",
-  date: "",
-  isoDate: "",
-  time: "",
+  host: "",
   city: "",
-  location: "",
-  price: "",
-  badgeColor: "success",
-  description: "",
-  highlights: "",
-  registrationRequired: true,
+  body: "",
+  site: "",
+  image: "",
+  deadline: "",
+  deadline2: "",
+  visibility: true,
 };
+
+/** Formate une Date en valeur compatible avec un input datetime-local. */
+function toDatetimeLocal(date: Date | null): string {
+  if (!date) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 
 export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
   const [form, setForm] = useState(EMPTY_FORM);
@@ -40,18 +46,14 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
     if (!open) return;
     setForm({
       title: event?.title || "",
-      category: event?.category || "Salon",
-      organizer: event?.organizer || "",
-      date: event?.date || "",
-      isoDate: event?.isoDate ? event.isoDate.slice(0, 16) : "",
-      time: event?.time || "",
+      host: event?.host || "",
       city: event?.city || "",
-      location: event?.location || "",
-      price: event?.price || "",
-      badgeColor: event?.badgeColor || "success",
-      description: event?.description || "",
-      highlights: (event?.highlights || []).join(", "),
-      registrationRequired: event ? !!event.registrationRequired : true,
+      body: event?.body || "",
+      site: event?.site || "",
+      image: event?.image || "",
+      deadline: toDatetimeLocal(event?.deadlineDate || null),
+      deadline2: toDatetimeLocal(event?.deadline2Date || null),
+      visibility: event ? event.visibility !== false : true,
     });
   }, [open, event]);
 
@@ -62,28 +64,26 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const eventData = {
+
+    const eventData: Record<string, unknown> = {
       title: form.title.trim(),
-      category: form.category,
-      organizer: form.organizer.trim(),
-      date: form.date.trim(),
-      isoDate: form.isoDate ? `${form.isoDate}:00` : "",
-      time: form.time.trim(),
+      host: form.host.trim(),
       city: form.city.trim(),
-      location: form.location.trim(),
-      price: form.price.trim(),
-      badgeColor: form.badgeColor,
-      description: form.description.trim(),
-      highlights: form.highlights.split(",").map((s) => s.trim()).filter(Boolean),
-      registrationRequired: form.registrationRequired,
+      body: form.body.trim(),
+      site: form.site.trim(),
+      image: form.image.trim(),
+      deadline: form.deadline ? Timestamp.fromDate(new Date(form.deadline)) : null,
+      deadline2: form.deadline2 ? Timestamp.fromDate(new Date(form.deadline2)) : null,
+      visibility: form.visibility,
     };
+    if (!event) eventData.timestamp = Timestamp.now();
 
     try {
       if (event) {
-        await updateDoc(doc(db, "evenements", event.id), eventData);
+        await updateDoc(doc(db, "events", event.id), eventData);
         notify("Événement mis à jour.");
       } else {
-        await addDoc(collection(db, "evenements"), eventData);
+        await addDoc(collection(db, "events"), eventData);
         notify("Événement ajouté avec succès !");
       }
       onClose();
@@ -104,74 +104,42 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
             <input id="eventTitle" type="text" value={form.title} onChange={(e) => set("title", e.target.value)} required />
           </div>
           <div className="form-group">
-            <label htmlFor="eventCategory">Catégorie</label>
-            <select id="eventCategory" value={form.category} onChange={(e) => set("category", e.target.value)}>
-              <option value="Salon">Salon</option>
-              <option value="Atelier">Atelier</option>
-              <option value="Webinaire">Webinaire</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="eventOrganizer">Organisateur</label>
-            <input id="eventOrganizer" type="text" value={form.organizer} onChange={(e) => set("organizer", e.target.value)} required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="eventDateDisplay">Date affichée</label>
-            <input id="eventDateDisplay" type="text" placeholder="Ex: 25 Octobre 2026" value={form.date} onChange={(e) => set("date", e.target.value)} required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="eventIsoDate">Date &amp; heure de début</label>
-            <input id="eventIsoDate" type="datetime-local" value={form.isoDate} onChange={(e) => set("isoDate", e.target.value)} required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="eventTime">Horaires affichés</label>
-            <input id="eventTime" type="text" placeholder="Ex: 09h00 - 17h00" value={form.time} onChange={(e) => set("time", e.target.value)} required />
+            <label htmlFor="eventHost">Organisateur</label>
+            <input id="eventHost" type="text" value={form.host} onChange={(e) => set("host", e.target.value)} required />
           </div>
           <div className="form-group">
             <label htmlFor="eventCity">Ville</label>
             <input id="eventCity" type="text" value={form.city} onChange={(e) => set("city", e.target.value)} required />
           </div>
           <div className="form-group">
-            <label htmlFor="eventLocation">Lieu</label>
-            <input id="eventLocation" type="text" value={form.location} onChange={(e) => set("location", e.target.value)} required />
+            <label htmlFor="eventDeadline">Date &amp; heure de début</label>
+            <input id="eventDeadline" type="datetime-local" value={form.deadline} onChange={(e) => set("deadline", e.target.value)} required />
           </div>
           <div className="form-group">
-            <label htmlFor="eventPrice">Prix affiché</label>
-            <input id="eventPrice" type="text" placeholder="Ex: Entrée Gratuite" value={form.price} onChange={(e) => set("price", e.target.value)} />
+            <label htmlFor="eventDeadline2">Date &amp; heure de fin (optionnel)</label>
+            <input id="eventDeadline2" type="datetime-local" value={form.deadline2} onChange={(e) => set("deadline2", e.target.value)} />
           </div>
           <div className="form-group">
-            <label htmlFor="eventBadgeColor">Couleur du badge</label>
-            <select id="eventBadgeColor" value={form.badgeColor} onChange={(e) => set("badgeColor", e.target.value)}>
-              <option value="success">Vert</option>
-              <option value="primary">Bleu</option>
-              <option value="info">Cyan</option>
-              <option value="warning">Jaune</option>
-              <option value="danger">Rouge</option>
-            </select>
+            <label htmlFor="eventSite">Lien (site, groupe WhatsApp...)</label>
+            <input id="eventSite" type="url" placeholder="https://..." value={form.site} onChange={(e) => set("site", e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="eventImage">Image (URL, optionnel)</label>
+            <input id="eventImage" type="url" placeholder="https://..." value={form.image} onChange={(e) => set("image", e.target.value)} />
           </div>
         </div>
         <div className="form-group full-width">
-          <label htmlFor="eventDescription">Description</label>
-          <textarea id="eventDescription" rows={4} value={form.description} onChange={(e) => set("description", e.target.value)} required />
-        </div>
-        <div className="form-group full-width">
-          <label htmlFor="eventHighlights">Points forts (séparés par des virgules)</label>
-          <input
-            id="eventHighlights"
-            type="text"
-            placeholder="Ex: Stands recruteurs, Speed-recruiting"
-            value={form.highlights}
-            onChange={(e) => set("highlights", e.target.value)}
-          />
+          <label htmlFor="eventBody">Description</label>
+          <textarea id="eventBody" rows={5} value={form.body} onChange={(e) => set("body", e.target.value)} required />
         </div>
         <div className="visibility-toggle mb-3">
           <input
-            id="eventRegistrationRequired"
+            id="eventVisibility"
             type="checkbox"
-            checked={form.registrationRequired}
-            onChange={(e) => set("registrationRequired", e.target.checked)}
+            checked={form.visibility}
+            onChange={(e) => set("visibility", e.target.checked)}
           />
-          <label htmlFor="eventRegistrationRequired" style={{ margin: 0 }}>Inscription requise</label>
+          <label htmlFor="eventVisibility" style={{ margin: 0 }}>Visible sur le site</label>
         </div>
         <div className="form-actions">
           <button type="submit" className="btn-sala-primary" disabled={saving}>
