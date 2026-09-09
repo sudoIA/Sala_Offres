@@ -33,13 +33,13 @@ export const metadata: Metadata = {
     siteName: "Sala",
     locale: "fr_FR",
     type: "website",
-    images: [{ url: "/img/logo_transparent.png", width: 250, height: 250, alt: "Logo Sala" }],
+    images: [{ url: "/img/logo_share_black.png", width: 1200, height: 630, alt: "Logo Sala" }],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: ["/img/logo_transparent.png"],
+    images: ["/img/logo_share_black.png"],
   },
 };
 
