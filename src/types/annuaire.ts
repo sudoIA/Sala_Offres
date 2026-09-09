@@ -1,6 +1,10 @@
 // src/types/annuaire.ts
 // Les 3 catégories d'annuaires Sala, chacune dans sa propre collection
 // Firestore, avec des champs légèrement différents.
+//
+// Toutes les catégories partagent le même modèle d'affichage : une carte
+// compacte (logo, type, ville, résumé) qui, au clic, ouvre le détail complet
+// (description, liste de filières/domaines/activités, carte de localisation).
 
 export type AnnuaireCategory = "universities" | "companies" | "clubs";
 
@@ -19,6 +23,10 @@ export interface UniversityDoc {
   email?: string;
   website?: string;
   faculties?: string[];
+  logo?: string;
+  summary?: string;
+  description?: string;
+  verified?: boolean;
 }
 
 export interface CompanyDoc {
@@ -30,10 +38,15 @@ export interface CompanyDoc {
   email?: string;
   website?: string;
   description?: string;
+  services?: string[];
+  logo?: string;
+  summary?: string;
+  verified?: boolean;
 }
 
 export interface ClubDoc {
   name?: string;
+  type?: string;
   city?: string;
   location?: string;
   schedule?: string;
@@ -41,6 +54,10 @@ export interface ClubDoc {
   phone?: string;
   fee?: string;
   description?: string;
+  activities?: string[];
+  logo?: string;
+  summary?: string;
+  verified?: boolean;
 }
 
 export type AnnuaireItemDoc = UniversityDoc & CompanyDoc & ClubDoc;

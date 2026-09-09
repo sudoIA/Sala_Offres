@@ -23,11 +23,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const title = `${job.title} — ${job.company} | Sala`;
   const description = `${job.description} Poste basé à ${job.city}.`;
 
+  const logo = { url: "/img/logo_transparent.png", width: 250, height: 250, alt: "Logo Sala" };
+
   return {
     title,
     description,
-    openGraph: { title, description, type: "article" },
-    twitter: { card: "summary", title, description },
+    openGraph: { title, description, type: "article", images: [logo] },
+    twitter: { card: "summary_large_image", title, description, images: [logo.url] },
   };
 }
 

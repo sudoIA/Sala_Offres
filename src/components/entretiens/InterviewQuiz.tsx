@@ -1,5 +1,5 @@
 // src/components/entretiens/InterviewQuiz.tsx
-// Quiz d'entraînement interactif (5 questions à choix multiple).
+// Quiz d'entraînement interactif (10 questions à choix multiple).
 
 "use client";
 
@@ -7,6 +7,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { QUIZ_QUESTIONS, type QuizOption } from "@/lib/entretiens-content";
 import { Confetti } from "@/components/Confetti";
+import { EncourageFace } from "@/components/EncourageFace";
 
 type Phase = "intro" | "play" | "result";
 
@@ -43,9 +44,9 @@ export function InterviewQuiz() {
       <div className="interview-card p-4 text-center">
         <i className="fas fa-graduation-cap fa-3x text-success mb-3"></i>
         <h4 className="fw-bold mb-2">Quiz d&apos;Évaluation : Êtes-vous prêt pour l&apos;entretien ?</h4>
-        <p className="text-muted mb-4">5 questions concrètes pour tester vos réflexes face à un recruteur.</p>
+        <p className="text-muted mb-4">10 questions concrètes pour tester vos réflexes face à un recruteur.</p>
         <button className="btn-sala-primary rounded-pill px-5 py-3 fw-bold" onClick={start}>
-          Commencer le Quiz (5 min) <i className="fas fa-play ms-2"></i>
+          Commencer le Quiz (10 min) <i className="fas fa-play ms-2"></i>
         </button>
       </div>
     );
@@ -104,8 +105,14 @@ export function InterviewQuiz() {
 
   return (
     <div className="interview-card p-5 text-center">
-      {percent >= 0.8 && <Confetti />}
-      <i className={`fas ${icon.i} fa-4x mb-3`}></i>
+      {percent >= 0.8 ? (
+        <>
+          <Confetti />
+          <i className={`fas ${icon.i} fa-4x mb-3`}></i>
+        </>
+      ) : (
+        <EncourageFace />
+      )}
       <h3 className="fw-bold mb-2">{icon.title}</h3>
       <p className="text-muted mb-4">{icon.msg}</p>
       <div className="h2 fw-bold text-success mb-4">{score} / {QUIZ_QUESTIONS.length}</div>

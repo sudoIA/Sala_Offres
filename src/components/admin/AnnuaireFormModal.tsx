@@ -34,19 +34,25 @@ const EMPTY_FORM = {
   website: "",
   faculties: "",
   sector: "",
+  services: "",
   description: "",
   location: "",
   schedule: "",
   coordinator: "",
   fee: "",
+  activities: "",
+  logo: "",
+  summary: "",
 };
 
 export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFormModalProps) {
   const [form, setForm] = useState(EMPTY_FORM);
+  const [verified, setVerified] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!open) return;
+    setVerified(item?.verified || false);
     setForm({
       name: item?.name || "",
       type: item?.type || "",
@@ -57,11 +63,15 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
       website: item?.website || "",
       faculties: (item?.faculties || []).join(", "),
       sector: item?.sector || "",
+      services: (item?.services || []).join(", "),
       description: item?.description || "",
       location: item?.location || "",
       schedule: item?.schedule || "",
       coordinator: item?.coordinator || "",
       fee: item?.fee || "",
+      activities: (item?.activities || []).join(", "),
+      logo: item?.logo || "",
+      summary: item?.summary || "",
     });
   }, [open, item]);
 
@@ -85,6 +95,9 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         email: form.email.trim(),
         website: form.website.trim(),
         faculties: form.faculties.split(",").map((s) => s.trim()).filter(Boolean),
+        logo: form.logo.trim(),
+        summary: form.summary.trim(),
+        description: form.description.trim(),
       };
     } else if (category === "companies") {
       data = {
@@ -96,10 +109,14 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         email: form.email.trim(),
         website: form.website.trim(),
         description: form.description.trim(),
+        services: form.services.split(",").map((s) => s.trim()).filter(Boolean),
+        logo: form.logo.trim(),
+        summary: form.summary.trim(),
       };
     } else {
       data = {
         name: form.name.trim(),
+        type: form.type.trim(),
         city: form.city.trim(),
         location: form.location.trim(),
         schedule: form.schedule.trim(),
@@ -107,8 +124,12 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         phone: form.phone.trim(),
         fee: form.fee.trim(),
         description: form.description.trim(),
+        activities: form.activities.split(",").map((s) => s.trim()).filter(Boolean),
+        logo: form.logo.trim(),
+        summary: form.summary.trim(),
       };
     }
+    data.verified = verified;
 
     try {
       if (item) {
@@ -140,10 +161,19 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Email</label><input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
               <div className="form-group"><label>Site Web</label><input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} /></div>
+              <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
+            </div>
+            <div className="form-group full-width">
+              <label>Résumé (1-2 phrases, affiché sur la carte)</label>
+              <input type="text" maxLength={160} value={form.summary} onChange={(e) => set("summary", e.target.value)} />
             </div>
             <div className="form-group full-width">
               <label>Filières &amp; Départements (séparés par des virgules)</label>
               <input type="text" value={form.faculties} onChange={(e) => set("faculties", e.target.value)} />
+            </div>
+            <div className="form-group full-width">
+              <label>Description complète (affichée dans le détail)</label>
+              <textarea rows={3} value={form.description} onChange={(e) => set("description", e.target.value)} />
             </div>
           </>
         )}
@@ -158,9 +188,18 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Email RH</label><input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
               <div className="form-group"><label>Site Web</label><input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} /></div>
+              <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
             </div>
             <div className="form-group full-width">
-              <label>Description</label>
+              <label>Résumé (1-2 phrases, affiché sur la carte)</label>
+              <input type="text" maxLength={160} value={form.summary} onChange={(e) => set("summary", e.target.value)} />
+            </div>
+            <div className="form-group full-width">
+              <label>Domaines d&apos;activité (séparés par des virgules)</label>
+              <input type="text" placeholder="Recrutement, Stages, Alternance..." value={form.services} onChange={(e) => set("services", e.target.value)} />
+            </div>
+            <div className="form-group full-width">
+              <label>Description complète (affichée dans le détail)</label>
               <textarea rows={3} value={form.description} onChange={(e) => set("description", e.target.value)} />
             </div>
           </>
@@ -170,19 +209,34 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
           <>
             <div className="form-grid">
               <div className="form-group"><label>Nom</label><input type="text" value={form.name} onChange={(e) => set("name", e.target.value)} required /></div>
+              <div className="form-group"><label>Type</label><input type="text" placeholder="Club communautaire, universitaire..." value={form.type} onChange={(e) => set("type", e.target.value)} /></div>
               <div className="form-group"><label>Ville</label><input type="text" value={form.city} onChange={(e) => set("city", e.target.value)} required /></div>
               <div className="form-group"><label>Lieu</label><input type="text" value={form.location} onChange={(e) => set("location", e.target.value)} /></div>
               <div className="form-group"><label>Horaire</label><input type="text" placeholder="Chaque samedi de 15h00 à 17h30" value={form.schedule} onChange={(e) => set("schedule", e.target.value)} /></div>
               <div className="form-group"><label>Coordinateur</label><input type="text" value={form.coordinator} onChange={(e) => set("coordinator", e.target.value)} /></div>
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Tarif</label><input type="text" placeholder="Gratuit, Adhésion libre..." value={form.fee} onChange={(e) => set("fee", e.target.value)} /></div>
+              <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
             </div>
             <div className="form-group full-width">
-              <label>Description</label>
+              <label>Résumé (1-2 phrases, affiché sur la carte)</label>
+              <input type="text" maxLength={160} value={form.summary} onChange={(e) => set("summary", e.target.value)} />
+            </div>
+            <div className="form-group full-width">
+              <label>Activités proposées (séparées par des virgules)</label>
+              <input type="text" placeholder="Conversation, Préparation TOEFL, Théâtre..." value={form.activities} onChange={(e) => set("activities", e.target.value)} />
+            </div>
+            <div className="form-group full-width">
+              <label>Description complète (affichée dans le détail)</label>
               <textarea rows={3} value={form.description} onChange={(e) => set("description", e.target.value)} />
             </div>
           </>
         )}
+
+        <label className="visibility-toggle mb-3">
+          <input type="checkbox" checked={verified} onChange={(e) => setVerified(e.target.checked)} />
+          Partenaire vérifié Sala (affiche un badge de confiance sur la fiche publique)
+        </label>
 
         <div className="form-actions">
           <button type="submit" className="btn-sala-primary" disabled={saving}>

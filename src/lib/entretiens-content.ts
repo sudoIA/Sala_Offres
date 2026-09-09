@@ -75,6 +75,22 @@ export const INTERVIEW_QUESTIONS: InterviewQuestion[] = [
       "Soyez précis et honnête : «Je suis disponible immédiatement» ou «Je dois respecter un préavis d'un mois, mais je reste flexible si besoin.»",
     dontText: "Évitez les réponses vagues comme «Je verrai» qui donnent l'impression que le poste n'est pas une priorité pour vous.",
   },
+  {
+    number: 9,
+    question: "« Quelles sont vos plus grandes qualités ? »",
+    seeking: "Si vous connaissez vos points forts et si vous pouvez les relier concrètement aux besoins du poste.",
+    doText:
+      "Choisissez 2 à 3 qualités illustrées par un exemple concret : «Je suis rigoureux : lors de mon dernier stage, j'ai mis en place un tableau de suivi qui a réduit nos erreurs de saisie de moitié.»",
+    dontText: "Évitez une liste de qualités génériques sans preuve («je suis dynamique, sérieux, motivé») qui ne convainc pas le recruteur.",
+  },
+  {
+    number: 10,
+    question: "« Pourquoi devrions-nous vous choisir plutôt qu'un autre candidat ? »",
+    seeking: "Votre capacité à valoriser ce qui vous distingue, sans dénigrer les autres candidats.",
+    doText:
+      "Mettez en avant votre valeur ajoutée spécifique : «Au-delà de mon diplôme, j'apporte une expérience de terrain concrète, directement utile pour les défis de ce poste.»",
+    dontText: "Ne critiquez jamais des candidats que vous ne connaissez pas — cela renvoie une image négative de vous-même, pas d'eux.",
+  },
 ];
 
 export interface QuizOption {
@@ -159,6 +175,14 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
       { text: "J'arrive en retard sans prévenir et je m'excuse une fois sur place.", correct: false, explanation: "Ne pas prévenir donne l'impression d'un manque de respect pour le temps du recruteur." },
       { text: "J'appelle ou j'envoie un message dès que possible pour prévenir du retard et de l'heure estimée d'arrivée.", correct: true, explanation: "Très bien ! Prévenir rapidement montre du professionnalisme, même en cas d'imprévu." },
       { text: "J'annule l'entretien sans explication.", correct: false, explanation: "Cela ferme définitivement la porte à cette opportunité, alors qu'un simple message suffisait." },
+    ],
+  },
+  {
+    question: "Après l'entretien, que faites-vous dans les 24 à 48 heures qui suivent ?",
+    options: [
+      { text: "Rien, j'attends que le recruteur me recontacte de lui-même.", correct: false, explanation: "Ne pas relancer peut donner l'impression d'un manque d'intérêt réel pour le poste." },
+      { text: "J'envoie un message ou un email de remerciement, en rappelant brièvement ma motivation.", correct: true, explanation: "Excellent réflexe ! Cela montre votre professionnalisme et garde votre candidature en mémoire." },
+      { text: "J'appelle plusieurs fois par jour pour savoir si j'ai obtenu le poste.", correct: false, explanation: "Une relance trop insistante peut agacer le recruteur et desservir votre candidature." },
     ],
   },
 ];

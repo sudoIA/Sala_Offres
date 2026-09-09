@@ -1195,24 +1195,125 @@ footer.sala-footer .footer-bottom {
   box-shadow: var(--sala-shadow-green);
 }
 
+.annuaire-tab-btn.active-uni { background: var(--sala-green); border-color: var(--sala-green); box-shadow: var(--sala-shadow-green); }
+.annuaire-tab-btn.active-comp { background: #0284c7; border-color: #0284c7; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28); }
+.annuaire-tab-btn.active-club { background: var(--sala-red); border-color: var(--sala-red); box-shadow: var(--sala-shadow-red); }
+
+/* Barre de chiffres clés, sous le titre de la page. */
+.annuaire-stats-bar {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 0 auto 28px;
+  max-width: 720px;
+}
+
+.annuaire-stat-tile {
+  flex: 1 1 160px;
+  background: #ffffff;
+  border: 1px solid var(--sala-border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  text-align: center;
+  box-shadow: var(--sala-shadow-sm);
+}
+
+.annuaire-stat-tile .num {
+  font-family: var(--sala-font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.annuaire-stat-tile.stat-uni .num { color: var(--sala-green-dark); }
+.annuaire-stat-tile.stat-comp .num { color: #0284c7; }
+.annuaire-stat-tile.stat-club .num { color: var(--sala-red-dark); }
+
+.annuaire-stat-tile .label {
+  font-size: 0.78rem;
+  color: #6b7580;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
 .annuaire-card {
   background: #ffffff;
   border: 1px solid var(--sala-border);
   border-radius: 14px;
-  padding: 22px;
+  padding: 0;
   margin-bottom: 18px;
   box-shadow: var(--sala-shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  overflow: hidden;
+  position: relative;
 }
 
 .annuaire-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: var(--sala-shadow-md);
   border-color: var(--sala-green-border);
+}
+
+.annuaire-card-clickable {
+  cursor: pointer;
+}
+
+/* Bandeau coloré en haut de carte, avec le logo qui déborde dessus. */
+.annuaire-card-banner {
+  height: 64px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.annuaire-card-banner-uni { background: linear-gradient(135deg, #cdeed6, #eaf6ed); }
+.annuaire-card-banner-comp { background: linear-gradient(135deg, #bde3fb, #e0f2fe); }
+.annuaire-card-banner-club { background: linear-gradient(135deg, #fecaca, var(--sala-red-light)); }
+
+.annuaire-verified-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--sala-green);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.annuaire-card-body {
+  padding: 34px 20px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.annuaire-card-logo-wrap {
+  position: absolute;
+  top: 38px;
+  left: 20px;
+  z-index: 2;
+}
+
+.annuaire-card-logo-wrap .sala-company-tile,
+.annuaire-card-logo-wrap .card-icon-header {
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.annuaire-card-logo-wrap .card-icon-header {
+  width: 52px;
+  height: 52px;
+  font-size: 1.4rem;
 }
 
 .card-icon-header {
@@ -1228,7 +1329,129 @@ footer.sala-footer .footer-bottom {
 
 .icon-uni { background: #eaf6ed; color: var(--sala-green-dark); }
 .icon-comp { background: #e0f2fe; color: #0284c7; }
-.icon-club { background: #fefce8; color: #b45309; }
+.icon-club { background: var(--sala-red-light); color: var(--sala-red-dark); }
+
+.annuaire-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--sala-radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid transparent;
+}
+
+.annuaire-badge-uni { background: #eaf6ed; color: var(--sala-green-dark); border-color: #cdeed6; }
+.annuaire-badge-comp { background: #e0f2fe; color: #0284c7; border-color: #bde3fb; }
+.annuaire-badge-club { background: var(--sala-red-light); color: var(--sala-red-dark); border-color: #fecaca; }
+
+.annuaire-card-summary {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.annuaire-card-cta {
+  padding: 12px 20px;
+  border-top: 1px solid var(--sala-border);
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: auto;
+}
+
+.annuaire-card-cta.cta-uni { color: var(--sala-green-dark); }
+.annuaire-card-cta.cta-comp { color: #0284c7; }
+.annuaire-card-cta.cta-club { color: var(--sala-red-dark); }
+
+/* Fiche détail (modale) */
+.annuaire-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 -22px 16px;
+  padding: 16px 22px;
+}
+
+.annuaire-detail-header-uni { background: linear-gradient(135deg, #eaf6ed, #ffffff); }
+.annuaire-detail-header-comp { background: linear-gradient(135deg, #e0f2fe, #ffffff); }
+.annuaire-detail-header-club { background: linear-gradient(135deg, var(--sala-red-light), #ffffff); }
+
+.annuaire-detail-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #6b7580;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.annuaire-map-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--sala-border);
+}
+
+.annuaire-map-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* État de chargement : cartes "squelette" animées. */
+@keyframes sala-skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+.annuaire-skeleton-block,
+.annuaire-skeleton-logo,
+.annuaire-skeleton-line {
+  background: #e2e8f0;
+  animation: sala-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.annuaire-skeleton-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--sala-radius-lg);
+  margin-top: -28px;
+  border: 3px solid #ffffff;
+  margin-bottom: 12px;
+}
+
+.annuaire-skeleton-line {
+  height: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+/* Apparition en fondu, légèrement décalée carte par carte. */
+@keyframes sala-annuaire-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.annuaire-fade-in {
+  animation: sala-annuaire-fade-up 0.4s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .annuaire-skeleton-block,
+  .annuaire-skeleton-logo,
+  .annuaire-skeleton-line,
+  .annuaire-fade-in {
+    animation: none;
+  }
+}
 
 /* ==========================================================================
    LÉGISLATION / DROIT DU TRAVAIL
@@ -1428,6 +1651,50 @@ footer.sala-footer .footer-bottom {
 @media (prefers-reduced-motion: reduce) {
   .confetti-wrap {
     display: none;
+  }
+}
+
+/* Visage triste-mais-encourageant affiché quand le score du quiz d'entretien
+   n'atteint pas 80%, pour inciter à réessayer sans décourager. */
+.encourage-face-wrap {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.encourage-face-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #f1f5f9;
+  animation: sala-encourage-pulse 1.8s ease-in-out infinite;
+}
+
+.encourage-face-icon {
+  position: relative;
+  font-size: 2.6rem;
+  color: #64748b;
+  animation: sala-encourage-bounce 1.6s ease-in-out infinite;
+}
+
+@keyframes sala-encourage-pulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes sala-encourage-bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(-4deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .encourage-face-pulse,
+  .encourage-face-icon {
+    animation: none;
   }
 }
 

@@ -149,7 +149,7 @@ export default function AdminAnnuairesPage() {
             <div className="admin-card" key={item.id}>
               <div className="admin-card-top">
                 <div className="admin-row-identity">
-                  <CompanyTile company={item.name} />
+                  <CompanyTile company={item.name} logoUrl={item.logo} />
                   <div className="title">{item.name || "Sans nom"}</div>
                 </div>
               </div>
