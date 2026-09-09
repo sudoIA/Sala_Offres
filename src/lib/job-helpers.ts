@@ -87,6 +87,19 @@ export function formatExpiry(deadlineDate: Date | null): Expiry | null {
   return { expired: false, text: `Date limite : ${deadlineDate.toLocaleDateString("fr-FR")}`, urgent: false };
 }
 
+/** Ex: "à l'instant", "il y a 5 min", "il y a 2h" — pour l'indicateur "Mise à jour ...". */
+export function formatRelativeTime(date: Date): string {
+  const diffSec = Math.max(0, Math.round((Date.now() - date.getTime()) / 1000));
+  if (diffSec < 30) return "à l'instant";
+  if (diffSec < 60) return "il y a moins d'1 min";
+  const diffMin = Math.round(diffSec / 60);
+  if (diffMin < 60) return `il y a ${diffMin} min`;
+  const diffH = Math.round(diffMin / 60);
+  if (diffH < 24) return `il y a ${diffH}h`;
+  const diffDays = Math.round(diffH / 24);
+  return `il y a ${diffDays} j`;
+}
+
 const FAVORIS_KEY = "sala_favoris";
 
 function readFavoris(): string[] {

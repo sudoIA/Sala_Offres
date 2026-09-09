@@ -12,46 +12,38 @@ import { FabCv } from "@/components/layout/FabCv";
 import { JobCard } from "@/components/JobCard";
 import { JobDetailContent } from "@/components/JobDetailContent";
 import { FavShareButtons } from "@/components/FavShareButtons";
+import { Pagination } from "@/components/admin/Pagination";
+import { usePagination } from "@/hooks/usePagination";
 import { useActiveJobs } from "@/hooks/useJobs";
 import { useCompanyLogos } from "@/hooks/useCompanyLogos";
+import { formatRelativeTime } from "@/lib/job-helpers";
 import type { Job } from "@/types/job";
 
-type FilterType = "all" | "city" | "contract";
-
-const CHIPS: { label: string; type: FilterType; value?: string }[] = [
-  { label: "Toutes", type: "all" },
-  { label: "📍 Brazzaville", type: "city", value: "Brazzaville" },
-  { label: "📍 Pointe-Noire", type: "city", value: "Pointe-Noire" },
-  { label: "💼 CDI", type: "contract", value: "CDI" },
-  { label: "📄 CDD", type: "contract", value: "CDD" },
-  { label: "🎓 Stage", type: "contract", value: "Stage" },
-];
-
 export default function OffresPage() {
-  const { jobs, loading, error } = useActiveJobs();
+  const { jobs, loading, error, lastUpdated, offline, refreshing, refresh } = useActiveJobs();
+  // Force un nouveau rendu régulier pour garder "il y a X min" à jour.
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 30000);
+    return () => clearInterval(id);
+  }, []);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState<FilterType>("all");
-  const [filterValue, setFilterValue] = useState("");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [hasAutoSelected, setHasAutoSelected] = useState(false);
 
   const filtered = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    return jobs.filter((job) => {
-      const matchText =
-        !term ||
+    if (!term) return jobs;
+    return jobs.filter(
+      (job) =>
         job.title?.toLowerCase().includes(term) ||
         job.company?.toLowerCase().includes(term) ||
         job.city?.toLowerCase().includes(term) ||
-        job.contract?.toLowerCase().includes(term);
+        job.contract?.toLowerCase().includes(term)
+    );
+  }, [jobs, searchTerm]);
 
-      if (!matchText) return false;
-
-      if (filterType === "city") return !!job.city?.toLowerCase().includes(filterValue.toLowerCase());
-      if (filterType === "contract") return !!job.contract?.toLowerCase().includes(filterValue.toLowerCase());
-      return true;
-    });
-  }, [jobs, searchTerm, filterType, filterValue]);
+  const { pageItems, page, totalPages, setPage } = usePagination(filtered, searchTerm.trim().toLowerCase());
 
   // Sélection automatique de la première offre sur bureau, une seule fois.
   useEffect(() => {
@@ -61,13 +53,7 @@ export default function OffresPage() {
     }
   }, [filtered, hasAutoSelected]);
 
-  const logos = useCompanyLogos(filtered.map((j) => j.company));
-
-  function resetFilters() {
-    setSearchTerm("");
-    setFilterType("all");
-    setFilterValue("");
-  }
+  const logos = useCompanyLogos(pageItems.map((j) => j.company));
 
   const shareUrl = selectedJob && typeof window !== "undefined" ? `${window.location.origin}/offres/${selectedJob.id}` : "";
 
@@ -111,22 +97,21 @@ export default function OffresPage() {
               </div>
             </div>
 
-            <div className="d-flex gap-2 overflow-auto pb-2 mb-3">
-              {CHIPS.map((chip) => {
-                const active = filterType === "all" ? chip.type === "all" : chip.value === filterValue;
-                return (
-                  <span
-                    key={chip.label}
-                    className={`filter-chip${active ? " active" : ""}`}
-                    onClick={() => {
-                      setFilterType(chip.type);
-                      setFilterValue(chip.value || "");
-                    }}
-                  >
-                    {chip.label}
-                  </span>
-                );
-              })}
+            <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+              <span className="small text-muted">
+                {offline ? (
+                  <>
+                    <i className="fas fa-exclamation-triangle text-warning me-1"></i> Hors-ligne — dernières offres enregistrées
+                  </>
+                ) : lastUpdated ? (
+                  <>
+                    <i className="fas fa-check-circle text-success me-1"></i> Mise à jour {formatRelativeTime(lastUpdated)}
+                  </>
+                ) : null}
+              </span>
+              <button type="button" className="btn btn-sm btn-light border" onClick={refresh} disabled={refreshing}>
+                <i className={`fas fa-sync-alt me-1${refreshing ? " fa-spin" : ""}`}></i> Actualiser
+              </button>
             </div>
 
             <div style={{ maxWidth: 860, margin: "0 auto" }}>
@@ -149,16 +134,16 @@ export default function OffresPage() {
                 <div className="text-center py-5 bg-white rounded-3 p-4 shadow-sm">
                   <i className="fas fa-search fa-3x text-muted mb-3"></i>
                   <h5 className="fw-bold text-dark">Aucune offre ne correspond à votre recherche</h5>
-                  <p className="text-muted mb-3">Essayez d&apos;ajuster vos mots-clés ou réinitialisez les filtres.</p>
-                  <button className="btn-sala-outline btn-sm" onClick={resetFilters}>
-                    Réinitialiser les filtres
+                  <p className="text-muted mb-3">Essayez d&apos;ajuster vos mots-clés de recherche.</p>
+                  <button className="btn-sala-outline btn-sm" onClick={() => setSearchTerm("")}>
+                    Réinitialiser la recherche
                   </button>
                 </div>
               )}
 
               {!loading &&
                 !error &&
-                filtered.map((job) => (
+                pageItems.map((job) => (
                   <JobCard
                     key={job.id}
                     job={job}
@@ -168,6 +153,10 @@ export default function OffresPage() {
                     logoUrl={job.company ? logos[job.company] : null}
                   />
                 ))}
+
+              {!loading && !error && filtered.length > 0 && (
+                <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+              )}
             </div>
           </div>
 

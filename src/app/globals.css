@@ -484,6 +484,59 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--sala-green);
 }
 
+.sala-nav-item-btn {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.sala-sidebar-footer-card {
+  margin: 12px;
+  padding: 14px;
+  background: var(--sala-green-light);
+  border: 1px solid var(--sala-green-border);
+  border-radius: var(--sala-radius-md);
+}
+
+.sala-sidebar-footer-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--sala-green-dark);
+  margin-bottom: 4px;
+}
+
+.sala-sidebar-footer-card-text {
+  font-size: 0.76rem;
+  color: var(--sala-text-secondary);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.sala-offline-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--sala-green-border);
+}
+
+.sala-offline-toggle-label {
+  font-size: 0.8rem;
+}
+
+.sala-offline-toggle-label .status {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--sala-green-dark);
+}
+
 .sala-main-content {
   flex: 1;
   display: flex;
@@ -542,9 +595,19 @@ h1, h2, h3, h4, h5, h6 {
   border-top: 1px solid var(--sala-border);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
   z-index: 1040;
-  justify-content: space-around;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   padding: 0 6px;
+}
+
+/* Chaque moitié répartit ses propres liens ; le bouton CV (FAB) reste ainsi
+   toujours exactement au centre, quel que soit le nombre de liens actifs de
+   chaque côté. */
+.sala-bottom-nav-side {
+  display: flex;
+  height: 100%;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .sala-bottom-nav-item {
@@ -623,7 +686,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .sala-bottom-nav {
-    display: flex;
+    display: grid;
   }
 
   body {

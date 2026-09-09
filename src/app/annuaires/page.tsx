@@ -6,7 +6,8 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -116,9 +117,16 @@ function AnnuaireCardSkeleton() {
   );
 }
 
-export default function AnnuairesPage() {
+const VALID_CATEGORIES: AnnuaireCategory[] = ["universities", "companies", "clubs"];
+
+function AnnuairesPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const catParam = searchParams.get("cat") as AnnuaireCategory | null;
+  const initialCategory = catParam && VALID_CATEGORIES.includes(catParam) ? catParam : "universities";
+
   const { universities, companies, clubs, loading } = usePublicAnnuaires();
-  const [category, setCategory] = useState<AnnuaireCategory>("universities");
+  const [category, setCategory] = useState<AnnuaireCategory>(initialCategory);
   const [search, setSearch] = useState("");
   const [city, setCity] = useState("all");
   const [detailItem, setDetailItem] = useState<AnnuaireItem | null>(null);
@@ -189,6 +197,7 @@ export default function AnnuairesPage() {
                 onClick={() => {
                   setCategory(tab.key);
                   setCity("all");
+                  router.replace(`/annuaires?cat=${tab.key}`, { scroll: false });
                 }}
               >
                 <i className={tab.icon}></i> {tab.label}
@@ -355,5 +364,13 @@ export default function AnnuairesPage() {
       <FabCv />
       <BottomNav />
     </div>
+  );
+}
+
+export default function AnnuairesPage() {
+  return (
+    <Suspense fallback={null}>
+      <AnnuairesPageInner />
+    </Suspense>
   );
 }
