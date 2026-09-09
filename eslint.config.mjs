@@ -28,6 +28,8 @@ const eslintConfig = defineConfig([
     // Service worker et runtime Workbox générés par @ducanh2912/next-pwa à chaque build.
     "public/sw.js",
     "public/workbox-*.js",
+    "public/worker-*.js",
+    "public/swe-worker-*.js",
   ]),
 ]);
 

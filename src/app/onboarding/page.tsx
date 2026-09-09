@@ -1,6 +1,7 @@
 // src/app/onboarding/page.tsx
-// Diaporama de découverte de Sala (4 slides), affiché via l'icône "?" des
-// pages de type application.
+// Diaporama de découverte de Sala : le problème résolu, puis une diapositive
+// par mission de l'ONG (reprises de la page "À propos"), affiché via l'icône
+// "?" des pages de type application.
 
 "use client";
 
@@ -44,11 +45,19 @@ export default function OnboardingPage() {
 
       <main className="container my-auto py-3">
         <div className="onboarding-card">
-          <span className="onboarding-step-indicator">{slide.counter}</span>
+          <span className="onboarding-step-indicator">
+            {index + 1} / {ONBOARDING_SLIDES.length}
+          </span>
 
-          <div className="slide-illustration" style={{ background: slide.themeColors.bg, color: slide.themeColors.color }}>
-            <i className={`${slide.icon} fa-4x`}></i>
-          </div>
+          {slide.kind === "photo" ? (
+            <div className="onboarding-photo-frame">
+              <Image src={slide.image} alt={slide.imageAlt} width={300} height={536} style={{ width: "100%", height: "auto" }} />
+            </div>
+          ) : (
+            <div className="slide-illustration" style={{ background: slide.themeColors.bg, color: slide.themeColors.color }}>
+              <i className={`${slide.icon} fa-4x`}></i>
+            </div>
+          )}
 
           <h2 className="h3 fw-bold mb-3">{slide.title}</h2>
           <p className="text-secondary mb-4" style={{ fontSize: "1rem", lineHeight: 1.6, minHeight: 60 }}>

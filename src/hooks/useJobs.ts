@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { collection, doc, getDoc, getDocsFromServer, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { loadJobsSnapshot, saveJobsSnapshot } from "@/lib/offline-cache";
+import { loadSnapshot, saveSnapshot } from "@/lib/offline-cache";
 import type { Job, JobDoc } from "@/types/job";
 
 interface UseJobsResult {
@@ -20,6 +20,40 @@ interface UseJobsResult {
   offline: boolean;
   refreshing: boolean;
   refresh: () => Promise<void>;
+}
+
+const CACHE_KEY = "jobs";
+
+interface CacheableJob extends Omit<Job, "deadlineDate" | "deadline" | "timestamp"> {
+  deadlineDate: string | null;
+}
+
+function loadCachedJobs(): { savedAt: Date; jobs: Job[] } | null {
+  const snap = loadSnapshot<CacheableJob[]>(CACHE_KEY);
+  if (!snap || !Array.isArray(snap.data)) return null;
+  return {
+    savedAt: snap.savedAt,
+    jobs: snap.data.map((j) => ({ ...j, deadlineDate: j.deadlineDate ? new Date(j.deadlineDate) : null })),
+  };
+}
+
+function saveCachedJobs(jobs: Job[]): void {
+  const cacheable: CacheableJob[] = jobs.map((job) => ({
+    id: job.id,
+    title: job.title,
+    company: job.company,
+    city: job.city,
+    contract: job.contract,
+    body: job.body,
+    languages: job.languages,
+    email: job.email,
+    site: job.site,
+    tel: job.tel,
+    competences: job.competences,
+    visibility: job.visibility,
+    deadlineDate: job.deadlineDate ? job.deadlineDate.toISOString() : null,
+  }));
+  saveSnapshot(CACHE_KEY, cacheable);
 }
 
 function docsToJobs(docs: { id: string; data: () => JobDoc }[]): Job[] {
@@ -42,10 +76,10 @@ export function useActiveJobs(): UseJobsResult {
   // éviter un écran vide le temps que Firestore réponde, et pour rester
   // consultable si l'appareil est réellement hors-ligne. Initialiseurs
   // paresseux : ne lisent le localStorage qu'une seule fois, au montage.
-  const [jobs, setJobs] = useState<Job[]>(() => loadJobsSnapshot()?.jobs || []);
-  const [loading, setLoading] = useState(() => !loadJobsSnapshot());
+  const [jobs, setJobs] = useState<Job[]>(() => loadCachedJobs()?.jobs || []);
+  const [loading, setLoading] = useState(() => !loadCachedJobs());
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(() => loadJobsSnapshot()?.savedAt || null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(() => loadCachedJobs()?.savedAt || null);
   const [offline, setOffline] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const jobsRef = useRef(jobs);
@@ -64,7 +98,7 @@ export function useActiveJobs(): UseJobsResult {
         setOffline(false);
         const now = new Date();
         setLastUpdated(now);
-        saveJobsSnapshot(eligible);
+        saveCachedJobs(eligible);
       },
       (err) => {
         console.error("Erreur chargement offres :", err);
@@ -89,7 +123,7 @@ export function useActiveJobs(): UseJobsResult {
       setError(null);
       setOffline(false);
       setLastUpdated(new Date());
-      saveJobsSnapshot(eligible);
+      saveCachedJobs(eligible);
     } catch (err) {
       console.warn("Actualisation impossible (hors-ligne ?) :", err);
       setOffline(true);

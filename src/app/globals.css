@@ -905,6 +905,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .hero-preview-card .sala-job-card:last-child { margin-bottom: 0; }
 
+.onboarding-photo-frame {
+  display: inline-block;
+  max-width: 190px;
+  width: 100%;
+  border-radius: var(--sala-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--sala-shadow-lg);
+  transform: rotate(-2deg);
+  border: 6px solid #ffffff;
+  margin: 0 auto 24px;
+}
+
+.onboarding-photo-frame img {
+  display: block;
+}
+
 .value-strip {
   border-top: 1px solid var(--sala-border);
   border-bottom: 1px solid var(--sala-border);
