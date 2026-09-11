@@ -36,14 +36,24 @@ async function loadOrFallback(colName: string, fallback: AnnuaireItem[]): Promis
 }
 
 export function usePublicAnnuaires() {
-  const cached = typeof window !== "undefined" ? loadSnapshot<AnnuairesData>(CACHE_KEY) : null;
-  const [universities, setUniversities] = useState<AnnuaireItem[]>(cached?.data.universities || []);
-  const [companies, setCompanies] = useState<AnnuaireItem[]>(cached?.data.companies || []);
-  const [clubs, setClubs] = useState<AnnuaireItem[]>(cached?.data.clubs || []);
-  const [loading, setLoading] = useState(!cached);
+  const [universities, setUniversities] = useState<AnnuaireItem[]>([]);
+  const [companies, setCompanies] = useState<AnnuaireItem[]>([]);
+  const [clubs, setClubs] = useState<AnnuaireItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    // Lu ici (dans l'effet), jamais pendant le rendu : le rendu serveur n'a
+    // pas accès à localStorage, donc lire le cache pendant le rendu produit
+    // un contenu différent entre serveur et client (erreur d'hydratation).
+    const cached = loadSnapshot<AnnuairesData>(CACHE_KEY);
+    if (cached) {
+      setUniversities(cached.data.universities);
+      setCompanies(cached.data.companies);
+      setClubs(cached.data.clubs);
+      setLoading(false);
+    }
+
     Promise.all([
       loadOrFallback(ANNUAIRE_COLLECTIONS.universities, cached?.data.universities || initialUniversities),
       loadOrFallback(ANNUAIRE_COLLECTIONS.companies, cached?.data.companies || initialCompanies),
@@ -59,7 +69,6 @@ export function usePublicAnnuaires() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { universities, companies, clubs, loading };

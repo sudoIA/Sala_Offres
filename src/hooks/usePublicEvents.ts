@@ -50,13 +50,21 @@ function timeout(ms: number): Promise<never> {
 }
 
 export function usePublicEvents() {
-  const cached = typeof window !== "undefined" ? loadSnapshot<CacheableEvent[]>(CACHE_KEY) : null;
-  const cachedEvents = cached && Array.isArray(cached.data) ? cached.data.map(fromCacheable) : null;
-  const [events, setEvents] = useState<SalaEvent[]>(() => cachedEvents || []);
-  const [loading, setLoading] = useState(!cachedEvents);
+  const [events, setEvents] = useState<SalaEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    // Lu ici (dans l'effet), jamais pendant le rendu : le rendu serveur n'a
+    // pas accès à localStorage, donc lire le cache pendant le rendu produit
+    // un contenu différent entre serveur et client (erreur d'hydratation).
+    const cached = loadSnapshot<CacheableEvent[]>(CACHE_KEY);
+    const cachedEvents = cached && Array.isArray(cached.data) ? cached.data.map(fromCacheable) : null;
+    if (cachedEvents) {
+      setEvents(cachedEvents);
+      setLoading(false);
+    }
+
     (async () => {
       try {
         // Pas d'orderBy() ni de where() ici : Firestore exclurait
@@ -89,7 +97,6 @@ export function usePublicEvents() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { events, loading };

@@ -62,6 +62,13 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // --- Offres collectées automatiquement (ACPE, ...), avant validation ---
+    // Jamais publique : seule l'équipe admin y accède, depuis l'écran
+    // "Imports" du back-office (lecture, écriture ET validation).
+    match /emplois_import/{importId} {
+      allow read, write: if isAdmin();
+    }
+
     // --- Inscriptions aux événements ---
     // Formulaire public (pas de compte requis) : on autorise la création
     // d'une inscription avec un schéma restreint, mais seule l'équipe admin

@@ -2937,14 +2937,16 @@ body.dashboard-body {
   grid-column: 1 / -1;
 }
 
-.annuaire-subtabs {
+.annuaire-subtabs,
+.admin-subtabs {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   margin-bottom: 20px;
 }
 
-.annuaire-subtab {
+.annuaire-subtab,
+.admin-subtab {
   background: #ffffff;
   border: 1.5px solid var(--sala-border);
   color: var(--sala-text-secondary);
@@ -2955,12 +2957,14 @@ body.dashboard-body {
   transition: all 0.2s ease;
 }
 
-.annuaire-subtab:hover {
+.annuaire-subtab:hover,
+.admin-subtab:hover {
   border-color: var(--sala-green);
   color: var(--sala-green-dark);
 }
 
-.annuaire-subtab.active {
+.annuaire-subtab.active,
+.admin-subtab.active {
   background: var(--sala-green);
   color: #ffffff;
   border-color: var(--sala-green);

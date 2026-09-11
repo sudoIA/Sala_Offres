@@ -1,5 +1,8 @@
 // src/components/admin/JobFormModal.tsx
 // Formulaire de création/édition d'une offre d'emploi (collection "emplois").
+// Sert aussi d'écran de relecture pour une offre importée automatiquement
+// (voir importRecord/onApproveImport) : l'admin peut corriger n'importe quel
+// champ avant publication, elle n'est jamais écrite telle quelle.
 
 "use client";
 
@@ -9,6 +12,7 @@ import { db } from "@/lib/firebase";
 import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import type { Job } from "@/types/job";
+import type { ImportedJobRecord } from "@/hooks/useJobImports";
 
 function dateInputValue(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -18,6 +22,10 @@ function dateInputValue(date: Date): string {
 interface JobFormModalProps {
   open: boolean;
   job: Job | null;
+  /** Offre importée à relire avant publication (voir page /admin/imports). */
+  importRecord?: ImportedJobRecord | null;
+  /** Si fourni, le formulaire publie via ce callback (puis marque l'import "approved") au lieu d'écrire directement dans "emplois". */
+  onApproveImport?: (jobData: Record<string, unknown>) => Promise<void>;
   onClose: () => void;
 }
 
@@ -38,29 +46,50 @@ const EMPTY_FORM = {
   visibility: true,
 };
 
-export function JobFormModal({ open, job, onClose }: JobFormModalProps) {
+export function JobFormModal({ open, job, importRecord, onApproveImport, onClose }: JobFormModalProps) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    setForm({
-      title: job?.title || "",
-      company: job?.company || "",
-      city: job?.city || "",
-      contract: job?.contract || "",
-      email: job?.email || "",
-      site: job?.site || "",
-      tel: job?.tel || "",
-      image: "",
-      timestamp: job?.timestamp?.toDate ? dateInputValue(job.timestamp.toDate()) : dateInputValue(new Date()),
-      deadline: job?.deadlineDate ? dateInputValue(job.deadlineDate) : "",
-      languages: job?.languages || "",
-      competences: (job?.competences || []).join(", "),
-      body: job?.body || "",
-      visibility: job ? !!job.visibility : true,
-    });
-  }, [open, job]);
+    if (job) {
+      setForm({
+        title: job.title || "",
+        company: job.company || "",
+        city: job.city || "",
+        contract: job.contract || "",
+        email: job.email || "",
+        site: job.site || "",
+        tel: job.tel || "",
+        image: "",
+        timestamp: job.timestamp?.toDate ? dateInputValue(job.timestamp.toDate()) : dateInputValue(new Date()),
+        deadline: job.deadlineDate ? dateInputValue(job.deadlineDate) : "",
+        languages: job.languages || "",
+        competences: (job.competences || []).join(", "),
+        body: job.body || "",
+        visibility: !!job.visibility,
+      });
+    } else if (importRecord) {
+      setForm({
+        title: importRecord.title || "",
+        company: importRecord.company || "",
+        city: importRecord.city || "",
+        contract: importRecord.contract || "",
+        email: importRecord.email || "",
+        site: importRecord.sourceUrl || "",
+        tel: "",
+        image: importRecord.logo || "",
+        timestamp: dateInputValue(new Date()),
+        deadline: importRecord.deadline ? dateInputValue(new Date(`${importRecord.deadline}T23:59:59`)) : "",
+        languages: "",
+        competences: "",
+        body: importRecord.description || "",
+        visibility: true,
+      });
+    } else {
+      setForm(EMPTY_FORM);
+    }
+  }, [open, job, importRecord]);
 
   function set<K extends keyof typeof EMPTY_FORM>(key: K, value: (typeof EMPTY_FORM)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -87,7 +116,10 @@ export function JobFormModal({ open, job, onClose }: JobFormModalProps) {
     };
 
     try {
-      if (job) {
+      if (onApproveImport) {
+        await onApproveImport(jobData);
+        notify("Offre publiée avec succès !");
+      } else if (job) {
         await updateDoc(doc(db, "emplois", job.id), jobData);
         notify("Offre mise à jour.");
       } else {
@@ -104,8 +136,20 @@ export function JobFormModal({ open, job, onClose }: JobFormModalProps) {
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={job ? "Modifier l'offre" : "Publier une nouvelle offre"}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={job ? "Modifier l'offre" : importRecord ? "Vérifier avant de publier l'offre importée" : "Publier une nouvelle offre"}
+    >
       <form className="job-form" onSubmit={handleSubmit}>
+        {importRecord && (
+          <p className="text-muted small mb-3">
+            Offre importée depuis {importRecord.source.toUpperCase()} — relisez et corrigez les champs avant de publier.{" "}
+            <a href={importRecord.sourceUrl} target="_blank" rel="noopener">
+              Voir l&apos;annonce d&apos;origine <i className="fas fa-external-link-alt"></i>
+            </a>
+          </p>
+        )}
         <div className="form-grid">
           <div className="form-group">
             <label htmlFor="title">Titre</label>
@@ -121,12 +165,20 @@ export function JobFormModal({ open, job, onClose }: JobFormModalProps) {
           </div>
           <div className="form-group">
             <label htmlFor="contract">Contrat</label>
-            <select id="contract" value={form.contract} onChange={(e) => set("contract", e.target.value)} required>
-              <option value="">Sélectionner</option>
-              <option value="CDI">CDI</option>
-              <option value="CDD">CDD</option>
-              <option value="Stage">Stage</option>
-            </select>
+            <input
+              id="contract"
+              type="text"
+              list="contract-suggestions"
+              placeholder="Ex: CDI, CDD, Stage..."
+              value={form.contract}
+              onChange={(e) => set("contract", e.target.value)}
+              required
+            />
+            <datalist id="contract-suggestions">
+              <option value="CDI" />
+              <option value="CDD" />
+              <option value="Stage" />
+            </datalist>
           </div>
           <div className="form-group">
             <label htmlFor="jobEmail">Email de contact</label>

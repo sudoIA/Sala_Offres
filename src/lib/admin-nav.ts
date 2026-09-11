@@ -53,6 +53,14 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     subtitle: "Fiches thématiques affichées sur la page Législation.",
   },
   {
+    href: "/admin/imports",
+    icon: "fas fa-cloud-download-alt",
+    label: "Imports",
+    mobileLabel: "Imports",
+    title: "Imports d'offres",
+    subtitle: "Offres collectées automatiquement (ACPE...), à valider avant publication.",
+  },
+  {
     href: "/admin/utilisateurs",
     icon: "fas fa-users",
     label: "Utilisateurs",

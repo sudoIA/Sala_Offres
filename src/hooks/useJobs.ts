@@ -72,20 +72,32 @@ function docsToJobs(docs: { id: string; data: () => JobDoc }[]): Job[] {
 
 /** Offres actives (visibles et non expirées), triées de la plus récente à la plus ancienne. */
 export function useActiveJobs(): UseJobsResult {
-  // Pré-remplissage depuis la dernière copie locale (mode hors-ligne) pour
-  // éviter un écran vide le temps que Firestore réponde, et pour rester
-  // consultable si l'appareil est réellement hors-ligne. Initialiseurs
-  // paresseux : ne lisent le localStorage qu'une seule fois, au montage.
-  const [jobs, setJobs] = useState<Job[]>(() => loadCachedJobs()?.jobs || []);
-  const [loading, setLoading] = useState(() => !loadCachedJobs());
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(() => loadCachedJobs()?.savedAt || null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [offline, setOffline] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const jobsRef = useRef(jobs);
   useEffect(() => {
     jobsRef.current = jobs;
   }, [jobs]);
+
+  // Pré-remplissage depuis la dernière copie locale (mode hors-ligne), pour
+  // éviter un écran vide le temps que Firestore réponde et rester consultable
+  // si l'appareil est réellement hors-ligne. Fait dans un effet (jamais
+  // pendant le rendu ni dans un initialiseur de useState) : le rendu serveur
+  // n'a pas accès à localStorage, donc lire le cache pendant le rendu produit
+  // un contenu différent entre serveur et client (erreur d'hydratation
+  // Next.js). Un effet ne s'exécute qu'après l'hydratation, donc sans risque.
+  useEffect(() => {
+    const cached = loadCachedJobs();
+    if (cached) {
+      setJobs(cached.jobs);
+      setLastUpdated(cached.savedAt);
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
