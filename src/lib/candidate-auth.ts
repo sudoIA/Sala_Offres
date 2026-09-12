@@ -3,6 +3,7 @@
 
 import {
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -38,7 +39,16 @@ export async function registerCandidate(
     updatedAt: serverTimestamp(),
   });
 
+  // Empêche les comptes fictifs : l'email doit être confirmé via le lien
+  // reçu avant que le compte soit pleinement utilisable (voir /verifier-email).
+  await sendEmailVerification(user);
+
   return user;
+}
+
+/** Renvoie l'email de vérification (ex: bouton "je n'ai rien reçu"). */
+export async function resendVerificationEmail(user: User): Promise<void> {
+  await sendEmailVerification(user);
 }
 
 /** Connexion candidat par email et mot de passe. */

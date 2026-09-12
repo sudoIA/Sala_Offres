@@ -25,7 +25,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 export default function ProfilePage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, emailVerified } = useAuth();
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [tab, setTab] = useState<Tab>("about");
@@ -37,8 +37,12 @@ export default function ProfilePage() {
       router.replace("/auth");
       return;
     }
+    if (!emailVerified) {
+      router.replace("/verifier-email");
+      return;
+    }
     loadUserProfile(user.uid).then(setProfile);
-  }, [authLoading, user, router]);
+  }, [authLoading, user, emailVerified, router]);
 
   async function handleSave(data: ProfileUpdateData) {
     if (!user) return;
@@ -46,7 +50,7 @@ export default function ProfilePage() {
     setProfile((p) => (p ? { ...p, ...data } : p));
   }
 
-  if (authLoading || !user) {
+  if (authLoading || !user || !emailVerified) {
     return (
       <div className="admin-auth-checking">
         <div className="spinner-border text-success"></div>

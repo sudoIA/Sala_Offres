@@ -100,6 +100,11 @@ export default function CvBuilderPage() {
         router.push("/auth");
         return;
       }
+      if (message.includes("vérifier")) {
+        alert(message);
+        router.push("/verifier-email");
+        return;
+      }
       alert("Erreur : " + message);
     }
   }

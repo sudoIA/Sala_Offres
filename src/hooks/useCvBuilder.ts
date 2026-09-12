@@ -131,6 +131,9 @@ export function useCvBuilder() {
     if (!user) {
       throw new Error("Vous devez être connecté pour sauvegarder votre CV en ligne.");
     }
+    if (!user.emailVerified) {
+      throw new Error("Vous devez vérifier votre adresse email avant de sauvegarder votre CV en ligne.");
+    }
     const docRef = await addDoc(collection(db, "users", user.uid, "cvs"), {
       ...cv,
       userId: user.uid,

@@ -15,7 +15,7 @@ import { loginCandidate, loginWithGoogle, registerCandidate, sendResetEmail } fr
 const CITIES = ["Brazzaville", "Pointe-Noire", "Dolisie", "Nkayi", "Oyo", "Autre"];
 
 export default function AuthPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, emailVerified } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState<"login" | "register">("login");
   const [error, setError] = useState("");
@@ -35,8 +35,9 @@ export default function AuthPage() {
   const [regPasswordConfirm, setRegPasswordConfirm] = useState("");
 
   useEffect(() => {
-    if (!authLoading && user) router.replace("/profile");
-  }, [authLoading, user, router]);
+    if (authLoading || !user) return;
+    router.replace(emailVerified ? "/profile" : "/verifier-email");
+  }, [authLoading, user, emailVerified, router]);
 
   function clearAlerts() {
     setError("");
@@ -48,9 +49,10 @@ export default function AuthPage() {
     clearAlerts();
     setLoginLoading(true);
     try {
-      await loginCandidate(loginEmail.trim(), loginPassword);
+      const loggedInUser = await loginCandidate(loginEmail.trim(), loginPassword);
       setSuccess("Connexion réussie ! Redirection...");
-      setTimeout(() => router.push("/profile"), 800);
+      const destination = loggedInUser.emailVerified ? "/profile" : "/verifier-email";
+      setTimeout(() => router.push(destination), 800);
     } catch (err) {
       const authErr = err as AuthError;
       console.error(authErr);
@@ -70,8 +72,8 @@ export default function AuthPage() {
     setRegisterLoading(true);
     try {
       await registerCandidate(regEmail.trim(), regPassword, regFullName.trim(), regCity, regPhone.trim());
-      setSuccess("Compte créé avec succès ! Bienvenue sur Sala.");
-      setTimeout(() => router.push("/profile"), 1000);
+      setSuccess("Compte créé ! Vérifiez votre boîte mail pour confirmer votre adresse.");
+      setTimeout(() => router.push("/verifier-email"), 1000);
     } catch (err) {
       const authErr = err as AuthError;
       console.error(authErr);
