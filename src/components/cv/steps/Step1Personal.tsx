@@ -45,7 +45,7 @@ export function Step1Personal({ personal, invalidFields, onChange, onFieldTouche
 
   return (
     <div className="step-pane cv-card">
-      <h3 className="h4 fw-bold mb-1 text-dark">Informations personnelles</h3>
+      <h3 className="h4 fw-bold mb-1">Informations personnelles</h3>
       <p className="text-muted small mb-4">Ces informations permettront aux recruteurs congolais de vous contacter directement.</p>
 
       <div className="row align-items-center mb-4">

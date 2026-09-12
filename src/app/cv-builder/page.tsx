@@ -110,7 +110,7 @@ export default function CvBuilderPage() {
   }
 
   return (
-    <div style={{ backgroundColor: "#f8faf9", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <div style={{ backgroundColor: "var(--sala-bg)", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <header className="sala-topbar">
         <Link href="/" className="d-flex align-items-center text-decoration-none">
           <Image src="/img/logo_transparent.png" alt="Logo Sala" width={100} height={38} style={{ height: 38, width: "auto" }} className="me-2" />

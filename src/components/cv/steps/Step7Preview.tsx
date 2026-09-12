@@ -81,7 +81,7 @@ export function Step7Preview({ cv, onTemplateChange, renderRef, onDownloadPdf, o
 
   return (
     <div className="step-pane">
-      <h3 className="h5 fw-bold mb-1 text-dark">Choisissez votre modèle</h3>
+      <h3 className="h5 fw-bold mb-1">Choisissez votre modèle</h3>
       <p className="text-muted small mb-3">Le modèle sélectionné détermine la mise en page de votre CV téléchargé en PDF.</p>
       <div className="template-picker">
         {TEMPLATES.map((tpl) => (

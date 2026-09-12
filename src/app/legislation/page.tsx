@@ -68,7 +68,7 @@ export default function LegislationPage() {
       <div className="sala-main-content">
         <AppTopbar />
 
-        <div style={{ backgroundColor: "#f8fafc", flex: 1 }}>
+        <div style={{ backgroundColor: "var(--sala-bg)", flex: 1 }}>
           <section className="py-4 py-md-5 text-white" style={{ background: "linear-gradient(135deg, #1e6b31 0%, #3b9452 100%)" }}>
             <div className="container text-center">
               <span className="badge bg-white text-dark fw-bold mb-3 px-3 py-2 rounded-pill shadow-sm">
@@ -137,7 +137,7 @@ export default function LegislationPage() {
                     <div className="p-3 bg-light rounded-3 mb-2 border">
                       <div className="d-flex align-items-center gap-2 mb-1">
                         <span className="badge bg-success">ACPE</span>
-                        <strong className="small">Agence Congolaise Pour l&apos;Emploi (ex-ONEMO)</strong>
+                        <strong className="small text-dark">Agence Congolaise Pour l&apos;Emploi (ex-ONEMO)</strong>
                       </div>
                       <p className="small text-muted mb-1">
                         Enregistre les demandeurs d&apos;emploi, vise les contrats d&apos;apprentissage et centralise les offres d&apos;entreprises.
@@ -156,7 +156,7 @@ export default function LegislationPage() {
                     <div className="p-3 bg-light rounded-3 mb-2 border">
                       <div className="d-flex align-items-center gap-2 mb-1">
                         <span className="badge bg-primary">CNSS</span>
-                        <strong className="small">Caisse Nationale de Sécurité Sociale</strong>
+                        <strong className="small text-dark">Caisse Nationale de Sécurité Sociale</strong>
                       </div>
                       <p className="small text-muted mb-1">
                         Assure la couverture sociale : retraite, allocations familiales, couverture des accidents du travail et maladies professionnelles.
@@ -175,7 +175,7 @@ export default function LegislationPage() {
                     <div className="p-3 bg-light rounded-3 border">
                       <div className="d-flex align-items-center gap-2 mb-1">
                         <span className="badge bg-danger">DGT / Inspection</span>
-                        <strong className="small">Inspection du Travail (Ministère de la Fonction Publique, du Travail et de la Sécurité Sociale)</strong>
+                        <strong className="small text-dark">Inspection du Travail (Ministère de la Fonction Publique, du Travail et de la Sécurité Sociale)</strong>
                       </div>
                       <p className="small text-muted mb-1">
                         En cas de conflit avec votre employeur, saisissez gratuitement l&apos;Inspection du Travail de votre

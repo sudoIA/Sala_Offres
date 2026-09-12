@@ -21,7 +21,7 @@ export function JobDetailPageClient({ id }: { id: string }) {
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
-    <div style={{ backgroundColor: "#f8f9fa", paddingBottom: 85 }}>
+    <div style={{ backgroundColor: "var(--sala-bg)", paddingBottom: 85 }}>
       <AppTopbar backHref="/offres" backLabel="Retour aux offres" />
 
       <div>
@@ -35,7 +35,7 @@ export function JobDetailPageClient({ id }: { id: string }) {
         {!loading && (notFound || !job) && (
           <div className="detail-card text-center py-5">
             <i className="fas fa-briefcase fa-2x text-muted mb-3"></i>
-            <h5 className="fw-bold text-dark">Offre introuvable</h5>
+            <h5 className="fw-bold">Offre introuvable</h5>
             <p className="text-muted mb-3">Cette offre n&apos;existe plus ou a été retirée.</p>
             <Link href="/offres" className="btn-sala-primary py-2 px-4 rounded-pill">
               Voir toutes les offres

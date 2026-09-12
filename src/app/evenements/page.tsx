@@ -120,7 +120,7 @@ export default function EvenementsPage() {
       <div className="sala-main-content">
         <AppTopbar />
 
-        <div style={{ backgroundColor: "#f8fafc", flex: 1 }}>
+        <div style={{ backgroundColor: "var(--sala-bg)", flex: 1 }}>
           <section className="py-4 py-md-5 text-white" style={{ background: "linear-gradient(135deg, #1e6b31 0%, #3b9452 100%)" }}>
             <div className="container text-center">
               <span className="badge bg-white text-dark fw-bold mb-3 px-3 py-2 rounded-pill shadow-sm">

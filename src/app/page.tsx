@@ -108,7 +108,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="value-strip bg-white">
+      <section className="value-strip">
         <div className="container">
           <div className="row g-4">
             <div className="col-md-3 col-sm-6">
@@ -159,7 +159,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="py-5" id="emplois" style={{ background: "#f8f9fa" }}>
+      <section className="py-5" id="emplois" style={{ background: "var(--sala-bg)" }}>
         <div className="container">
           <div className="text-center mb-5">
             <span className="section-eyebrow">Opportunités récentes</span>

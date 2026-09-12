@@ -52,7 +52,7 @@ export default function AdminOverviewPage() {
           </div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon" style={{ background: "#f1f3f5", color: "var(--sala-text-secondary)" }}>
+          <div className="stat-icon" style={{ background: "var(--sala-bg)", color: "var(--sala-text-secondary)" }}>
             <i className="fas fa-layer-group"></i>
           </div>
           <div>

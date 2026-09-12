@@ -25,7 +25,7 @@ export default function EntretiensPage() {
         <div className="container py-4" style={{ maxWidth: 840 }}>
           <div className="text-center mb-4">
             <span className="badge-sala-green px-3 py-1 mb-2"><i className="fas fa-user-tie me-1"></i> Coaching Recrutement</span>
-            <h1 className="h2 fw-bold text-dark mb-2">Préparation aux Entretiens</h1>
+            <h1 className="h2 fw-bold mb-2">Préparation aux Entretiens</h1>
             <p className="text-muted">
               Maîtrisez les codes des recruteurs au Congo, évitez les pièges classiques et entraînez-vous avec notre Quiz interactif.
             </p>
@@ -54,7 +54,7 @@ export default function EntretiensPage() {
                 <div className="interview-card" key={q.number}>
                   <div className="d-flex align-items-center gap-2 mb-2">
                     <span className="badge bg-light text-dark border fw-bold">Question {q.number}</span>
-                    <h5 className="fw-bold mb-0 text-dark">{q.question}</h5>
+                    <h5 className="fw-bold mb-0">{q.question}</h5>
                   </div>
                   <p className="text-muted small mb-3">
                     <strong>Ce que cherche le recruteur :</strong> {q.seeking}

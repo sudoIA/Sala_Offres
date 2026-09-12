@@ -42,7 +42,7 @@ export function Step5Skills({ skills, hobbies, onSkillsChange, onHobbiesChange }
 
   return (
     <div className="step-pane cv-card">
-      <h3 className="h4 fw-bold mb-1 text-dark">Compétences</h3>
+      <h3 className="h4 fw-bold mb-1">Compétences</h3>
       <p className="text-muted small mb-3">Indiquez vos compétences techniques et humaines (séparées par des virgules).</p>
 
       <div className="mb-4">
@@ -73,7 +73,7 @@ export function Step5Skills({ skills, hobbies, onSkillsChange, onHobbiesChange }
 
       <hr className="mb-4" />
 
-      <h3 className="h5 fw-bold mb-1 text-dark">Loisirs &amp; Centres d&apos;intérêt</h3>
+      <h3 className="h5 fw-bold mb-1">Loisirs &amp; Centres d&apos;intérêt</h3>
       <p className="text-muted small mb-3">Un CV avec des centres d&apos;intérêt paraît plus humain aux yeux du recruteur (séparés par des virgules).</p>
       <div className="mb-3">
         <label className="form-label small fw-bold">Vos loisirs</label>

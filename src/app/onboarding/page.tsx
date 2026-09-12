@@ -32,7 +32,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div style={{ background: "#f8faf9", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between", overflowX: "hidden" }}>
+    <div style={{ background: "var(--sala-bg)", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "space-between", overflowX: "hidden" }}>
       <header className="p-3 px-md-4 d-flex justify-content-between align-items-center">
         <Link href="/" className="d-flex align-items-center text-decoration-none">
           <Image src="/img/logo_transparent.png" alt="Logo Sala" width={110} height={40} style={{ height: 40, width: "auto" }} className="me-2" />

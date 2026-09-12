@@ -166,7 +166,7 @@ function AnnuairesPageInner() {
         <div className="container py-4">
           <div className="text-center mb-3">
             <span className="badge-sala-green px-3 py-1 mb-2">Réseau &amp; Écosystème Congolais</span>
-            <h1 className="h2 fw-bold text-dark mb-2">Les Annuaires Sala</h1>
+            <h1 className="h2 fw-bold mb-2">Les Annuaires Sala</h1>
             <p className="text-muted" style={{ maxWidth: 600, margin: "0 auto" }}>
               Découvrez les établissements universitaires, les recruteurs partenaires et les clubs linguistiques au Congo.
             </p>

@@ -139,7 +139,7 @@ export default function ProfilePage() {
                 <hr className="my-4" />
 
                 <h5 className="fw-bold mb-3">CV par défaut</h5>
-                <div className="d-flex align-items-center justify-content-between p-3 rounded-3" style={{ backgroundColor: "#f8f9fa", border: "1px solid var(--sala-border)" }}>
+                <div className="d-flex align-items-center justify-content-between p-3 rounded-3" style={{ backgroundColor: "var(--sala-bg)", border: "1px solid var(--sala-border)" }}>
                   <div className="d-flex align-items-center gap-3">
                     <div style={{ width: 44, height: 44, background: "#fee2e2", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <i className="fas fa-file-pdf text-danger fa-lg"></i>

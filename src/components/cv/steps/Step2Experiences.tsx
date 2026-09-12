@@ -15,7 +15,7 @@ export function Step2Experiences({ experiences, onAdd, onUpdate, onRemove }: Ste
     <div className="step-pane cv-card">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h3 className="h4 fw-bold mb-1 text-dark">Expériences professionnelles</h3>
+          <h3 className="h4 fw-bold mb-1">Expériences professionnelles</h3>
           <p className="text-muted small mb-0">Stages, emplois, missions bénévoles ou alternances.</p>
         </div>
         <button type="button" className="btn-sala-outline btn-sm" onClick={onAdd}>

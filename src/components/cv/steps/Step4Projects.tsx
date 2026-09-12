@@ -15,7 +15,7 @@ export function Step4Projects({ projects, onAdd, onUpdate, onRemove }: Step4Prop
     <div className="step-pane cv-card">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h3 className="h4 fw-bold mb-1 text-dark">Projets &amp; Réalisations (Facultatif)</h3>
+          <h3 className="h4 fw-bold mb-1">Projets &amp; Réalisations (Facultatif)</h3>
           <p className="text-muted small mb-0">Projets académiques, initiatives personnelles ou associatives marquantes.</p>
         </div>
         <button type="button" className="btn-sala-outline btn-sm" onClick={onAdd}>

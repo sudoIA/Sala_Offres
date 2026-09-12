@@ -9,12 +9,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
+import { useDarkMode } from "@/context/DarkModeContext";
 import { getAdminSectionMeta } from "@/lib/admin-nav";
 
 export function AdminTopbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const meta = getAdminSectionMeta(pathname);
 
   async function handleLogout() {
@@ -33,6 +35,15 @@ export function AdminTopbar() {
         <div className="admin-topbar-subtitle">{meta.subtitle}</div>
       </div>
       <div className="admin-topbar-actions">
+        <button
+          type="button"
+          className="admin-icon-btn"
+          title={darkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+          aria-label="Mode sombre"
+          onClick={toggleDarkMode}
+        >
+          <i className={`fas ${darkMode ? "fa-sun" : "fa-moon"}`}></i>
+        </button>
         <Link href="/" target="_blank" className="admin-icon-btn" title="Voir le site public">
           <i className="fas fa-external-link-alt"></i>
         </Link>

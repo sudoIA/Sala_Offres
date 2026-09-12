@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useDarkMode } from "@/context/DarkModeContext";
 import { isOfflineModeEnabled, setOfflineModeEnabled } from "@/lib/offline-cache";
 import { notify } from "@/lib/notify";
 
@@ -21,6 +22,7 @@ interface AppTopbarProps {
 
 export function AppTopbar({ backHref, backLabel }: AppTopbarProps) {
   const { user } = useAuth();
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const firstName = user?.displayName ? user.displayName.split(" ")[0] : "Mon profil";
 
   const [offlineMode, setOfflineMode] = useState(true);
@@ -45,6 +47,15 @@ export function AppTopbar({ backHref, backLabel }: AppTopbarProps) {
       </div>
 
       <div className="d-flex align-items-center gap-2">
+        <button
+          type="button"
+          className="btn btn-sm btn-light"
+          title={darkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+          aria-label="Mode sombre"
+          onClick={toggleDarkMode}
+        >
+          <i className={`fas ${darkMode ? "fa-sun" : "fa-moon"}`}></i>
+        </button>
         <button
           type="button"
           className="btn btn-sm btn-light d-lg-none"
