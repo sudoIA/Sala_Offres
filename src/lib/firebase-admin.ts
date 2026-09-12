@@ -6,12 +6,17 @@
 // aux règles de sécurité Firestore — à ne jamais importer depuis un
 // composant "use client" ni exposer au navigateur.
 //
-// Nécessite 3 variables d'environnement côté serveur (Console Firebase >
-// Paramètres du projet > Comptes de service > Générer une nouvelle clé
-// privée) : FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY.
+// Nécessite une seule variable d'environnement côté serveur :
+// FIREBASE_SERVICE_ACCOUNT = le contenu COMPLET du fichier .json téléchargé
+// depuis Console Firebase > Paramètres du projet > Comptes de service >
+// Générer une nouvelle clé privée (copié-collé tel quel, sans rien modifier
+// dedans). Un seul bloc à copier-coller entièrement plutôt que d'en extraire
+// un seul champ (la clé privée) à la main — beaucoup plus fiable, un copier
+// partiel de la clé privée étant une source d'erreur fréquente.
+//
 // L'initialisation est différée (pas au chargement du module) pour ne pas
-// faire échouer `next build` sur une machine où ces variables ne sont pas
-// définies (ex: en local, où seul le SDK client est utilisé).
+// faire échouer `next build` sur une machine où cette variable n'est pas
+// définie (ex: en local, où seul le SDK client est utilisé).
 
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
@@ -21,19 +26,21 @@ let dbInstance: Firestore | null = null;
 export function getAdminDb(): Firestore {
   if (dbInstance) return dbInstance;
 
-  const projectId = process.env.FIREBASE_PROJECT_ID;
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  // Sur Vercel, les retours à la ligne de la clé privée sont stockés échappés
-  // ("\n" littéral) : il faut les reconvertir en vrais retours à la ligne.
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
-
-  if (!projectId || !clientEmail || !privateKey) {
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
+  if (!raw) {
     throw new Error(
-      "Variables d'environnement Firebase Admin manquantes (FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY)."
+      "Variable d'environnement FIREBASE_SERVICE_ACCOUNT manquante (contenu JSON complet du compte de service Firebase)."
     );
   }
 
-  const app = getApps()[0] ?? initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+  let serviceAccount: object;
+  try {
+    serviceAccount = JSON.parse(raw);
+  } catch {
+    throw new Error("FIREBASE_SERVICE_ACCOUNT ne contient pas un JSON valide.");
+  }
+
+  const app = getApps()[0] ?? initializeApp({ credential: cert(serviceAccount) });
   dbInstance = getFirestore(app);
   return dbInstance;
 }
