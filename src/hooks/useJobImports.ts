@@ -17,6 +17,7 @@ import { useCallback, useEffect, useState } from "react";
 import { addDoc, collection, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { buildImportDocId, findDuplicatePublishedJob, stripUndefined } from "@/lib/job-import-helpers";
+import { IMPORT_SOURCES, type ImportSourceKey } from "@/lib/import-sources";
 import type { ImportedJob } from "@/types/job-import";
 import type { Job } from "@/types/job";
 
@@ -24,13 +25,7 @@ export interface ImportedJobRecord extends ImportedJob {
   id: string;
 }
 
-/** Une entrée par source connectée : clé de l'URL de l'API (/api/jobs/import/<key>) et libellé affiché. */
-export const IMPORT_SOURCES = [
-  { key: "acpe", label: "ACPE" },
-  { key: "afriqueemplois", label: "Afriqueemplois.com" },
-  { key: "lesopportunites", label: "Les Opportunités du Monde" },
-] as const;
-export type ImportSourceKey = (typeof IMPORT_SOURCES)[number]["key"];
+export { IMPORT_SOURCES, type ImportSourceKey };
 
 export function useJobImports() {
   const [imports, setImports] = useState<ImportedJobRecord[]>([]);

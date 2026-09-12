@@ -69,6 +69,14 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // --- Historique des collectes automatiques (tâche planifiée) ---
+    // Écrit uniquement par le SDK Admin côté serveur (jamais soumis à ces
+    // règles) ; l'équipe admin peut seulement le consulter, pas le modifier.
+    match /import_runs/{runId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // --- Inscriptions aux événements ---
     // Formulaire public (pas de compte requis) : on autorise la création
     // d'une inscription avec un schéma restreint, mais seule l'équipe admin

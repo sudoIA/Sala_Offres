@@ -8,6 +8,7 @@
 import { useState } from "react";
 import { useAdminJobs } from "@/hooks/useAdminJobs";
 import { IMPORT_SOURCES, useJobImports, type ImportedJobRecord, type ImportSourceKey } from "@/hooks/useJobImports";
+import { useImportRuns } from "@/hooks/useImportRuns";
 import { usePagination } from "@/hooks/usePagination";
 import { CompanyTile } from "@/components/CompanyTile";
 import { JobFormModal } from "@/components/admin/JobFormModal";
@@ -37,6 +38,7 @@ function matchesTab(record: ImportedJobRecord, tab: Tab): boolean {
 export default function AdminImportsPage() {
   const { jobs: publishedJobs } = useAdminJobs();
   const { imports, loading, runCollection, finalizeImportApproval, rejectImport, markDuplicate } = useJobImports();
+  const { runs: importRuns } = useImportRuns();
   const [tab, setTab] = useState<Tab>("pending");
   const [source, setSource] = useState<ImportSourceKey>("acpe");
   const [sourcePage, setSourcePage] = useState(1);
@@ -96,6 +98,50 @@ export default function AdminImportsPage() {
           </p>
         </div>
       </div>
+
+      {importRuns.length > 0 && (
+        <div className="mb-4">
+          <h6 className="text-muted mb-2">
+            <i className="fas fa-history me-1"></i> Historique des collectes automatiques (tâche planifiée quotidienne)
+          </h6>
+          <div style={{ overflowX: "auto" }}>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Source</th>
+                  <th>Nouvelles</th>
+                  <th>Mises à jour</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                {importRuns.flatMap((run) =>
+                  run.results.map((r) => (
+                    <tr key={`${run.id}_${r.source}`}>
+                      <td>{run.ranAt ? run.ranAt.toLocaleString("fr-FR") : "—"}</td>
+                      <td>{IMPORT_SOURCES.find((s) => s.key === r.source)?.label || r.source}</td>
+                      <td>{r.created}</td>
+                      <td>{r.updated}</td>
+                      <td>
+                        {r.error ? (
+                          <span className="text-danger" title={r.error}>
+                            <i className="fas fa-exclamation-triangle me-1"></i>Échec
+                          </span>
+                        ) : (
+                          <span className="text-success">
+                            <i className="fas fa-check me-1"></i>OK
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       <div className="admin-toolbar">
         <label className="d-flex align-items-center gap-2 mb-0">
