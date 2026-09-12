@@ -21,19 +21,10 @@
 
 import * as cheerio from "cheerio";
 import type { ImportedJob } from "@/types/job-import";
+import { IMPORT_USER_AGENT, extractEmail, parseFrDate } from "./shared";
 
 const SOURCE = "acpe";
 const LIST_URL = "https://acpe.cg/public/offres-emplois";
-const USER_AGENT = "Mozilla/5.0 (compatible; SalaBot/1.0; +https://www.ongsala.com)";
-
-/** Convertit "JJ-MM-AAAA" ou "JJ/MM/AAAA" en "AAAA-MM-JJ" (ISO). */
-function parseAcpeDate(text: string | undefined | null): string | undefined {
-  if (!text) return undefined;
-  const match = text.trim().match(/^(\d{2})[-/](\d{2})[-/](\d{4})$/);
-  if (!match) return undefined;
-  const [, day, month, year] = match;
-  return `${year}-${month}-${day}`;
-}
 
 /** Extrait l'identifiant numérique final d'une URL de détail ACPE. */
 function extractSourceId(detailUrl: string): string | null {
@@ -55,7 +46,7 @@ function extractSourceId(detailUrl: string): string | null {
 export async function enrichAcpeJob(job: ImportedJob): Promise<ImportedJob> {
   try {
     const res = await fetch(job.sourceUrl, {
-      headers: { "User-Agent": USER_AGENT, Accept: "text/html" },
+      headers: { "User-Agent": IMPORT_USER_AGENT, Accept: "text/html" },
       cache: "no-store",
     });
     if (!res.ok) return job;
@@ -71,13 +62,13 @@ export async function enrichAcpeJob(job: ImportedJob): Promise<ImportedJob> {
     const contractFull = $(".badge.bg-primary").first().text().trim();
     const description = cardBodyAfter("Description du poste").text().replace(/\s+/g, " ").trim();
     const companyText = cardBodyAfter("entreprise").text();
-    const emailMatch = companyText.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+    const email = extractEmail(companyText);
 
     return {
       ...job,
       contract: contractFull || job.contract,
       description: description || undefined,
-      email: emailMatch ? emailMatch[0] : undefined,
+      email,
     };
   } catch (err) {
     console.warn(`Enrichissement ACPE impossible pour ${job.sourceUrl} :`, err);
@@ -95,7 +86,7 @@ export interface CollectAcpeResult {
 export async function collectAcpePage(page = 1): Promise<CollectAcpeResult> {
   const url = page > 1 ? `${LIST_URL}?page=${page}` : LIST_URL;
   const res = await fetch(url, {
-    headers: { "User-Agent": USER_AGENT, Accept: "text/html" },
+    headers: { "User-Agent": IMPORT_USER_AGENT, Accept: "text/html" },
     // Le site est mis à jour en continu ; on ne veut jamais d'une réponse mise en cache par Next.
     cache: "no-store",
   });
@@ -129,7 +120,7 @@ export async function collectAcpePage(page = 1): Promise<CollectAcpeResult> {
     const salary = tags[2] || undefined;
 
     const deadlineRaw = card.find(".job-price").first().text().trim();
-    const deadline = parseAcpeDate(deadlineRaw);
+    const deadline = parseFrDate(deadlineRaw);
 
     let logo = card.find(".image-box img").first().attr("src") || undefined;
     if (logo && /blank\.(png|jpg)$/i.test(logo)) logo = undefined; // logo générique = pas de vrai logo

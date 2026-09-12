@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { useAdminJobs } from "@/hooks/useAdminJobs";
-import { useJobImports, type ImportedJobRecord } from "@/hooks/useJobImports";
+import { IMPORT_SOURCES, useJobImports, type ImportedJobRecord, type ImportSourceKey } from "@/hooks/useJobImports";
 import { usePagination } from "@/hooks/usePagination";
 import { CompanyTile } from "@/components/CompanyTile";
 import { JobFormModal } from "@/components/admin/JobFormModal";
@@ -36,9 +36,10 @@ function matchesTab(record: ImportedJobRecord, tab: Tab): boolean {
 
 export default function AdminImportsPage() {
   const { jobs: publishedJobs } = useAdminJobs();
-  const { imports, loading, runAcpeCollection, finalizeImportApproval, rejectImport, markDuplicate } = useJobImports();
+  const { imports, loading, runCollection, finalizeImportApproval, rejectImport, markDuplicate } = useJobImports();
   const [tab, setTab] = useState<Tab>("pending");
-  const [acpePage, setAcpePage] = useState(1);
+  const [source, setSource] = useState<ImportSourceKey>("acpe");
+  const [sourcePage, setSourcePage] = useState(1);
   const [collecting, setCollecting] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [reviewRecord, setReviewRecord] = useState<ImportedJobRecord | null>(null);
@@ -49,10 +50,10 @@ export default function AdminImportsPage() {
   async function handleCollect() {
     setCollecting(true);
     try {
-      const result = await runAcpeCollection(acpePage, publishedJobs);
+      const result = await runCollection(source, sourcePage, publishedJobs);
       notify(`${result.created} nouvelle(s) offre(s), ${result.updated} déjà connue(s) mise(s) à jour.`);
     } catch (err) {
-      console.error("Erreur collecte ACPE :", err);
+      console.error("Erreur collecte :", err);
       notify("La collecte a échoué. Réessayez plus tard.", "error");
     } finally {
       setCollecting(false);
@@ -91,19 +92,34 @@ export default function AdminImportsPage() {
         <div>
           <h1 className="admin-page-title">Imports d&apos;offres</h1>
           <p className="admin-page-subtitle">
-            Offres collectées automatiquement depuis des sites externes (ACPE...). Rien n&apos;est publié sans votre validation.
+            Offres collectées automatiquement depuis des sites externes (ACPE, Afriqueemplois.com...). Rien n&apos;est publié sans votre validation.
           </p>
         </div>
       </div>
 
       <div className="admin-toolbar">
         <label className="d-flex align-items-center gap-2 mb-0">
-          <span className="small text-muted">Page ACPE</span>
+          <span className="small text-muted">Source</span>
+          <select
+            value={source}
+            onChange={(e) => setSource(e.target.value as ImportSourceKey)}
+            className="admin-search-input"
+            style={{ width: 180 }}
+          >
+            {IMPORT_SOURCES.map((s) => (
+              <option key={s.key} value={s.key}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="d-flex align-items-center gap-2 mb-0">
+          <span className="small text-muted">Page</span>
           <input
             type="number"
             min={1}
-            value={acpePage}
-            onChange={(e) => setAcpePage(Math.max(1, Number(e.target.value) || 1))}
+            value={sourcePage}
+            onChange={(e) => setSourcePage(Math.max(1, Number(e.target.value) || 1))}
             style={{ width: 70 }}
             className="admin-search-input"
           />
@@ -115,7 +131,7 @@ export default function AdminImportsPage() {
             </>
           ) : (
             <>
-              <i className="fas fa-cloud-download-alt me-1"></i> Lancer une collecte ACPE
+              <i className="fas fa-cloud-download-alt me-1"></i> Lancer une collecte
             </>
           )}
         </button>
@@ -159,7 +175,7 @@ export default function AdminImportsPage() {
                     <CompanyTile company={record.company} logoUrl={record.logo} />
                     <div>
                       <div className="title">{record.title}</div>
-                      <div className="subtitle">{record.company}</div>
+                      <div className="subtitle">{record.company || "Entreprise non précisée"}</div>
                     </div>
                   </div>
                   <span className="admin-badge">{record.source.toUpperCase()}</span>

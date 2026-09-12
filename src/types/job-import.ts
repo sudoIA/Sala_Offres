@@ -9,9 +9,13 @@ export type ImportedJobStatus = "pending" | "approved" | "rejected" | "duplicate
 
 export interface ImportedJob {
   title: string;
-  company: string;
-  city: string;
-  contract: string;
+  // Optionnels : certaines sources (ex. les annonces "en texte libre" sur
+  // Afriqueemplois.com) n'ont pas de champ entreprise/ville/contrat qu'on
+  // puisse extraire avec confiance. Dans ce cas on ne devine rien — le champ
+  // reste vide et l'admin le complète dans l'écran de relecture avant publication.
+  company?: string;
+  city?: string;
+  contract?: string;
   salary?: string;
   description?: string;
   email?: string;

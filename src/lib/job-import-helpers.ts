@@ -34,8 +34,12 @@ function dedupKey(company: string, title: string, city: string): string {
 }
 
 /** Cherche, parmi les offres déjà publiées, une correspondance
- * entreprise+titre+ville (V1 de dédoublonnage, cf. document de plan). */
+ * entreprise+titre+ville (V1 de dédoublonnage, cf. document de plan). Si
+ * l'offre importée n'a pas d'entreprise ou de ville identifiée (annonce en
+ * texte libre non entièrement extraite), on ne tente pas la comparaison
+ * plutôt que de la faire sur une clé partielle peu fiable. */
 export function findDuplicatePublishedJob(imported: Pick<ImportedJob, "company" | "title" | "city">, published: Job[]): Job | null {
+  if (!imported.company || !imported.city) return null;
   const key = dedupKey(imported.company, imported.title, imported.city);
   return published.find((job) => dedupKey(job.company || "", job.title || "", job.city || "") === key) || null;
 }

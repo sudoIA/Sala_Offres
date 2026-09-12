@@ -1,9 +1,9 @@
 // src/hooks/useJobImports.ts
 // Écoute la collection Firestore "emplois_import" (offres collectées
 // automatiquement, en attente de validation) et expose les actions de
-// l'écran admin "Imports" : lancer une collecte ACPE, finaliser une
-// publication (après relecture/édition dans JobFormModal), rejeter, marquer
-// comme doublon.
+// l'écran admin "Imports" : lancer une collecte (ACPE, Afriqueemplois...),
+// finaliser une publication (après relecture/édition dans JobFormModal),
+// rejeter, marquer comme doublon.
 //
 // Ces écritures utilisent le SDK client Firebase depuis le navigateur de
 // l'admin déjà connecté (comme le reste du back-office) : la route API ne
@@ -23,6 +23,14 @@ import type { Job } from "@/types/job";
 export interface ImportedJobRecord extends ImportedJob {
   id: string;
 }
+
+/** Une entrée par source connectée : clé de l'URL de l'API (/api/jobs/import/<key>) et libellé affiché. */
+export const IMPORT_SOURCES = [
+  { key: "acpe", label: "ACPE" },
+  { key: "afriqueemplois", label: "Afriqueemplois.com" },
+  { key: "lesopportunites", label: "Les Opportunités du Monde" },
+] as const;
+export type ImportSourceKey = (typeof IMPORT_SOURCES)[number]["key"];
 
 export function useJobImports() {
   const [imports, setImports] = useState<ImportedJobRecord[]>([]);
@@ -46,13 +54,13 @@ export function useJobImports() {
   }, []);
 
   /**
-   * Lance la collecte ACPE pour une page donnée puis écrit le résultat dans
+   * Lance une collecte (source + page) puis écrit le résultat dans
    * "emplois_import". Idempotent : rejouer la même page ne fait que mettre à
    * jour `lastCheckedAt` sur les imports déjà connus, sans jamais écraser une
    * décision déjà prise (approuvée/rejetée/doublon) par un admin.
    */
-  const runAcpeCollection = useCallback(async (page: number, publishedJobs: Job[]) => {
-    const res = await fetch("/api/jobs/import/acpe", {
+  const runCollection = useCallback(async (source: ImportSourceKey, page: number, publishedJobs: Job[]) => {
+    const res = await fetch(`/api/jobs/import/${source}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ page, withDetails: true }),
@@ -108,5 +116,5 @@ export function useJobImports() {
     await updateDoc(doc(db, "emplois_import", id), { status: "duplicate" });
   }
 
-  return { imports, loading, runAcpeCollection, finalizeImportApproval, rejectImport, markDuplicate };
+  return { imports, loading, runCollection, finalizeImportApproval, rejectImport, markDuplicate };
 }
