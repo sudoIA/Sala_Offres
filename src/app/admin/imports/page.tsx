@@ -6,7 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAdminJobs } from "@/hooks/useAdminJobs";
+import { fetchAllJobsOnce } from "@/hooks/useAdminJobs";
 import { IMPORT_SOURCES, useJobImports, type ImportedJobRecord, type ImportSourceKey } from "@/hooks/useJobImports";
 import { useImportRuns } from "@/hooks/useImportRuns";
 import { usePagination } from "@/hooks/usePagination";
@@ -36,7 +36,6 @@ function matchesTab(record: ImportedJobRecord, tab: Tab): boolean {
 }
 
 export default function AdminImportsPage() {
-  const { jobs: publishedJobs } = useAdminJobs();
   const { imports, loading, runCollection, finalizeImportApproval, rejectImport, markDuplicate } = useJobImports();
   const { runs: importRuns } = useImportRuns();
   const [tab, setTab] = useState<Tab>("pending");
@@ -52,6 +51,7 @@ export default function AdminImportsPage() {
   async function handleCollect() {
     setCollecting(true);
     try {
+      const publishedJobs = await fetchAllJobsOnce();
       const result = await runCollection(source, sourcePage, publishedJobs);
       notify(`${result.created} nouvelle(s) offre(s), ${result.updated} déjà connue(s) mise(s) à jour.`);
     } catch (err) {
@@ -104,7 +104,7 @@ export default function AdminImportsPage() {
           <h6 className="text-muted mb-2">
             <i className="fas fa-history me-1"></i> Historique des collectes automatiques (tâche planifiée quotidienne)
           </h6>
-          <div style={{ overflowX: "auto" }}>
+          <div style={{ overflowX: "auto", overflowY: "auto", maxHeight: 260 }}>
             <table className="admin-table">
               <thead>
                 <tr>

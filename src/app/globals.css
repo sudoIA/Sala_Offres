@@ -724,11 +724,11 @@ h1, h2, h3, h4, h5, h6 {
    PANNEAU DE DÉTAIL D'OFFRE — Compte à rebours & Onglets
    ========================================================================== */
 .sala-company-tile {
-  width: 42px;
-  height: 42px;
+  width: 84px;
+  height: 84px;
   border-radius: var(--sala-radius-md);
   font-weight: 800;
-  font-size: 0.72rem;
+  font-size: 1.3rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -741,7 +741,7 @@ h1, h2, h3, h4, h5, h6 {
      souvent des PNG à fond transparent conçus pour un fond clair. */
   background: #ffffff;
   border: 1px solid var(--sala-border);
-  padding: 4px;
+  padding: 8px;
   overflow: hidden;
 }
 
@@ -752,9 +752,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sala-company-tile-lg {
-  width: 52px;
-  height: 52px;
-  font-size: 0.9rem;
+  width: 104px;
+  height: 104px;
+  font-size: 1.7rem;
   border-radius: var(--sala-radius-lg);
 }
 
@@ -1395,7 +1395,7 @@ footer.sala-footer .footer-bottom {
 }
 
 .annuaire-card-body {
-  padding: 34px 20px 20px;
+  padding: 58px 20px 20px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1403,7 +1403,7 @@ footer.sala-footer .footer-bottom {
 
 .annuaire-card-logo-wrap {
   position: absolute;
-  top: 38px;
+  top: 12px;
   left: 20px;
   z-index: 2;
 }
@@ -1415,9 +1415,9 @@ footer.sala-footer .footer-bottom {
 }
 
 .annuaire-card-logo-wrap .card-icon-header {
-  width: 52px;
-  height: 52px;
-  font-size: 1.4rem;
+  width: 104px;
+  height: 104px;
+  font-size: 2.8rem;
 }
 
 .card-icon-header {
@@ -1489,11 +1489,40 @@ footer.sala-footer .footer-bottom {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #6b7580;
+  color: var(--sala-text-muted);
   margin-bottom: 8px;
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Carte "Coordonnées" du détail annuaire : une ligne par information
+   disponible (aucune ligne inventée pour un champ non renseigné). */
+.annuaire-coord-card {
+  background: var(--sala-bg);
+  border: 1px solid var(--sala-border);
+  border-radius: var(--sala-radius-md);
+  overflow: hidden;
+}
+
+.annuaire-coord-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: var(--sala-text-primary);
+}
+
+.annuaire-coord-row + .annuaire-coord-row {
+  border-top: 1px solid var(--sala-border);
+}
+
+.annuaire-coord-row i {
+  width: 18px;
+  text-align: center;
+  color: var(--sala-green);
+  flex-shrink: 0;
 }
 
 .annuaire-map-frame {

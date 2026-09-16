@@ -18,7 +18,10 @@ export interface UniversityDoc {
   name?: string;
   type?: string;
   city?: string;
+  district?: string;
+  building?: string;
   address?: string;
+  hours?: string;
   phone?: string;
   email?: string;
   website?: string;
@@ -33,7 +36,10 @@ export interface CompanyDoc {
   name?: string;
   sector?: string;
   city?: string;
+  district?: string;
+  building?: string;
   address?: string;
+  hours?: string;
   phone?: string;
   email?: string;
   website?: string;
@@ -48,6 +54,8 @@ export interface ClubDoc {
   name?: string;
   type?: string;
   city?: string;
+  district?: string;
+  building?: string;
   location?: string;
   schedule?: string;
   coordinator?: string;

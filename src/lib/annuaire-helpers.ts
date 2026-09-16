@@ -44,6 +44,11 @@ export function annuaireAddress(item: AnnuaireItem): string {
   return item.address || item.location || "";
 }
 
+/** Horaires à afficher (champ générique "hours", ou "schedule" pour les clubs). */
+export function annuaireHours(item: AnnuaireItem): string {
+  return item.hours || item.schedule || "";
+}
+
 /**
  * URL d'intégration Google Maps (sans clé API) construite à partir du nom,
  * de l'adresse et de la ville. Retourne null si on n'a rien de localisable.

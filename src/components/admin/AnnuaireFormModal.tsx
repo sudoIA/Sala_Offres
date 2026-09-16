@@ -28,7 +28,10 @@ const EMPTY_FORM = {
   name: "",
   type: "",
   city: "",
+  district: "",
+  building: "",
   address: "",
+  hours: "",
   phone: "",
   email: "",
   website: "",
@@ -57,7 +60,10 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
       name: item?.name || "",
       type: item?.type || "",
       city: item?.city || "",
+      district: item?.district || "",
+      building: item?.building || "",
       address: item?.address || "",
+      hours: item?.hours || "",
       phone: item?.phone || "",
       email: item?.email || "",
       website: item?.website || "",
@@ -90,7 +96,10 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         name: form.name.trim(),
         type: form.type.trim(),
         city: form.city.trim(),
+        district: form.district.trim(),
+        building: form.building.trim(),
         address: form.address.trim(),
+        hours: form.hours.trim(),
         phone: form.phone.trim(),
         email: form.email.trim(),
         website: form.website.trim(),
@@ -104,7 +113,10 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         name: form.name.trim(),
         sector: form.sector.trim(),
         city: form.city.trim(),
+        district: form.district.trim(),
+        building: form.building.trim(),
         address: form.address.trim(),
+        hours: form.hours.trim(),
         phone: form.phone.trim(),
         email: form.email.trim(),
         website: form.website.trim(),
@@ -118,6 +130,8 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         name: form.name.trim(),
         type: form.type.trim(),
         city: form.city.trim(),
+        district: form.district.trim(),
+        building: form.building.trim(),
         location: form.location.trim(),
         schedule: form.schedule.trim(),
         coordinator: form.coordinator.trim(),
@@ -157,7 +171,10 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Nom</label><input type="text" value={form.name} onChange={(e) => set("name", e.target.value)} required /></div>
               <div className="form-group"><label>Type</label><input type="text" placeholder="Université Publique, Institut Supérieur..." value={form.type} onChange={(e) => set("type", e.target.value)} /></div>
               <div className="form-group"><label>Ville</label><input type="text" value={form.city} onChange={(e) => set("city", e.target.value)} required /></div>
+              <div className="form-group"><label>Quartier</label><input type="text" placeholder="Makélékélé..." value={form.district} onChange={(e) => set("district", e.target.value)} /></div>
+              <div className="form-group"><label>Bâtiment / Salle</label><input type="text" placeholder="Diata (rectorat), Salle 207..." value={form.building} onChange={(e) => set("building", e.target.value)} /></div>
               <div className="form-group"><label>Adresse</label><input type="text" value={form.address} onChange={(e) => set("address", e.target.value)} /></div>
+              <div className="form-group"><label>Horaires (facultatif)</label><input type="text" placeholder="Tous les samedis de 13h30 à 15h30..." value={form.hours} onChange={(e) => set("hours", e.target.value)} /></div>
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Email</label><input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
               <div className="form-group"><label>Site Web</label><input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} /></div>
@@ -184,7 +201,10 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Nom</label><input type="text" value={form.name} onChange={(e) => set("name", e.target.value)} required /></div>
               <div className="form-group"><label>Secteur</label><input type="text" value={form.sector} onChange={(e) => set("sector", e.target.value)} required /></div>
               <div className="form-group"><label>Ville</label><input type="text" value={form.city} onChange={(e) => set("city", e.target.value)} required /></div>
+              <div className="form-group"><label>Quartier</label><input type="text" placeholder="Makélékélé..." value={form.district} onChange={(e) => set("district", e.target.value)} /></div>
+              <div className="form-group"><label>Bâtiment / Bureau</label><input type="text" placeholder="Immeuble X, 3e étage..." value={form.building} onChange={(e) => set("building", e.target.value)} /></div>
               <div className="form-group"><label>Adresse</label><input type="text" value={form.address} onChange={(e) => set("address", e.target.value)} /></div>
+              <div className="form-group"><label>Horaires d&apos;ouverture (facultatif)</label><input type="text" placeholder="Lundi-Vendredi 8h-17h..." value={form.hours} onChange={(e) => set("hours", e.target.value)} /></div>
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Email RH</label><input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
               <div className="form-group"><label>Site Web</label><input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} /></div>
@@ -211,6 +231,8 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Nom</label><input type="text" value={form.name} onChange={(e) => set("name", e.target.value)} required /></div>
               <div className="form-group"><label>Type</label><input type="text" placeholder="Club communautaire, universitaire..." value={form.type} onChange={(e) => set("type", e.target.value)} /></div>
               <div className="form-group"><label>Ville</label><input type="text" value={form.city} onChange={(e) => set("city", e.target.value)} required /></div>
+              <div className="form-group"><label>Quartier</label><input type="text" placeholder="Makélékélé..." value={form.district} onChange={(e) => set("district", e.target.value)} /></div>
+              <div className="form-group"><label>Bâtiment / Salle</label><input type="text" placeholder="Salle 207..." value={form.building} onChange={(e) => set("building", e.target.value)} /></div>
               <div className="form-group"><label>Lieu</label><input type="text" value={form.location} onChange={(e) => set("location", e.target.value)} /></div>
               <div className="form-group"><label>Horaire</label><input type="text" placeholder="Chaque samedi de 15h00 à 17h30" value={form.schedule} onChange={(e) => set("schedule", e.target.value)} /></div>
               <div className="form-group"><label>Coordinateur</label><input type="text" value={form.coordinator} onChange={(e) => set("coordinator", e.target.value)} /></div>

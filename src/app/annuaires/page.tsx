@@ -24,6 +24,7 @@ import {
   annuaireCategoryClass,
   annuaireDetailChips,
   annuaireDirectionsUrl,
+  annuaireHours,
   annuaireMapEmbedUrl,
 } from "@/lib/annuaire-helpers";
 import type { AnnuaireCategory, AnnuaireItem } from "@/types/annuaire";
@@ -156,6 +157,7 @@ function AnnuairesPageInner() {
   const detailMapUrl = detailItem ? annuaireMapEmbedUrl(detailItem) : null;
   const detailDirectionsUrl = detailItem ? annuaireDirectionsUrl(detailItem) : null;
   const detailAddress = detailItem ? annuaireAddress(detailItem) : "";
+  const detailHours = detailItem ? annuaireHours(detailItem) : "";
 
   return (
     <div className="sala-layout-wrapper">
@@ -279,15 +281,54 @@ function AnnuairesPageInner() {
                     </span>
                   )}
                 </div>
-                <div className="text-muted small mt-1">
-                  <i className="fas fa-map-marker-alt text-success me-1"></i> {detailItem.city || "—"}
-                  {detailAddress && <> — {detailAddress}</>}
-                </div>
               </div>
             </div>
 
+            <div className="annuaire-detail-section-title"><i className="fas fa-address-card"></i> Coordonnées</div>
+            <div className="annuaire-coord-card mb-3">
+              {detailItem.city && (
+                <div className="annuaire-coord-row">
+                  <i className="fas fa-city"></i>
+                  <span>{detailItem.city}</span>
+                </div>
+              )}
+              {detailItem.district && (
+                <div className="annuaire-coord-row">
+                  <i className="fas fa-map"></i>
+                  <span>{detailItem.district}</span>
+                </div>
+              )}
+              {detailItem.building && (
+                <div className="annuaire-coord-row">
+                  <i className="fas fa-door-open"></i>
+                  <span>{detailItem.building}</span>
+                </div>
+              )}
+              {detailAddress && (
+                <div className="annuaire-coord-row">
+                  <i className="fas fa-map-marker-alt"></i>
+                  <span>{detailAddress}</span>
+                </div>
+              )}
+              {detailHours && (
+                <div className="annuaire-coord-row">
+                  <i className="far fa-clock"></i>
+                  <span>{detailHours}</span>
+                </div>
+              )}
+              {detailItem.phone && (
+                <div className="annuaire-coord-row">
+                  <i className="fas fa-phone-alt"></i>
+                  <span>{detailItem.phone}</span>
+                </div>
+              )}
+            </div>
+
             {detailItem.description && (
-              <p className="text-secondary small mb-3" style={{ lineHeight: 1.6 }}>{detailItem.description}</p>
+              <>
+                <div className="annuaire-detail-section-title"><i className="fas fa-info-circle"></i> Présentation</div>
+                <p className="text-secondary small mb-3" style={{ lineHeight: 1.6 }}>{detailItem.description}</p>
+              </>
             )}
 
             {detailChips && detailChips.items.length > 0 && (
@@ -318,7 +359,7 @@ function AnnuairesPageInner() {
 
             {detailMapUrl && (
               <div className="mb-2">
-                <div className="annuaire-detail-section-title"><i className="fas fa-map-marked-alt"></i> Localisation</div>
+                <div className="annuaire-detail-section-title"><i className="fas fa-map-marked-alt"></i> Où nous trouver</div>
                 <div className="annuaire-map-frame mb-2">
                   <iframe
                     src={detailMapUrl}
