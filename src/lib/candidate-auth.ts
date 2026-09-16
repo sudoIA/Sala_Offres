@@ -12,6 +12,15 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/lib/firebase";
 
+// Sans ceci, le lien de vérification ramène vers la page générique et non
+// brandée de Firebase (sala-a6c15.firebaseapp.com/__/auth/action) plutôt que
+// vers notre propre écran /verifier-email. window.location.origin (et non
+// getSiteUrl(), qui s'appuie sur une variable d'environnement serveur) car
+// ce module tourne entièrement côté navigateur.
+function verificationActionCodeSettings() {
+  return { url: `${window.location.origin}/verifier-email`, handleCodeInApp: true };
+}
+
 /** Inscription candidat avec création de son profil dans Firestore. */
 export async function registerCandidate(
   email: string,
@@ -41,14 +50,14 @@ export async function registerCandidate(
 
   // Empêche les comptes fictifs : l'email doit être confirmé via le lien
   // reçu avant que le compte soit pleinement utilisable (voir /verifier-email).
-  await sendEmailVerification(user);
+  await sendEmailVerification(user, verificationActionCodeSettings());
 
   return user;
 }
 
 /** Renvoie l'email de vérification (ex: bouton "je n'ai rien reçu"). */
 export async function resendVerificationEmail(user: User): Promise<void> {
-  await sendEmailVerification(user);
+  await sendEmailVerification(user, verificationActionCodeSettings());
 }
 
 /** Connexion candidat par email et mot de passe. */
