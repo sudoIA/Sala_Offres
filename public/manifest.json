@@ -2,20 +2,21 @@
   "name": "Sala - Emplois & Opportunités",
   "short_name": "Sala",
   "description": "Plateforme d'aide à l'emploi pour les jeunes de la République du Congo par l'ONG Sala",
-  "start_url": "index.html",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b9452",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "img/logo_100.png",
-      "sizes": "100x100",
+      "src": "img/logo_pwa_192.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "img/logo_transparent.png",
+      "src": "img/logo_pwa_512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

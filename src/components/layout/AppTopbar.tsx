@@ -70,21 +70,20 @@ export function AppTopbar({ backHref, backLabel }: AppTopbarProps) {
           <Link href={backHref} className="btn-sala-outline py-1 px-3" style={{ fontSize: "0.85rem" }}>
             <i className="fas fa-arrow-left me-1"></i> {backLabel || "Retour"}
           </Link>
+        ) : user ? (
+          <Link href="/profile" className="btn-sala-primary py-1 px-3" style={{ fontSize: "0.85rem" }} title={firstName}>
+            <i className="fas fa-user-circle d-sm-none"></i>
+            <span className="d-none d-sm-inline">
+              <i className="fas fa-user-circle me-1"></i> {firstName}
+            </span>
+          </Link>
         ) : (
-          <>
-            {user ? (
-              <Link href="/profile" className="btn-sala-primary py-1 px-3" style={{ fontSize: "0.85rem" }}>
-                <i className="fas fa-user-circle me-1"></i> {firstName}
-              </Link>
-            ) : (
-              <Link href="/auth" className="btn-sala-outline py-1 px-3" style={{ fontSize: "0.85rem" }}>
-                <i className="fas fa-user me-1"></i> Connexion
-              </Link>
-            )}
-            <Link href="/onboarding" className="btn btn-light py-1 px-2 text-muted" title="Découvrir Sala (Tutoriel)" style={{ fontSize: "0.85rem" }}>
-              <i className="fas fa-question-circle"></i>
-            </Link>
-          </>
+          <Link href="/auth" className="btn-sala-outline py-1 px-3" style={{ fontSize: "0.85rem" }} title="Connexion">
+            <i className="fas fa-user d-sm-none"></i>
+            <span className="d-none d-sm-inline">
+              <i className="fas fa-user me-1"></i> Connexion
+            </span>
+          </Link>
         )}
       </div>
     </header>
