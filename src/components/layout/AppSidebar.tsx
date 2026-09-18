@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useMobileMenu } from "@/context/MobileMenuContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { shareLink } from "@/lib/share";
 import { isOfflineModeEnabled, setOfflineModeEnabled } from "@/lib/offline-cache";
@@ -44,6 +45,7 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { user } = useAuth();
   const settings = useSiteSettings();
+  const { open: mobileOpen, close: closeMobileMenu } = useMobileMenu();
   const isActive = (href: string) => pathname === href || pathname?.startsWith(href + "/");
   const firstName = user?.displayName ? user.displayName.split(" ")[0] : "Connexion";
 
@@ -70,14 +72,19 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className="sala-sidebar">
+    <>
+      {mobileOpen && <div className="sala-mobile-nav-backdrop" onClick={closeMobileMenu}></div>}
+      <aside className={`sala-sidebar${mobileOpen ? " mobile-open" : ""}`}>
       <div className="sala-sidebar-header">
         <Link href="/" className="d-flex align-items-center text-decoration-none gap-2">
           <Image src="/img/logo_transparent.png" alt="Logo Sala" height={36} width={100} style={{ height: 36, width: "auto" }} />
           <span style={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--sala-green-dark)" }}>SALA</span>
         </Link>
+        <button type="button" className="sala-sidebar-close d-lg-none" onClick={closeMobileMenu} aria-label="Fermer le menu">
+          <i className="fas fa-times"></i>
+        </button>
       </div>
-      <div className="sala-sidebar-nav">
+      <div className="sala-sidebar-nav" onClick={closeMobileMenu}>
         <div className="sala-nav-section-title">Navigation</div>
         <Link href="/" className={`sala-nav-item${isActive("/") && pathname === "/" ? " active" : ""}`}>
           <i className="fas fa-home"></i> Accueil
@@ -149,6 +156,7 @@ export function AppSidebar() {
           </label>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

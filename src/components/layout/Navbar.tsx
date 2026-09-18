@@ -9,11 +9,13 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useDarkMode } from "@/context/DarkModeContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const settings = useSiteSettings();
   const firstName = user?.displayName ? user.displayName.split(" ")[0] : "Mon profil";
 
@@ -23,9 +25,20 @@ export function Navbar() {
         <Image src="/img/logo_transparent.png" alt="Logo Sala" height={38} width={110} style={{ height: 38, width: "auto" }} className="me-2" priority />
         <span style={{ fontFamily: "var(--sala-font-display)", fontWeight: 800, fontSize: "1.25rem", color: "var(--sala-green-dark)" }}>SALA</span>
       </Link>
-      <button type="button" className="navbar-toggler me-4" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-        <span className="navbar-toggler-icon"></span>
-      </button>
+      <div className="d-flex align-items-center gap-2 ms-auto me-3 me-lg-0">
+        <button
+          type="button"
+          className="btn btn-sm btn-light"
+          title={darkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+          aria-label="Mode sombre"
+          onClick={toggleDarkMode}
+        >
+          <i className={`fas ${darkMode ? "fa-sun" : "fa-moon"}`}></i>
+        </button>
+        <button type="button" className="navbar-toggler m-0" onClick={() => setOpen((v) => !v)} aria-label="Menu">
+          <span className="navbar-toggler-icon"></span>
+        </button>
+      </div>
       <div className={`collapse navbar-collapse${open ? " show" : ""}`}>
         <div className="navbar-nav ms-auto p-4 p-lg-0">
           <Link href="/" className="nav-item nav-link active">Accueil</Link>

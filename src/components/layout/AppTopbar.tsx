@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useDarkMode } from "@/context/DarkModeContext";
+import { useMobileMenu } from "@/context/MobileMenuContext";
 import { isOfflineModeEnabled, setOfflineModeEnabled } from "@/lib/offline-cache";
 import { notify } from "@/lib/notify";
 
@@ -23,6 +24,7 @@ interface AppTopbarProps {
 export function AppTopbar({ backHref, backLabel }: AppTopbarProps) {
   const { user } = useAuth();
   const { darkMode, toggleDarkMode } = useDarkMode();
+  const { toggle: toggleMobileMenu } = useMobileMenu();
   const firstName = user?.displayName ? user.displayName.split(" ")[0] : "Mon profil";
 
   const [offlineMode, setOfflineMode] = useState(true);
@@ -40,6 +42,15 @@ export function AppTopbar({ backHref, backLabel }: AppTopbarProps) {
   return (
     <header className="sala-topbar">
       <div className="d-flex align-items-center gap-3">
+        <button
+          type="button"
+          className="sala-burger-btn d-lg-none"
+          title="Ouvrir le menu"
+          aria-label="Ouvrir le menu"
+          onClick={toggleMobileMenu}
+        >
+          <i className="fas fa-bars"></i>
+        </button>
         <Link href="/" className="d-flex align-items-center text-decoration-none">
           <Image src="/img/logo_transparent.png" alt="Logo Sala" height={42} width={120} style={{ height: 42, width: "auto" }} className="me-2" />
           <span style={{ fontWeight: 800, fontSize: "1.3rem", color: "var(--sala-green)" }}>SALA</span>

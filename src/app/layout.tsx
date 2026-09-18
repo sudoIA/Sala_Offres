@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Heebo, Inter } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { DarkModeProvider } from "@/context/DarkModeContext";
+import { MobileMenuProvider } from "@/context/MobileMenuContext";
 import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -64,7 +65,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <DarkModeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <MobileMenuProvider>{children}</MobileMenuProvider>
+          </AuthProvider>
         </DarkModeProvider>
       </body>
     </html>
