@@ -13,20 +13,12 @@ import { AppTopbar } from "@/components/layout/AppTopbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { FabCv } from "@/components/layout/FabCv";
 import { Modal } from "@/components/Modal";
-import { CompanyTile } from "@/components/CompanyTile";
+import { AnnuaireCard, AnnuaireCardSkeleton } from "@/components/annuaire/AnnuaireCard";
+import { AnnuaireDetailContent } from "@/components/annuaire/AnnuaireDetailContent";
 import { Pagination } from "@/components/admin/Pagination";
 import { usePagination } from "@/hooks/usePagination";
 import { usePublicAnnuaires } from "@/hooks/usePublicAnnuaire";
-import {
-  annuaireAddress,
-  annuaireBadgeLabel,
-  annuaireCardSummary,
-  annuaireCategoryClass,
-  annuaireDetailChips,
-  annuaireDirectionsUrl,
-  annuaireHours,
-  annuaireMapEmbedUrl,
-} from "@/lib/annuaire-helpers";
+import { annuaireCategoryClass, annuaireModalTitle } from "@/lib/annuaire-helpers";
 import type { AnnuaireCategory, AnnuaireItem } from "@/types/annuaire";
 
 const TABS: { key: AnnuaireCategory; icon: string; label: string }[] = [
@@ -35,87 +27,11 @@ const TABS: { key: AnnuaireCategory; icon: string; label: string }[] = [
   { key: "clubs", icon: "fas fa-comments", label: "Clubs d'Anglais" },
 ];
 
-const CATEGORY_ICON: Record<AnnuaireCategory, string> = {
-  universities: "fas fa-graduation-cap",
-  companies: "fas fa-building",
-  clubs: "fas fa-comments",
-};
-
 function splitCities(value?: string): string[] {
   return (value || "")
     .split(",")
     .map((c) => c.trim())
     .filter(Boolean);
-}
-
-function AnnuaireCard({
-  category,
-  item,
-  index,
-  onOpen,
-}: {
-  category: AnnuaireCategory;
-  item: AnnuaireItem;
-  index: number;
-  onOpen: () => void;
-}) {
-  const cat = annuaireCategoryClass(category);
-  const badge = annuaireBadgeLabel(category, item);
-  const summary = annuaireCardSummary(item);
-
-  return (
-    <div
-      className="annuaire-card annuaire-card-clickable annuaire-fade-in"
-      style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
-      onClick={onOpen}
-      role="button"
-      tabIndex={0}
-    >
-      <div className={`annuaire-card-banner annuaire-card-banner-${cat}`}>
-        {item.verified && (
-          <span className="annuaire-verified-badge" title="Partenaire vérifié Sala">
-            <i className="fas fa-check"></i>
-          </span>
-        )}
-      </div>
-      <div className="annuaire-card-body">
-        <div className="annuaire-card-logo-wrap">
-          {item.logo ? (
-            <CompanyTile company={item.name} logoUrl={item.logo} large />
-          ) : (
-            <div className={`card-icon-header icon-${cat}`}>
-              <i className={CATEGORY_ICON[category]}></i>
-            </div>
-          )}
-        </div>
-        <span className={`annuaire-badge annuaire-badge-${cat}`}>{badge}</span>
-        <h5 className="fw-bold mb-1 mt-2" style={{ fontSize: "1.05rem" }}>{item.name}</h5>
-        <div className="text-muted small mb-2">
-          <i className="fas fa-map-marker-alt text-success me-1"></i> {item.city || "—"}
-        </div>
-        {summary && <p className="text-secondary small mb-0 annuaire-card-summary">{summary}</p>}
-      </div>
-      <div className={`annuaire-card-cta cta-${cat}`}>
-        Voir la fiche <i className="fas fa-arrow-right ms-1"></i>
-      </div>
-    </div>
-  );
-}
-
-function AnnuaireCardSkeleton() {
-  return (
-    <div className="annuaire-card">
-      <div className="annuaire-card-banner annuaire-skeleton-block"></div>
-      <div className="annuaire-card-body">
-        <div className="annuaire-skeleton-logo"></div>
-        <div className="annuaire-skeleton-line" style={{ width: "45%" }}></div>
-        <div className="annuaire-skeleton-line" style={{ width: "75%", height: 16 }}></div>
-        <div className="annuaire-skeleton-line" style={{ width: "55%" }}></div>
-        <div className="annuaire-skeleton-line" style={{ width: "95%" }}></div>
-        <div className="annuaire-skeleton-line" style={{ width: "85%" }}></div>
-      </div>
-    </div>
-  );
 }
 
 const VALID_CATEGORIES: AnnuaireCategory[] = ["universities", "companies", "clubs"];
@@ -133,7 +49,6 @@ function AnnuairesPageInner() {
   const [detailItem, setDetailItem] = useState<AnnuaireItem | null>(null);
 
   const items = category === "universities" ? universities : category === "companies" ? companies : clubs;
-  const detailCat = annuaireCategoryClass(category);
 
   const cities = useMemo(() => {
     const set = new Set<string>();
@@ -152,12 +67,6 @@ function AnnuairesPageInner() {
   }, [items, search, city]);
 
   const { pageItems, page, totalPages, setPage } = usePagination(filtered, `${category}|${city}|${search.trim().toLowerCase()}`);
-
-  const detailChips = detailItem ? annuaireDetailChips(category, detailItem) : null;
-  const detailMapUrl = detailItem ? annuaireMapEmbedUrl(detailItem) : null;
-  const detailDirectionsUrl = detailItem ? annuaireDirectionsUrl(detailItem) : null;
-  const detailAddress = detailItem ? annuaireAddress(detailItem) : "";
-  const detailHours = detailItem ? annuaireHours(detailItem) : "";
 
   return (
     <div className="sala-layout-wrapper">
@@ -267,139 +176,8 @@ function AnnuairesPageInner() {
         </div>
       </div>
 
-      <Modal open={!!detailItem} onClose={() => setDetailItem(null)} title={detailItem?.name || "Détails"} size="md">
-        {detailItem && (
-          <>
-            <div className={`annuaire-detail-header annuaire-detail-header-${detailCat}`}>
-              <CompanyTile company={detailItem.name} logoUrl={detailItem.logo} large />
-              <div>
-                <div className="d-flex align-items-center gap-2 flex-wrap">
-                  <span className={`annuaire-badge annuaire-badge-${detailCat}`}>{annuaireBadgeLabel(category, detailItem)}</span>
-                  {detailItem.verified && (
-                    <span className="annuaire-badge" style={{ background: "var(--sala-green-light)", color: "var(--sala-green-dark)" }}>
-                      <i className="fas fa-check-circle"></i> Partenaire vérifié
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="annuaire-detail-section-title"><i className="fas fa-address-card"></i> Coordonnées</div>
-            <div className="annuaire-coord-card mb-3">
-              {detailItem.city && (
-                <div className="annuaire-coord-row">
-                  <i className="fas fa-city"></i>
-                  <span>{detailItem.city}</span>
-                </div>
-              )}
-              {detailItem.district && (
-                <div className="annuaire-coord-row">
-                  <i className="fas fa-map"></i>
-                  <span>{detailItem.district}</span>
-                </div>
-              )}
-              {detailItem.building && (
-                <div className="annuaire-coord-row">
-                  <i className="fas fa-door-open"></i>
-                  <span>{detailItem.building}</span>
-                </div>
-              )}
-              {detailAddress && (
-                <div className="annuaire-coord-row">
-                  <i className="fas fa-map-marker-alt"></i>
-                  <span>{detailAddress}</span>
-                </div>
-              )}
-              {detailHours && (
-                <div className="annuaire-coord-row">
-                  <i className="far fa-clock"></i>
-                  <span>{detailHours}</span>
-                </div>
-              )}
-              {detailItem.phone && (
-                <div className="annuaire-coord-row">
-                  <i className="fas fa-phone-alt"></i>
-                  <span>{detailItem.phone}</span>
-                </div>
-              )}
-            </div>
-
-            {detailItem.description && (
-              <>
-                <div className="annuaire-detail-section-title"><i className="fas fa-info-circle"></i> Présentation</div>
-                <p className="text-secondary small mb-3" style={{ lineHeight: 1.6 }}>{detailItem.description}</p>
-              </>
-            )}
-
-            {detailChips && detailChips.items.length > 0 && (
-              <div className="mb-3">
-                <div className="annuaire-detail-section-title"><i className="fas fa-list-ul"></i> {detailChips.label}</div>
-                <div className="d-flex flex-wrap gap-1">
-                  {detailChips.items.map((chip, i) => (
-                    <span className="badge bg-light text-dark border" style={{ fontSize: "0.75rem" }} key={i}>{chip}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {category === "clubs" && (detailItem.schedule || detailItem.fee) && (
-              <div className="mb-3 d-flex flex-wrap gap-2">
-                {detailItem.schedule && (
-                  <span className="badge bg-light text-dark border p-2" style={{ fontSize: "0.8rem" }}>
-                    <i className="far fa-clock me-1 text-danger"></i> {detailItem.schedule}
-                  </span>
-                )}
-                {detailItem.fee && (
-                  <span className="badge bg-warning-subtle text-dark border p-2" style={{ fontSize: "0.8rem" }}>
-                    <i className="fas fa-tag me-1"></i> {detailItem.fee}
-                  </span>
-                )}
-              </div>
-            )}
-
-            {detailMapUrl && (
-              <div className="mb-2">
-                <div className="annuaire-detail-section-title"><i className="fas fa-map-marked-alt"></i> Où nous trouver</div>
-                <div className="annuaire-map-frame mb-2">
-                  <iframe
-                    src={detailMapUrl}
-                    title={`Localisation - ${detailItem.name}`}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                  ></iframe>
-                </div>
-                {detailDirectionsUrl && (
-                  <a href={detailDirectionsUrl} target="_blank" rel="noopener" className="btn btn-sm btn-outline-secondary rounded-pill">
-                    <i className="fas fa-diamond-turn-right me-1"></i> Itinéraire
-                  </a>
-                )}
-              </div>
-            )}
-
-            <div className="d-flex flex-wrap gap-2 pt-3 mt-2 border-top">
-              {detailItem.phone && (
-                <a href={`tel:${detailItem.phone}`} className="btn btn-sm btn-outline-success rounded-pill">
-                  <i className="fas fa-phone-alt me-1"></i> Appeler
-                </a>
-              )}
-              {detailItem.email && (
-                <a href={`mailto:${detailItem.email}`} className="btn btn-sm btn-outline-primary rounded-pill">
-                  <i className="fas fa-envelope me-1"></i> {category === "companies" ? "Contact RH" : "Email"}
-                </a>
-              )}
-              {detailItem.website && (
-                <a href={detailItem.website} target="_blank" rel="noopener" className="btn btn-sm btn-sala-primary rounded-pill">
-                  <i className="fas fa-globe me-1"></i> Site Web
-                </a>
-              )}
-              {category === "clubs" && detailItem.coordinator && (
-                <span className="btn btn-sm btn-light rounded-pill disabled">
-                  <i className="fas fa-user me-1"></i> {detailItem.coordinator}
-                </span>
-              )}
-            </div>
-          </>
-        )}
+      <Modal open={!!detailItem} onClose={() => setDetailItem(null)} title={annuaireModalTitle(category)} size="md">
+        {detailItem && <AnnuaireDetailContent category={category} item={detailItem} />}
       </Modal>
 
       <FabCv />

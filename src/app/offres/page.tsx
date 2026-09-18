@@ -101,7 +101,7 @@ export default function OffresPage() {
               <span className="small text-muted">
                 {offline ? (
                   <>
-                    <i className="fas fa-exclamation-triangle text-warning me-1"></i> Hors-ligne — dernières offres enregistrées
+                    <i className="fas fa-exclamation-triangle text-warning me-1"></i> Hors-ligne - dernières offres enregistrées
                   </>
                 ) : lastUpdated ? (
                   <>

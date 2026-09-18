@@ -22,7 +22,7 @@ export function JobDetailPageClient({ id }: { id: string }) {
 
   return (
     <div style={{ backgroundColor: "var(--sala-bg)", paddingBottom: 85 }}>
-      <AppTopbar backHref="/offres" backLabel="Retour aux offres" />
+      <AppTopbar backHref="/offres" />
 
       <div>
         {loading && (

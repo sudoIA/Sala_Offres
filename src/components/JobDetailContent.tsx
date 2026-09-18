@@ -93,6 +93,13 @@ export function JobDetailContent({ job }: { job: Job }) {
               {job.deadlineDate ? ` — Date limite : ${job.deadlineDate.toLocaleDateString("fr-FR")}` : ""}
             </p>
           )}
+          <div className="mt-3" style={{ color: "var(--sala-red)", fontSize: "0.85rem", lineHeight: 1.6 }}>
+            <strong>ATTENTION :</strong>
+            <br />
+            <br />
+            <strong>Sala</strong> vous conseille de bien vous renseigner sur les offres avant de postuler et de ne{" "}
+            <strong>jamais</strong> verser de l&apos;argent pendant le processus de recrutement.
+          </div>
         </div>
       )}
 

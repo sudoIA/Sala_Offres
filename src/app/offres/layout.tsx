@@ -6,7 +6,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Offres d'emploi — Sala",
+  title: "Offres d'emploi - Sala",
   description:
     "Toutes les offres d'emploi et de stage actives au Congo (Brazzaville, Pointe-Noire), publiées par l'ONG Sala.",
 };

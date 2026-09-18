@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   if (!job) {
     return {
-      title: "Offre introuvable — Sala",
+      title: "Offre introuvable - Sala",
       description: "Cette offre n'existe plus ou a été retirée.",
     };
   }

@@ -33,7 +33,7 @@ export function RegistrationsModal({ open, eventId, eventTitle, onClose }: Regis
   }, [open, eventId]);
 
   return (
-    <Modal open={open} onClose={onClose} title={`Inscrits — ${eventTitle}`}>
+    <Modal open={open} onClose={onClose} title={`Inscrits - ${eventTitle}`}>
       {error && <p className="text-danger small">Impossible de charger les inscriptions.</p>}
       {!error && registrations === null && (
         <div className="text-center py-3">

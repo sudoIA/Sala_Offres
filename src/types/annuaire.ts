@@ -14,7 +14,31 @@ export const ANNUAIRE_COLLECTIONS: Record<AnnuaireCategory, string> = {
   clubs: "clubs_anglais",
 };
 
-export interface UniversityDoc {
+/**
+ * Champs vus tels quels dans une bonne partie des fiches déjà en base
+ * (import différent de notre formulaire admin : "contenu" au lieu de
+ * "description", "site" au lieu de "website", "tel"/"tel2" au lieu de
+ * "phone"...). On les garde lisibles en repli (voir annuaire-helpers.ts)
+ * pour ne rien perdre de ce qui existe déjà, sans avoir à tout ressaisir.
+ */
+export interface AnnuaireLegacyFields {
+  full_name?: string;
+  contenu?: string;
+  site?: string;
+  tel?: string;
+  tel2?: string;
+  email2?: string;
+  statut?: string;
+  /**
+   * Nom de fichier (pas une URL) d'une photo du bâtiment, à chercher dans le
+   * dossier Firebase Storage de la catégorie — voir useAnnuaireImages. Le nom
+   * du champ contient une espace (pas un underscore) tel qu'il existe déjà
+   * dans les fiches Firestore.
+   */
+  "image batiment"?: string;
+}
+
+export interface UniversityDoc extends AnnuaireLegacyFields {
   name?: string;
   type?: string;
   city?: string;
@@ -27,12 +51,13 @@ export interface UniversityDoc {
   website?: string;
   faculties?: string[];
   logo?: string;
+  photo?: string;
   summary?: string;
   description?: string;
   verified?: boolean;
 }
 
-export interface CompanyDoc {
+export interface CompanyDoc extends AnnuaireLegacyFields {
   name?: string;
   sector?: string;
   city?: string;
@@ -46,11 +71,12 @@ export interface CompanyDoc {
   description?: string;
   services?: string[];
   logo?: string;
+  photo?: string;
   summary?: string;
   verified?: boolean;
 }
 
-export interface ClubDoc {
+export interface ClubDoc extends AnnuaireLegacyFields {
   name?: string;
   type?: string;
   city?: string;
@@ -64,6 +90,7 @@ export interface ClubDoc {
   description?: string;
   activities?: string[];
   logo?: string;
+  photo?: string;
   summary?: string;
   verified?: boolean;
 }

@@ -77,7 +77,7 @@ export default function OnboardingPage() {
       </main>
 
       <footer className="py-3 text-center text-muted small">
-        ONG Sala — Pour l&apos;insertion professionnelle des jeunes au Congo
+        ONG Sala - Pour l&apos;insertion professionnelle des jeunes au Congo
       </footer>
     </div>
   );

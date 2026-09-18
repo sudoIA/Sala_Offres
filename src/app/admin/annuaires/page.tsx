@@ -1,5 +1,8 @@
 // src/app/admin/annuaires/page.tsx
-// Grille de cartes pour gérer les 3 annuaires Sala (sous-onglets).
+// Grille de cartes pour gérer les 3 annuaires Sala (sous-onglets). Les cartes
+// et la fiche d'aperçu reprennent exactement le même habillage que le site
+// public (voir components/annuaire/) pour que l'admin voie ce que voient les
+// visiteurs avant de modifier ou supprimer une fiche.
 
 "use client";
 
@@ -9,10 +12,13 @@ import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAnnuaire } from "@/hooks/useAnnuaire";
 import { usePagination } from "@/hooks/usePagination";
-import { CompanyTile } from "@/components/CompanyTile";
+import { AnnuaireCard, AnnuaireCardSkeleton } from "@/components/annuaire/AnnuaireCard";
+import { AnnuaireDetailContent } from "@/components/annuaire/AnnuaireDetailContent";
 import { AnnuaireFormModal } from "@/components/admin/AnnuaireFormModal";
+import { Modal } from "@/components/Modal";
 import { Pagination } from "@/components/admin/Pagination";
 import { confirmDelete, notify } from "@/lib/notify";
+import { annuaireModalTitle } from "@/lib/annuaire-helpers";
 import { ANNUAIRE_COLLECTIONS, type AnnuaireCategory, type AnnuaireItem } from "@/types/annuaire";
 
 const SUBTABS: { category: AnnuaireCategory; icon: string; label: string }[] = [
@@ -21,43 +27,13 @@ const SUBTABS: { category: AnnuaireCategory; icon: string; label: string }[] = [
   { category: "clubs", icon: "fas fa-comments", label: "Clubs d'Anglais" },
 ];
 
-function cardMeta(category: AnnuaireCategory, item: AnnuaireItem) {
-  if (category === "universities") {
-    return (
-      <>
-        <span className="admin-badge">{item.type || "—"}</span>
-        <span><i className="fas fa-map-marker-alt"></i>{item.city || "—"}</span>
-      </>
-    );
-  }
-  if (category === "companies") {
-    return (
-      <>
-        <span className="admin-badge">{item.sector || "—"}</span>
-        <span><i className="fas fa-map-marker-alt"></i>{item.city || "—"}</span>
-      </>
-    );
-  }
-  return (
-    <>
-      <span><i className="fas fa-map-marker-alt"></i>{item.city || "—"}</span>
-      <span><i className="far fa-clock"></i>{item.schedule || "—"}</span>
-    </>
-  );
-}
-
-function cardFooter(category: AnnuaireCategory, item: AnnuaireItem) {
-  if (category === "universities") return item.phone || item.email || "";
-  if (category === "companies") return item.email || item.phone || "";
-  return item.coordinator || "";
-}
-
 export default function AdminAnnuairesPage() {
   const [category, setCategory] = useState<AnnuaireCategory>("universities");
   const { items, loading } = useAnnuaire(category);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<AnnuaireItem | null>(null);
+  const [previewItem, setPreviewItem] = useState<AnnuaireItem | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -78,11 +54,18 @@ export default function AdminAnnuairesPage() {
       try {
         await deleteDoc(doc(db, ANNUAIRE_COLLECTIONS[category], item.id));
         notify("Fiche supprimée.");
+        setPreviewItem((current) => (current?.id === item.id ? null : current));
       } catch (err) {
         console.error("Erreur suppression fiche :", err);
         notify("Erreur lors de la suppression.", "error");
       }
     }
+  }
+
+  function handleEdit(item: AnnuaireItem) {
+    setPreviewItem(null);
+    setEditingItem(item);
+    setModalOpen(true);
   }
 
   return (
@@ -131,52 +114,66 @@ export default function AdminAnnuairesPage() {
         </div>
       </div>
 
-      <div className="admin-card-grid">
-        {loading && (
-          <div className="admin-card-empty admin-empty">
-            <div className="spinner-border text-success"></div>
-          </div>
-        )}
+      <div className="row g-3">
+        {loading &&
+          Array.from({ length: 3 }).map((_, i) => (
+            <div className="col-md-6 col-lg-4" key={i}>
+              <AnnuaireCardSkeleton />
+            </div>
+          ))}
 
         {!loading && filtered.length === 0 && (
-          <div className="admin-card-empty admin-empty">
-            {items.length === 0 ? "Aucune fiche enregistrée dans cet annuaire." : "Aucune fiche ne correspond à votre recherche."}
+          <div className="col-12">
+            <div className="admin-card-empty admin-empty">
+              {items.length === 0 ? "Aucune fiche enregistrée dans cet annuaire." : "Aucune fiche ne correspond à votre recherche."}
+            </div>
           </div>
         )}
 
         {!loading &&
-          pageItems.map((item) => (
-            <div className="admin-card" key={item.id}>
-              <div className="admin-card-top">
-                <div className="admin-row-identity">
-                  <CompanyTile company={item.name} logoUrl={item.logo} />
-                  <div className="title">{item.name || "Sans nom"}</div>
-                </div>
-              </div>
-              <div className="admin-card-meta">{cardMeta(category, item)}</div>
-              <div className="admin-card-footer">
-                <span className="text-muted small">{cardFooter(category, item)}</span>
-                <div className="admin-actions">
-                  <button
-                    className="btn-icon btn-icon-edit"
-                    title="Modifier"
-                    onClick={() => {
-                      setEditingItem(item);
-                      setModalOpen(true);
-                    }}
-                  >
-                    <i className="fas fa-pen"></i>
-                  </button>
-                  <button className="btn-icon btn-icon-delete" title="Supprimer" onClick={() => handleDelete(item)}>
-                    <i className="fas fa-trash"></i>
-                  </button>
-                </div>
-              </div>
+          pageItems.map((item, i) => (
+            <div className="col-md-6 col-lg-4" key={item.id}>
+              <AnnuaireCard
+                category={category}
+                item={item}
+                index={i}
+                ctaLabel="Aperçu"
+                onOpen={() => setPreviewItem(item)}
+                headerActions={
+                  <>
+                    <button className="annuaire-card-icon-btn" title="Modifier" onClick={() => handleEdit(item)}>
+                      <i className="fas fa-pen"></i>
+                    </button>
+                    <button className="annuaire-card-icon-btn danger" title="Supprimer" onClick={() => handleDelete(item)}>
+                      <i className="fas fa-trash"></i>
+                    </button>
+                  </>
+                }
+              />
             </div>
           ))}
       </div>
 
       <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+
+      <Modal open={!!previewItem} onClose={() => setPreviewItem(null)} title={annuaireModalTitle(category)} size="md">
+        {previewItem && (
+          <AnnuaireDetailContent
+            category={category}
+            item={previewItem}
+            extraActions={
+              <>
+                <button className="btn btn-sm btn-sala-outline rounded-pill" onClick={() => handleEdit(previewItem)}>
+                  <i className="fas fa-pen me-1"></i> Modifier
+                </button>
+                <button className="btn btn-sm btn-outline-danger rounded-pill" onClick={() => handleDelete(previewItem)}>
+                  <i className="fas fa-trash me-1"></i> Supprimer
+                </button>
+              </>
+            }
+          />
+        )}
+      </Modal>
 
       <AnnuaireFormModal open={modalOpen} category={category} item={editingItem} onClose={() => setModalOpen(false)} />
     </section>

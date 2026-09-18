@@ -51,7 +51,7 @@ export default function NotFound() {
         </p>
       </div>
       <div style={{ textAlign: "center", paddingTop: 20, fontSize: "0.78rem", color: "var(--sala-text-muted)" }}>
-        © 2026 ONG Sala — République du Congo
+        © 2026 ONG Sala - Tous droits réservés
       </div>
     </div>
   );

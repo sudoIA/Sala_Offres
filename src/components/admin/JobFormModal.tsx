@@ -144,7 +144,7 @@ export function JobFormModal({ open, job, importRecord, onApproveImport, onClose
       <form className="job-form" onSubmit={handleSubmit}>
         {importRecord && (
           <p className="text-muted small mb-3">
-            Offre importée depuis {importRecord.source.toUpperCase()} — relisez et corrigez les champs avant de publier.{" "}
+            Offre importée depuis {importRecord.source.toUpperCase()} - relisez et corrigez les champs avant de publier.{" "}
             <a href={importRecord.sourceUrl} target="_blank" rel="noopener">
               Voir l&apos;annonce d&apos;origine <i className="fas fa-external-link-alt"></i>
             </a>

@@ -45,6 +45,7 @@ const EMPTY_FORM = {
   fee: "",
   activities: "",
   logo: "",
+  photo: "",
   summary: "",
 };
 
@@ -57,26 +58,30 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
     if (!open) return;
     setVerified(item?.verified || false);
     setForm({
-      name: item?.name || "",
-      type: item?.type || "",
+      // Certaines fiches existantes viennent d'un import différent de ce
+      // formulaire (full_name/contenu/site/tel/tel2/statut) : on les relit ici
+      // pour ne pas afficher un formulaire vide sur une fiche déjà remplie.
+      name: item?.name || item?.full_name || "",
+      type: item?.type || item?.statut || "",
       city: item?.city || "",
       district: item?.district || "",
       building: item?.building || "",
       address: item?.address || "",
       hours: item?.hours || "",
-      phone: item?.phone || "",
-      email: item?.email || "",
-      website: item?.website || "",
+      phone: item?.phone || item?.tel || item?.tel2 || "",
+      email: item?.email || item?.email2 || "",
+      website: item?.website || item?.site || "",
       faculties: (item?.faculties || []).join(", "),
-      sector: item?.sector || "",
+      sector: item?.sector || item?.statut || "",
       services: (item?.services || []).join(", "),
-      description: item?.description || "",
+      description: item?.description || item?.contenu || "",
       location: item?.location || "",
       schedule: item?.schedule || "",
       coordinator: item?.coordinator || "",
       fee: item?.fee || "",
       activities: (item?.activities || []).join(", "),
       logo: item?.logo || "",
+      photo: item?.photo || "",
       summary: item?.summary || "",
     });
   }, [open, item]);
@@ -105,6 +110,7 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         website: form.website.trim(),
         faculties: form.faculties.split(",").map((s) => s.trim()).filter(Boolean),
         logo: form.logo.trim(),
+        photo: form.photo.trim(),
         summary: form.summary.trim(),
         description: form.description.trim(),
       };
@@ -123,6 +129,7 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         description: form.description.trim(),
         services: form.services.split(",").map((s) => s.trim()).filter(Boolean),
         logo: form.logo.trim(),
+        photo: form.photo.trim(),
         summary: form.summary.trim(),
       };
     } else {
@@ -140,6 +147,7 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         description: form.description.trim(),
         activities: form.activities.split(",").map((s) => s.trim()).filter(Boolean),
         logo: form.logo.trim(),
+        photo: form.photo.trim(),
         summary: form.summary.trim(),
       };
     }
@@ -179,6 +187,7 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Email</label><input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
               <div className="form-group"><label>Site Web</label><input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} /></div>
               <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
+              <div className="form-group"><label>Photo du lieu (URL de l&apos;image, facultatif)</label><input type="url" placeholder="https://..." value={form.photo} onChange={(e) => set("photo", e.target.value)} /></div>
             </div>
             <div className="form-group full-width">
               <label>Résumé (1-2 phrases, affiché sur la carte)</label>
@@ -209,6 +218,7 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Email RH</label><input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
               <div className="form-group"><label>Site Web</label><input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} /></div>
               <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
+              <div className="form-group"><label>Photo du lieu (URL de l&apos;image, facultatif)</label><input type="url" placeholder="https://..." value={form.photo} onChange={(e) => set("photo", e.target.value)} /></div>
             </div>
             <div className="form-group full-width">
               <label>Résumé (1-2 phrases, affiché sur la carte)</label>
@@ -239,6 +249,7 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Tarif</label><input type="text" placeholder="Gratuit, Adhésion libre..." value={form.fee} onChange={(e) => set("fee", e.target.value)} /></div>
               <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
+              <div className="form-group"><label>Photo du lieu (URL de l&apos;image, facultatif)</label><input type="url" placeholder="https://..." value={form.photo} onChange={(e) => set("photo", e.target.value)} /></div>
             </div>
             <div className="form-group full-width">
               <label>Résumé (1-2 phrases, affiché sur la carte)</label>
