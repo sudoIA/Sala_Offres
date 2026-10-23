@@ -49,6 +49,17 @@ export function getAdminApp(): App {
   return appInstance;
 }
 
+/**
+ * Vrai si le compte de service est configuré (production Vercel). Les
+ * lectures faites côté serveur passent alors par le SDK Admin, qui n'est pas
+ * soumis à App Check : elles continuent de fonctionner une fois App Check
+ * activé sur Firestore. En local (variable absente), on retombe sur le SDK
+ * client comme avant.
+ */
+export function hasAdminCredentials(): boolean {
+  return !!process.env.FIREBASE_SERVICE_ACCOUNT;
+}
+
 export function getAdminDb(): Firestore {
   return getFirestore(getAdminApp());
 }

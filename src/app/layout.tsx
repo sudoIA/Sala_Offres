@@ -56,6 +56,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={`${heebo.variable} ${inter.variable}`}>
       <head>
+        {/* Ouvre tôt les connexions vers les serveurs sollicités dès
+            l'affichage (base de données, icônes, logos) : gagne un
+            aller-retour réseau sur chacun, sensible sur mobile. */}
+        <link rel="preconnect" href="https://firestore.googleapis.com" />
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="" />
+        <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
         <link
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
           rel="stylesheet"

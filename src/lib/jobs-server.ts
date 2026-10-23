@@ -7,6 +7,7 @@
 
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { getAdminDb, hasAdminCredentials } from "@/lib/firebase-admin";
 import type { JobDoc } from "@/types/job";
 
 export interface JobMetadata {
@@ -22,10 +23,15 @@ function stripHtml(html: string): string {
 
 export async function getJobMetadata(jobId: string): Promise<JobMetadata | null> {
   try {
-    const snap = await getDoc(doc(db, "emplois", jobId));
-    if (!snap.exists()) return null;
-
-    const data = snap.data() as JobDoc;
+    // SDK Admin en production (non soumis à App Check), SDK client en local.
+    let data: JobDoc | undefined;
+    if (hasAdminCredentials()) {
+      data = (await getAdminDb().collection("emplois").doc(jobId).get()).data() as JobDoc | undefined;
+    } else {
+      const snap = await getDoc(doc(db, "emplois", jobId));
+      data = snap.exists() ? (snap.data() as JobDoc) : undefined;
+    }
+    if (!data) return null;
     if (data.visibility === false) return null;
 
     const plainBody = stripHtml(data.body || "");

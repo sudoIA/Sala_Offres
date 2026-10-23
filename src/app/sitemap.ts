@@ -5,6 +5,7 @@
 import type { MetadataRoute } from "next";
 import { collection, getDocs, query, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { getAdminDb, hasAdminCredentials } from "@/lib/firebase-admin";
 import { getSiteUrl } from "@/lib/site-url";
 
 // Regénéré au plus toutes les heures : évite d'interroger Firestore à
@@ -36,8 +37,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     // Offres encore ouvertes uniquement : inutile de signaler aux moteurs de
     // recherche des milliers d'offres expirées.
-    const snap = await getDocs(query(collection(db, "emplois"), where("deadline", ">", Timestamp.now())));
-    jobEntries = snap.docs
+    // SDK Admin en production (non soumis à App Check), SDK client en local.
+    const docs = hasAdminCredentials()
+      ? (await getAdminDb().collection("emplois").where("deadline", ">", now).get()).docs
+      : (await getDocs(query(collection(db, "emplois"), where("deadline", ">", Timestamp.now())))).docs;
+    jobEntries = docs
       .filter((d) => d.data().visibility !== false)
       .map((d) => ({ url: `${base}/offres/${d.id}`, lastModified: now }));
   } catch (err) {

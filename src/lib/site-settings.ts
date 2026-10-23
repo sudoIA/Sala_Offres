@@ -43,11 +43,29 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   },
 };
 
+// Une seule lecture partagée : menu, barre du bas, pied de page et en-tête
+// demandent tous ces réglages à chaque page. Rafraîchie au plus toutes les
+// 5 minutes (le changement fait par un admin apparaît donc sous 5 min).
+const SETTINGS_TTL_MS = 5 * 60 * 1000;
+let cached: { at: number; promise: Promise<SiteSettings> } | null = null;
+
 /**
  * Charge les réglages du site depuis Firestore, avec repli sur les valeurs par
  * défaut si le document n'existe pas encore ou en cas d'erreur (ex: hors-ligne).
  */
-export async function loadSiteSettings(): Promise<SiteSettings> {
+export function loadSiteSettings(): Promise<SiteSettings> {
+  if (!cached || Date.now() - cached.at > SETTINGS_TTL_MS) {
+    cached = { at: Date.now(), promise: fetchSiteSettings() };
+  }
+  return cached.promise;
+}
+
+/** À appeler après une modification des réglages (Admin > Paramètres). */
+export function clearSiteSettingsCache(): void {
+  cached = null;
+}
+
+async function fetchSiteSettings(): Promise<SiteSettings> {
   try {
     const snap = await getDoc(doc(db, "settings", "site"));
     if (snap.exists()) {

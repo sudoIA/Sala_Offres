@@ -14,7 +14,7 @@ import {
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
-import { DEFAULT_SETTINGS, loadSiteSettings, type SiteSettings } from "@/lib/site-settings";
+import { DEFAULT_SETTINGS, clearSiteSettingsCache, loadSiteSettings, type SiteSettings } from "@/lib/site-settings";
 import { notify } from "@/lib/notify";
 import { AutoPublishPanel } from "@/components/admin/AutoPublishPanel";
 import { logAdminAction } from "@/lib/admin-log";
@@ -93,6 +93,7 @@ export default function AdminSettingsPage() {
         },
         { merge: true }
       );
+      clearSiteSettingsCache();
       await logAdminAction("settings", "settings", "Coordonnées du site modifiées");
       notify("Coordonnées enregistrées.");
     } catch (err) {
@@ -108,6 +109,7 @@ export default function AdminSettingsPage() {
     setSavingVisibility(true);
     try {
       await setDoc(doc(db, "settings", "site"), { sectionsVisible: settings.sectionsVisible }, { merge: true });
+      clearSiteSettingsCache();
       await logAdminAction("settings", "settings", "Sections visibles modifiées");
       notify("Visibilité enregistrée. Les visiteurs verront le changement à leur prochain chargement de page.");
     } catch (err) {

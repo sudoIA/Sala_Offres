@@ -4,14 +4,15 @@
 // Le navigateur de l'admin envoie son jeton Firebase ("Authorization: Bearer
 // <idToken>"). On vérifie sa signature avec le SDK Admin — ce qui ne demande
 // que l'identifiant du projet, pas de compte de service — puis on lit
-// roles/{uid} via l'API REST Firestore AVEC ce même jeton : ce sont donc les
-// règles de sécurité habituelles qui s'appliquent, sans aucun secret serveur
-// supplémentaire (fonctionne aussi en local, où FIREBASE_SERVICE_ACCOUNT
-// n'est pas défini).
+// roles/{uid} : par le SDK Admin en production (compte de service présent,
+// non soumis à App Check), sinon via l'API REST Firestore AVEC ce même jeton,
+// donc sous les règles de sécurité habituelles (cas du développement local,
+// où FIREBASE_SERVICE_ACCOUNT n'est pas défini).
 
 import { NextResponse, type NextRequest } from "next/server";
 import { getApps, initializeApp, type App } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { getAdminDb, hasAdminCredentials } from "@/lib/firebase-admin";
 
 const PROJECT_ID = "sala-a6c15";
 // Application nommée, distincte de celle de firebase-admin.ts (qui, elle,
@@ -23,6 +24,11 @@ function verifierApp(): App {
 }
 
 async function hasAdminRole(uid: string, idToken: string): Promise<boolean> {
+  // En production, lecture par le SDK Admin (non soumis à App Check).
+  if (hasAdminCredentials()) {
+    const snap = await getAdminDb().collection("roles").doc(uid).get();
+    return snap.data()?.role === "admin";
+  }
   const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/roles/${encodeURIComponent(uid)}`;
   const res = await fetch(url, { headers: { Authorization: `Bearer ${idToken}` }, cache: "no-store" });
   if (!res.ok) return false;
