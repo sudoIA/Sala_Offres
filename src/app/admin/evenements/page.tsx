@@ -15,6 +15,8 @@ import { RegistrationsModal } from "@/components/admin/RegistrationsModal";
 import { Pagination } from "@/components/admin/Pagination";
 import { confirmDelete, notify } from "@/lib/notify";
 import type { SalaEvent } from "@/types/event";
+import { safeExternalUrl } from "@/lib/safe-url";
+import { logAdminAction } from "@/lib/admin-log";
 
 export default function AdminEventsPage() {
   const { events, loading } = useEvents();
@@ -43,6 +45,7 @@ export default function AdminEventsPage() {
     if (await confirmDelete(evt.title || "cet événement")) {
       try {
         await deleteDoc(doc(db, "events", evt.id));
+        await logAdminAction("delete", "events", evt.title || "Événement", evt.id);
         notify("Événement supprimé.");
       } catch (err) {
         console.error("Erreur suppression événement :", err);
@@ -115,7 +118,7 @@ export default function AdminEventsPage() {
               <div className="admin-card-footer">
                 <span className="text-muted small">
                   {evt.site ? (
-                    <a href={evt.site} target="_blank" rel="noopener">
+                    <a href={safeExternalUrl(evt.site) ?? undefined} target="_blank" rel="noopener">
                       <i className="fas fa-link me-1"></i>Lien
                     </a>
                   ) : (

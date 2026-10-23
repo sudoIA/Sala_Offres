@@ -1184,6 +1184,26 @@ footer.sala-footer .footer-bottom {
   background: transparent;
 }
 
+/* Filtres de la page /offres (ville, contrat, tri). */
+.sala-offres-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sala-offres-filters select {
+  flex: 1 1 140px;
+  min-width: 0;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  background: var(--sala-surface);
+  color: var(--sala-text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 .filter-chip {
   display: inline-flex;
   align-items: center;
@@ -4046,3 +4066,158 @@ body.dashboard-body {
 }
 
 .tpl-moderne-body .cv-section-title { font-size: 12.5px; }
+
+/* ===== News Sala (page /actualites) ===== */
+.news-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  text-align: left;
+  padding: 0;
+  border: 1px solid var(--sala-border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sala-surface);
+  color: var(--sala-text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.news-card-image {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+}
+
+.news-card-body {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.news-card-date {
+  font-size: 0.78rem;
+  color: var(--sala-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.news-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 6px 0 8px;
+}
+
+.news-card-summary {
+  font-size: 0.88rem;
+  color: var(--sala-text-secondary);
+  flex: 1;
+}
+
+.news-card-more {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sala-green-dark);
+}
+
+.news-article-image {
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+/* ===== Tableau de bord admin : indicateurs (AdminInsights) ===== */
+.insight-bars {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 180px;
+  border-bottom: 1px solid var(--sala-border);
+}
+
+.insight-bar-col {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  outline: none;
+}
+
+.insight-bar-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.insight-bar {
+  width: min(28px, 70%);
+  min-height: 2px;
+  background: var(--sala-green);
+  border-radius: 4px 4px 0 0;
+}
+
+.insight-bar-label {
+  font-size: 0.7rem;
+  color: var(--sala-text-muted);
+  margin-top: 4px;
+  white-space: nowrap;
+}
+
+/* Infobulle au survol / au focus clavier de chaque colonne. */
+.insight-bar-col:hover::after,
+.insight-bar-col:focus::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--sala-text-primary);
+  color: var(--sala-bg);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.insight-bar-col:hover .insight-bar,
+.insight-bar-col:focus .insight-bar {
+  filter: brightness(0.85);
+}
+
+.insight-ranking {
+  padding-left: 1.2rem;
+}
+
+.insight-ranking li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--sala-border);
+  font-size: 0.88rem;
+}
+
+.insight-ranking li:last-child {
+  border-bottom: none;
+}
+
+.insight-ranking-title {
+  color: var(--sala-text-primary);
+}
+
+.insight-ranking-value {
+  float: right;
+  color: var(--sala-text-secondary);
+  font-weight: 600;
+}

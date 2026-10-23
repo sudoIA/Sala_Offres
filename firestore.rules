@@ -77,30 +77,128 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Chaîne facultative bornée en taille (champ absent accepté).
+    function optString(data, key, max) {
+      return !(key in data) || (data[key] is string && data[key].size() <= max);
+    }
+
     // --- Inscriptions aux événements ---
     // Formulaire public (pas de compte requis) : on autorise la création
     // d'une inscription avec un schéma restreint, mais seule l'équipe admin
     // peut consulter ou gérer la liste des inscrits (données personnelles).
+    // Tailles bornées : un robot ne peut pas y stocker de gros volumes.
     match /inscriptions_evenements/{regId} {
       allow create: if request.resource.data.keys().hasOnly(
           ['eventId', 'eventTitle', 'name', 'email', 'phone', 'registeredAt']
         ) &&
         request.resource.data.eventId is string &&
+        request.resource.data.eventId.size() <= 100 &&
         request.resource.data.name is string &&
-        request.resource.data.name.size() > 0;
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 120 &&
+        optString(request.resource.data, 'eventTitle', 200) &&
+        optString(request.resource.data, 'phone', 30) &&
+        optString(request.resource.data, 'registeredAt', 40) &&
+        (!('email' in request.resource.data) ||
+          (request.resource.data.email is string &&
+            request.resource.data.email.size() <= 254 &&
+            (request.resource.data.email.size() == 0 ||
+              request.resource.data.email.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$'))));
       allow read, update, delete: if isAdmin();
     }
 
     // --- Profils candidats ---
     // Chacun ne lit/écrit que son propre profil et ses propres CV ; l'admin
     // peut lister tous les profils (page "Utilisateurs" du back-office).
-    match /users/{uid} {
-      allow read, write: if isSignedIn() && request.auth.uid == uid;
-      allow read: if isAdmin();
+    //
+    // Le profil n'accepte que les champs connus du site, avec des tailles
+    // bornées. À la création, tout le document est contrôlé ; à la mise à
+    // jour, seuls les champs modifiés (diff), pour ne jamais bloquer un ancien
+    // profil qui contiendrait un champ historique.
+    function profileKeys() {
+      return ['uid', 'fullName', 'email', 'city', 'phone', 'role', 'photoURL', 'bio',
+              'skills', 'savedJobs', 'applications', 'jobAlerts', 'createdAt', 'updatedAt'];
+    }
 
+    function validProfileValues(d) {
+      return optString(d, 'fullName', 120) &&
+        optString(d, 'email', 254) &&
+        optString(d, 'city', 80) &&
+        optString(d, 'phone', 30) &&
+        optString(d, 'bio', 2000) &&
+        (!('photoURL' in d) || d.photoURL == null || (d.photoURL is string && d.photoURL.size() <= 1000)) &&
+        // Le vrai rôle admin vit dans "roles" : ici, seul "candidat" est permis.
+        (!('role' in d) || d.role == 'candidat') &&
+        (!('skills' in d) || (d.skills is list && d.skills.size() <= 50)) &&
+        (!('savedJobs' in d) || (d.savedJobs is list && d.savedJobs.size() <= 500)) &&
+        (!('applications' in d) || (d.applications is list && d.applications.size() <= 500)) &&
+        (!('jobAlerts' in d) ||
+          (d.jobAlerts is map &&
+            d.jobAlerts.keys().hasOnly(['enabled', 'keywords', 'city', 'contract']) &&
+            d.jobAlerts.enabled is bool &&
+            d.jobAlerts.keywords is list && d.jobAlerts.keywords.size() <= 10 &&
+            optString(d.jobAlerts, 'city', 80) &&
+            optString(d.jobAlerts, 'contract', 40)));
+    }
+
+    match /users/{uid} {
+      allow read: if isSignedIn() && request.auth.uid == uid;
+      allow read: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.keys().hasOnly(profileKeys()) &&
+        validProfileValues(request.resource.data);
+      allow update: if isSignedIn() && request.auth.uid == uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(profileKeys()) &&
+        validProfileValues(request.resource.data);
+      // Suppression de son propre compte (page Profil > Compte).
+      allow delete: if isSignedIn() && request.auth.uid == uid;
+
+      // CV enregistrés : écriture réservée aux comptes à l'email vérifié
+      // (même exigence que l'interface, mais appliquée par la base).
       match /cvs/{cvId} {
-        allow read, write: if isSignedIn() && request.auth.uid == uid;
+        allow read, delete: if isSignedIn() && request.auth.uid == uid;
+        allow create, update: if isSignedIn() && request.auth.uid == uid &&
+          request.auth.token.email_verified == true;
       }
+    }
+
+    // --- News Sala (page publique /actualites) ---
+    // Lecture publique des seuls articles visibles ; l'équipe admin voit et
+    // gère tout.
+    match /news/{articleId} {
+      allow read: if resource.data.visibility == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // --- Journal des actions admin (Admin > Journal) ---
+    // Ajout uniquement, par un admin et à son propre nom ; jamais modifié ni
+    // supprimé, pour que l'historique reste fiable.
+    match /admin_logs/{logId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() &&
+        request.resource.data.uid == request.auth.uid &&
+        request.resource.data.keys().hasOnly(['action', 'target', 'label', 'targetId', 'uid', 'email', 'at']) &&
+        request.resource.data.label is string && request.resource.data.label.size() <= 200;
+      allow update, delete: if false;
+    }
+
+    // --- Erreurs rencontrées par les visiteurs ---
+    // Écrites uniquement par le serveur (SDK Admin, route /api/client-errors).
+    match /client_errors/{errorId} {
+      allow read, delete: if isAdmin();
+      allow create, update: if false;
+    }
+
+    // --- Compteur de consultations des offres (anonyme) ---
+    // Un visiteur peut seulement ajouter 1 ; seuls les admins lisent les
+    // chiffres (tableau de bord).
+    match /job_views/{jobId} {
+      allow read: if isAdmin();
+      allow create: if request.resource.data.keys().hasOnly(['count']) &&
+        request.resource.data.count == 1;
+      allow update: if request.resource.data.keys().hasOnly(['count']) &&
+        request.resource.data.count == resource.data.count + 1;
+      allow delete: if isAdmin();
     }
 
     // --- Rôles admin ---

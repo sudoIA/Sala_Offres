@@ -9,6 +9,7 @@ import { db } from "@/lib/firebase";
 import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import type { LegislationFiche, LegislationTopic } from "@/types/legislation";
+import { logAdminAction } from "@/lib/admin-log";
 
 interface LegislationFormModalProps {
   open: boolean;
@@ -70,9 +71,11 @@ export function LegislationFormModal({ open, fiche, nextOrder, onClose }: Legisl
     try {
       if (fiche) {
         await updateDoc(doc(db, "legislation", fiche.id), data);
+        await logAdminAction("update", "legislation", String(data.title || "Fiche"), fiche.id);
         notify("Fiche mise à jour.");
       } else {
-        await addDoc(collection(db, "legislation"), data);
+        const ref = await addDoc(collection(db, "legislation"), data);
+        await logAdminAction("create", "legislation", String(data.title || "Fiche"), ref.id);
         notify("Fiche ajoutée avec succès !");
       }
       onClose();

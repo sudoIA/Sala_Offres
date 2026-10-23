@@ -3,6 +3,7 @@
 // Firebase Auth). Le rôle admin est stocké séparément dans "roles/{uid}".
 
 import type { Timestamp } from "firebase/firestore";
+import type { JobAlertPrefs } from "@/lib/job-alerts";
 
 export interface UserProfileDoc {
   fullName?: string;
@@ -14,6 +15,7 @@ export interface UserProfileDoc {
   skills?: string[];
   savedJobs?: string[];
   applications?: string[];
+  jobAlerts?: JobAlertPrefs;
   createdAt?: Timestamp;
 }
 

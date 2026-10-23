@@ -6,6 +6,7 @@
 // catégorie dans chaque page.
 
 import type { AnnuaireCategory, AnnuaireItem } from "@/types/annuaire";
+import { safeExternalUrl } from "@/lib/safe-url";
 
 const CARD_SUMMARY_MAX_LENGTH = 140;
 
@@ -52,8 +53,9 @@ export function annuaireDescription(item: AnnuaireItem): string {
 }
 
 /** Site web : champ "website" ou, à défaut, "site" (certains imports). */
+/** Site web, uniquement s'il s'agit d'une vraie adresse http(s) (voir safe-url.ts). */
 export function annuaireWebsite(item: AnnuaireItem): string {
-  return item.website || item.site || "";
+  return safeExternalUrl(item.website || item.site) || "";
 }
 
 /** Numéros de téléphone (phone/tel/tel2), sans doublons. */

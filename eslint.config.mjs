@@ -23,8 +23,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Archive de l'ancien site statique, conservée pour référence uniquement.
-    "legacy-static-site/**",
     // Service worker et runtime Workbox générés par @ducanh2912/next-pwa à chaque build.
     "public/sw.js",
     "public/workbox-*.js",

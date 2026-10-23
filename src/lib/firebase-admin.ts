@@ -1,6 +1,7 @@
 // src/lib/firebase-admin.ts
-// Initialise Firebase Admin (uniquement pour la tâche planifiée de collecte
-// d'offres, voir src/app/api/cron/collect-jobs/route.ts). Contrairement au
+// Initialise Firebase Admin (tâche planifiée de collecte d'offres et
+// d'alertes, voir src/app/api/cron/collect-jobs/route.ts, et journal des
+// erreurs, voir src/app/api/client-errors/route.ts). Contrairement au
 // SDK client (@/lib/firebase.ts) utilisé partout ailleurs dans le site, le
 // SDK Admin s'authentifie avec un compte de service et n'est jamais soumis
 // aux règles de sécurité Firestore — à ne jamais importer depuis un
@@ -18,13 +19,14 @@
 // faire échouer `next build` sur une machine où cette variable n'est pas
 // définie (ex: en local, où seul le SDK client est utilisé).
 
-import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
-let dbInstance: Firestore | null = null;
+let appInstance: App | null = null;
 
-export function getAdminDb(): Firestore {
-  if (dbInstance) return dbInstance;
+/** Application Admin authentifiée par le compte de service. */
+export function getAdminApp(): App {
+  if (appInstance) return appInstance;
 
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
   if (!raw) {
@@ -40,7 +42,13 @@ export function getAdminDb(): Firestore {
     throw new Error("FIREBASE_SERVICE_ACCOUNT ne contient pas un JSON valide.");
   }
 
-  const app = getApps()[0] ?? initializeApp({ credential: cert(serviceAccount) });
-  dbInstance = getFirestore(app);
-  return dbInstance;
+  // Application par défaut explicitement : une autre application nommée,
+  // sans compte de service, peut exister dans le même processus (vérification
+  // des jetons admin, voir admin-auth.ts) et ne doit jamais être réutilisée ici.
+  appInstance = getApps().find((a) => a.name === "[DEFAULT]") ?? initializeApp({ credential: cert(serviceAccount) });
+  return appInstance;
+}
+
+export function getAdminDb(): Firestore {
+  return getFirestore(getAdminApp());
 }

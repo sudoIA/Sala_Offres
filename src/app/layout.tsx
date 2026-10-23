@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Heebo, Inter } from "next/font/google";
+import { DevServiceWorkerCleanup } from "@/components/DevServiceWorkerCleanup";
+import { ErrorReporter } from "@/components/ErrorReporter";
 import { AuthProvider } from "@/context/AuthContext";
 import { DarkModeProvider } from "@/context/DarkModeContext";
 import { MobileMenuProvider } from "@/context/MobileMenuContext";
@@ -64,6 +66,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <DevServiceWorkerCleanup />
+        <ErrorReporter />
         <DarkModeProvider>
           <AuthProvider>
             <MobileMenuProvider>{children}</MobileMenuProvider>

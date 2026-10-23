@@ -10,6 +10,7 @@ import { db } from "@/lib/firebase";
 import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import { ANNUAIRE_COLLECTIONS, type AnnuaireCategory, type AnnuaireItem } from "@/types/annuaire";
+import { logAdminAction } from "@/lib/admin-log";
 
 interface AnnuaireFormModalProps {
   open: boolean;
@@ -156,9 +157,11 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
     try {
       if (item) {
         await updateDoc(doc(db, colName, item.id), data);
+        await logAdminAction("update", colName, String(data.name || "Fiche annuaire"), item.id);
         notify("Fiche mise à jour.");
       } else {
-        await addDoc(collection(db, colName), data);
+        const ref = await addDoc(collection(db, colName), data);
+        await logAdminAction("create", colName, String(data.name || "Fiche annuaire"), ref.id);
         notify("Fiche ajoutée avec succès !");
       }
       onClose();

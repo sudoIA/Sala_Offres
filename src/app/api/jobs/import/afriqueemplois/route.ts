@@ -5,9 +5,15 @@
 // "emplois_import" une fois connecté en tant qu'admin).
 
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin-auth";
 import { collectAfriqueemploisPage } from "@/lib/collectors/afriqueemplois";
 
 export async function POST(req: NextRequest) {
+  // Route réservée aux admins connectés : sinon n'importe qui pourrait
+  // déclencher en boucle des collectes vers les sites sources.
+  const denied = await requireAdmin(req);
+  if (denied) return denied;
+
   let page = 1;
   try {
     const body = await req.json();

@@ -101,6 +101,11 @@ export function AppSidebar() {
           </Link>
         )}
 
+        {settings.sectionsVisible.actualites && (
+          <Link href="/actualites" className={`sala-nav-item${isActive("/actualites") ? " active" : ""}`}>
+            <i className="fas fa-newspaper"></i> Actualités
+          </Link>
+        )}
         {settings.sectionsVisible.annuaires && (
           <>
             <div className="sala-nav-section-title">Annuaires</div>

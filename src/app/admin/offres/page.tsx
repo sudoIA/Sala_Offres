@@ -14,6 +14,7 @@ import { JobFormModal } from "@/components/admin/JobFormModal";
 import { Pagination } from "@/components/admin/Pagination";
 import { confirmDelete, notify } from "@/lib/notify";
 import type { Job } from "@/types/job";
+import { logAdminAction } from "@/lib/admin-log";
 
 export default function AdminJobsPage() {
   const { jobs, loading } = useAdminJobs();
@@ -40,6 +41,7 @@ export default function AdminJobsPage() {
   async function toggleVisibility(job: Job, visible: boolean) {
     try {
       await updateDoc(doc(db, "emplois", job.id), { visibility: visible });
+      await logAdminAction("update", "emplois", `${job.title || "Offre"} — ${visible ? "rendue visible" : "masquée"}`, job.id);
     } catch (err) {
       console.error("Erreur mise à jour visibilité :", err);
       notify("Impossible de mettre à jour la visibilité.", "error");
@@ -50,6 +52,7 @@ export default function AdminJobsPage() {
     if (await confirmDelete(job.title || "cette offre")) {
       try {
         await deleteDoc(doc(db, "emplois", job.id));
+        await logAdminAction("delete", "emplois", job.title || "Offre", job.id);
         notify("Offre supprimée.");
       } catch (err) {
         console.error("Erreur suppression offre :", err);
@@ -105,6 +108,9 @@ export default function AdminJobsPage() {
         {!loading &&
           pageItems.map((job) => {
             const deadline = job.deadlineDate ? job.deadlineDate.toLocaleDateString("fr-FR") : "Sans échéance";
+            // Une offre dont la date limite est passée disparaît d'elle-même du
+            // site public (voir useActiveJobs) : on le signale ici.
+            const expired = !!job.deadlineDate && job.deadlineDate <= new Date();
             return (
               <div className="admin-card" key={job.id}>
                 <div className="admin-card-top">
@@ -130,7 +136,15 @@ export default function AdminJobsPage() {
                   <span><i className="far fa-clock"></i>{deadline}</span>
                 </div>
                 <div className="admin-card-footer">
-                  <span className="text-muted small">{job.visibility ? "Publiée" : "Masquée"}</span>
+                  <span className="text-muted small">
+                    {expired ? (
+                      <span className="text-danger"><i className="fas fa-hourglass-end me-1"></i>Expirée (retirée du site)</span>
+                    ) : job.visibility ? (
+                      "Publiée"
+                    ) : (
+                      "Masquée"
+                    )}
+                  </span>
                   <div className="admin-actions">
                     <button
                       className="btn-icon btn-icon-edit"

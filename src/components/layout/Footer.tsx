@@ -6,6 +6,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { safeExternalUrl } from "@/lib/safe-url";
 
 export function Footer() {
   const settings = useSiteSettings();
@@ -50,22 +51,22 @@ export function Footer() {
             {(settings.socialFacebook || settings.socialLinkedin || settings.socialInstagram || settings.socialWhatsapp) && (
               <div className="footer-social-icons">
                 {settings.socialFacebook && (
-                  <a href={settings.socialFacebook} target="_blank" rel="noopener" aria-label="Facebook">
+                  <a href={safeExternalUrl(settings.socialFacebook) ?? undefined} target="_blank" rel="noopener" aria-label="Facebook">
                     <i className="fab fa-facebook-f"></i>
                   </a>
                 )}
                 {settings.socialLinkedin && (
-                  <a href={settings.socialLinkedin} target="_blank" rel="noopener" aria-label="LinkedIn">
+                  <a href={safeExternalUrl(settings.socialLinkedin) ?? undefined} target="_blank" rel="noopener" aria-label="LinkedIn">
                     <i className="fab fa-linkedin-in"></i>
                   </a>
                 )}
                 {settings.socialInstagram && (
-                  <a href={settings.socialInstagram} target="_blank" rel="noopener" aria-label="Instagram">
+                  <a href={safeExternalUrl(settings.socialInstagram) ?? undefined} target="_blank" rel="noopener" aria-label="Instagram">
                     <i className="fab fa-instagram"></i>
                   </a>
                 )}
                 {settings.socialWhatsapp && (
-                  <a href={settings.socialWhatsapp} target="_blank" rel="noopener" aria-label="WhatsApp">
+                  <a href={safeExternalUrl(settings.socialWhatsapp) ?? undefined} target="_blank" rel="noopener" aria-label="WhatsApp">
                     <i className="fab fa-whatsapp"></i>
                   </a>
                 )}

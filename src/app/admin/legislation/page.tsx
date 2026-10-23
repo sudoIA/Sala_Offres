@@ -12,6 +12,7 @@ import { CompanyTile } from "@/components/CompanyTile";
 import { LegislationFormModal } from "@/components/admin/LegislationFormModal";
 import { confirmDelete, notify } from "@/lib/notify";
 import { TOPIC_LABELS, type LegislationFiche } from "@/types/legislation";
+import { logAdminAction } from "@/lib/admin-log";
 
 export default function AdminLegislationPage() {
   const { fiches, loading } = useLegislationAdmin();
@@ -36,6 +37,7 @@ export default function AdminLegislationPage() {
     if (await confirmDelete(fiche.title || "cette fiche")) {
       try {
         await deleteDoc(doc(db, "legislation", fiche.id));
+        await logAdminAction("delete", "legislation", fiche.title || "Fiche", fiche.id);
         notify("Fiche supprimée.");
       } catch (err) {
         console.error("Erreur suppression fiche législation :", err);

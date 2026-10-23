@@ -6,7 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import { fetchAllJobsOnce } from "@/hooks/useAdminJobs";
+import { fetchRecentJobsOnce } from "@/hooks/useAdminJobs";
 import { IMPORT_SOURCES, useJobImports, type ImportedJobRecord, type ImportSourceKey } from "@/hooks/useJobImports";
 import { useImportRuns } from "@/hooks/useImportRuns";
 import { usePagination } from "@/hooks/usePagination";
@@ -14,6 +14,7 @@ import { CompanyTile } from "@/components/CompanyTile";
 import { JobFormModal } from "@/components/admin/JobFormModal";
 import { Pagination } from "@/components/admin/Pagination";
 import { notify } from "@/lib/notify";
+import { safeExternalUrl } from "@/lib/safe-url";
 
 type Tab = "pending" | "duplicate" | "rejected" | "expired";
 
@@ -51,7 +52,7 @@ export default function AdminImportsPage() {
   async function handleCollect() {
     setCollecting(true);
     try {
-      const publishedJobs = await fetchAllJobsOnce();
+      const publishedJobs = await fetchRecentJobsOnce();
       const result = await runCollection(source, sourcePage, publishedJobs);
       notify(`${result.created} nouvelle(s) offre(s), ${result.updated} déjà connue(s) mise(s) à jour.`);
     } catch (err) {
@@ -233,7 +234,7 @@ export default function AdminImportsPage() {
                   {record.salary && <span><i className="fas fa-money-bill-wave"></i>{record.salary}</span>}
                 </div>
                 <div className="admin-card-footer">
-                  <a href={record.sourceUrl} target="_blank" rel="noopener" className="text-muted small">
+                  <a href={safeExternalUrl(record.sourceUrl) ?? undefined} target="_blank" rel="noopener" className="text-muted small">
                     <i className="fas fa-external-link-alt me-1"></i>Voir la source
                   </a>
                   {tab === "pending" && (

@@ -7,6 +7,12 @@
 // sécurité Firestore. Chaque exécution est journalisée dans "import_runs"
 // pour rester visible dans l'écran admin (suivi des erreurs).
 //
+// Deux étapes s'ajoutent à la collecte :
+// - publication automatique des offres des sources "de confiance" cochées
+//   dans Admin > Paramètres (settings/imports.autoPublishSources) — les
+//   autres restent en attente de relecture manuelle comme avant ;
+// - envoi des alertes emploi aux candidats abonnés (voir alert-emails.ts).
+//
 // Sécurité : seul Vercel Cron doit pouvoir déclencher cette route. Vercel
 // ajoute automatiquement l'en-tête "Authorization: Bearer <CRON_SECRET>"
 // quand la variable d'environnement CRON_SECRET est définie sur le projet —
@@ -20,7 +26,8 @@ import { collectAcpePage, enrichAcpeJob } from "@/lib/collectors/acpe";
 import { collectAfriqueemploisPage } from "@/lib/collectors/afriqueemplois";
 import { collectLesOpportunitesPage } from "@/lib/collectors/lesopportunites";
 import { sleep } from "@/lib/collectors/shared";
-import { buildImportDocId, findDuplicatePublishedJob, stripUndefined } from "@/lib/job-import-helpers";
+import { sendJobAlertDigests, type AlertRunResult } from "@/lib/alert-emails";
+import { DEDUPE_WINDOW_DAYS, buildImportDocId, findDuplicatePublishedJob, importToJobData, stripUndefined } from "@/lib/job-import-helpers";
 import { IMPORT_SOURCES, type ImportSourceKey } from "@/lib/import-sources";
 import type { ImportedJob } from "@/types/job-import";
 import type { Job } from "@/types/job";
@@ -32,6 +39,7 @@ interface SourceRunResult {
   source: ImportSourceKey;
   created: number;
   updated: number;
+  autoPublished: number;
   total: number;
   error: string | null;
 }
@@ -66,7 +74,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ ok: false, error: (err as Error).message }, { status: 500 });
   }
 
-  const publishedSnap = await db.collection("emplois").get();
+  // Offres publiées récemment seulement (voir DEDUPE_WINDOW_DAYS).
+  const since = new Date(Date.now() - DEDUPE_WINDOW_DAYS * 24 * 3600 * 1000);
+  const publishedSnap = await db.collection("emplois").where("timestamp", ">", since).get();
   const published: Job[] = publishedSnap.docs.map((d) => {
     const data = d.data();
     return { id: d.id, company: data.company, title: data.title, city: data.city, deadlineDate: null };
@@ -74,9 +84,15 @@ export async function GET(request: NextRequest) {
 
   const results: SourceRunResult[] = [];
 
+  const importSettings = (await db.collection("settings").doc("imports").get()).data();
+  const autoPublishSources = new Set<string>(
+    Array.isArray(importSettings?.autoPublishSources) ? importSettings.autoPublishSources : []
+  );
+
   for (const { key: source } of IMPORT_SOURCES) {
     let created = 0;
     let updated = 0;
+    let autoPublished = 0;
     let total = 0;
     let error: string | null = null;
     try {
@@ -91,11 +107,19 @@ export async function GET(request: NextRequest) {
           updated++;
         } else {
           const duplicate = findDuplicatePublishedJob(job, published);
+          let publishedJobId: string | undefined;
+          if (!duplicate && autoPublishSources.has(source)) {
+            const jobRef = await db.collection("emplois").add(importToJobData(job, new Date()));
+            publishedJobId = jobRef.id;
+            autoPublished++;
+          }
           await ref.set(
             stripUndefined({
               ...job,
-              status: duplicate ? "duplicate" : "pending",
+              status: duplicate ? "duplicate" : publishedJobId ? "approved" : "pending",
               duplicateOf: duplicate?.id,
+              publishedJobId,
+              autoPublished: publishedJobId ? true : undefined,
               lastCheckedAt: job.importedAt,
             })
           );
@@ -106,14 +130,23 @@ export async function GET(request: NextRequest) {
       error = err instanceof Error ? err.message : String(err);
       console.error(`Collecte automatique "${source}" en échec :`, err);
     }
-    results.push({ source, created, updated, total, error });
+    results.push({ source, created, updated, autoPublished, total, error });
+  }
+
+  let alerts: AlertRunResult | { error: string };
+  try {
+    alerts = await sendJobAlertDigests(db);
+  } catch (err) {
+    console.error("Envoi des alertes emploi en échec :", err);
+    alerts = { error: err instanceof Error ? err.message : String(err) };
   }
 
   await db.collection("import_runs").add({
     ranAt: FieldValue.serverTimestamp(),
     results,
+    alerts,
   });
 
   const hasError = results.some((r) => r.error);
-  return NextResponse.json({ ok: !hasError, results });
+  return NextResponse.json({ ok: !hasError, results, alerts });
 }

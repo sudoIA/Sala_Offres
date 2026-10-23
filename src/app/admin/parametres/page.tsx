@@ -16,6 +16,8 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { DEFAULT_SETTINGS, loadSiteSettings, type SiteSettings } from "@/lib/site-settings";
 import { notify } from "@/lib/notify";
+import { AutoPublishPanel } from "@/components/admin/AutoPublishPanel";
+import { logAdminAction } from "@/lib/admin-log";
 
 export default function AdminSettingsPage() {
   const { user } = useAuth();
@@ -91,6 +93,7 @@ export default function AdminSettingsPage() {
         },
         { merge: true }
       );
+      await logAdminAction("settings", "settings", "Coordonnées du site modifiées");
       notify("Coordonnées enregistrées.");
     } catch (err) {
       console.error("Erreur enregistrement des coordonnées :", err);
@@ -105,6 +108,7 @@ export default function AdminSettingsPage() {
     setSavingVisibility(true);
     try {
       await setDoc(doc(db, "settings", "site"), { sectionsVisible: settings.sectionsVisible }, { merge: true });
+      await logAdminAction("settings", "settings", "Sections visibles modifiées");
       notify("Visibilité enregistrée. Les visiteurs verront le changement à leur prochain chargement de page.");
     } catch (err) {
       console.error("Erreur enregistrement de la visibilité :", err);
@@ -281,6 +285,14 @@ export default function AdminSettingsPage() {
               />
               Législation / Droit du Travail
             </label>
+            <label className="visibility-toggle">
+              <input
+                type="checkbox"
+                checked={settings.sectionsVisible.actualites}
+                onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, actualites: e.target.checked } }))}
+              />
+              Actualités (News Sala)
+            </label>
           </div>
           <div className="form-actions" style={{ textAlign: "left" }}>
             <button type="submit" className="btn-sala-primary" disabled={savingVisibility}>
@@ -289,6 +301,8 @@ export default function AdminSettingsPage() {
           </div>
         </form>
       </div>
+
+      <AutoPublishPanel />
     </section>
   );
 }

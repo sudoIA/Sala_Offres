@@ -5,7 +5,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, query, Timestamp, where } from "firebase/firestore";
+import { DEDUPE_WINDOW_DAYS } from "@/lib/job-import-helpers";
 import { db } from "@/lib/firebase";
 import type { Job, JobDoc } from "@/types/job";
 
@@ -14,13 +15,16 @@ function toJob(id: string, data: JobDoc): Job {
 }
 
 /**
- * Lecture ponctuelle (pas d'abonnement temps réel) de toutes les offres —
- * utile pour un besoin ciblé et rare (ex: dédoublonnage au moment de lancer
- * une collecte, voir admin/imports) sans maintenir en permanence un flux
- * temps réel sur des milliers de documents juste "au cas où".
+ * Lecture ponctuelle (pas d'abonnement temps réel) des offres publiées
+ * récemment — sert au dédoublonnage au moment de lancer une collecte (voir
+ * admin/imports). Limitée aux DEDUPE_WINDOW_DAYS derniers jours : une offre
+ * importée aujourd'hui ne peut pas doublonner une annonce vieille d'un an, et
+ * relire tout l'historique (plus de 2 600 offres) à chaque collecte coûtait
+ * autant de lectures facturées.
  */
-export async function fetchAllJobsOnce(): Promise<Job[]> {
-  const snapshot = await getDocs(collection(db, "emplois"));
+export async function fetchRecentJobsOnce(): Promise<Job[]> {
+  const since = Timestamp.fromMillis(Date.now() - DEDUPE_WINDOW_DAYS * 24 * 3600 * 1000);
+  const snapshot = await getDocs(query(collection(db, "emplois"), where("timestamp", ">", since)));
   return snapshot.docs.map((d) => toJob(d.id, d.data() as JobDoc));
 }
 

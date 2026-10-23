@@ -15,11 +15,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { addDoc, collection, doc, getDoc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { buildImportDocId, findDuplicatePublishedJob, stripUndefined } from "@/lib/job-import-helpers";
 import { IMPORT_SOURCES, type ImportSourceKey } from "@/lib/import-sources";
 import type { ImportedJob } from "@/types/job-import";
 import type { Job } from "@/types/job";
+import { logAdminAction } from "@/lib/admin-log";
 
 export interface ImportedJobRecord extends ImportedJob {
   id: string;
@@ -55,9 +56,11 @@ export function useJobImports() {
    * décision déjà prise (approuvée/rejetée/doublon) par un admin.
    */
   const runCollection = useCallback(async (source: ImportSourceKey, page: number, publishedJobs: Job[]) => {
+    // La route vérifie ce jeton côté serveur (voir src/lib/admin-auth.ts).
+    const idToken = await auth.currentUser?.getIdToken();
     const res = await fetch(`/api/jobs/import/${source}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken || ""}` },
       body: JSON.stringify({ page, withDetails: true }),
     });
     const data = await res.json();
@@ -99,16 +102,23 @@ export function useJobImports() {
    * l'offre importée écrite telle quelle sans passer par cet écran.
    */
   async function finalizeImportApproval(importId: string, jobData: Record<string, unknown>) {
-    await addDoc(collection(db, "emplois"), stripUndefined(jobData));
-    await updateDoc(doc(db, "emplois_import", importId), { status: "approved" });
+    const ref = await addDoc(collection(db, "emplois"), stripUndefined(jobData));
+    await updateDoc(doc(db, "emplois_import", importId), { status: "approved", publishedJobId: ref.id });
+  }
+
+  function importLabel(id: string): string {
+    const record = imports.find((r) => r.id === id);
+    return record ? `${record.title} — ${record.company || record.source}` : id;
   }
 
   async function rejectImport(id: string) {
     await updateDoc(doc(db, "emplois_import", id), { status: "rejected" });
+    await logAdminAction("reject", "emplois_import", importLabel(id), id);
   }
 
   async function markDuplicate(id: string) {
     await updateDoc(doc(db, "emplois_import", id), { status: "duplicate" });
+    await logAdminAction("reject", "emplois_import", `${importLabel(id)} (doublon)`, id);
   }
 
   return { imports, loading, runCollection, finalizeImportApproval, rejectImport, markDuplicate };

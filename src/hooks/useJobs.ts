@@ -1,13 +1,18 @@
 // src/hooks/useJobs.ts
-// Écoute en temps réel de la collection Firestore "emplois".
-// NB : pas de orderBy() — Firestore exclurait silencieusement toute offre
-// sans champ "timestamp" au lieu de simplement la trier en dernier. Le tri se
-// fait donc côté client, en tolérant les offres sans timestamp.
+// Écoute en temps réel des offres actives de la collection Firestore "emplois".
+// Seules les offres dont la date limite n'est pas dépassée sont demandées à
+// Firestore : la collection garde tout l'historique (plus de 2 600 offres,
+// dont une poignée seulement encore ouvertes), et la télécharger en entier à
+// chaque visite coûtait des milliers de lectures facturées par visiteur.
+// Les rares offres sans champ "deadline" (anciennes saisies de test) sont de
+// ce fait exclues — le formulaire admin rend ce champ obligatoire.
+// NB : pas de orderBy("timestamp") — Firestore exclurait silencieusement toute
+// offre sans ce champ ; le tri se fait côté client.
 
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { collection, doc, getDoc, getDocsFromServer, onSnapshot } from "firebase/firestore";
+import { collection, doc, getDoc, getDocsFromServer, onSnapshot, query, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { loadSnapshot, saveSnapshot } from "@/lib/offline-cache";
 import type { Job, JobDoc } from "@/types/job";
@@ -70,6 +75,11 @@ function docsToJobs(docs: { id: string; data: () => JobDoc }[]): Job[] {
   return eligible;
 }
 
+/** Offres dont la date limite n'est pas encore passée (la visibilité est filtrée ensuite). */
+function activeJobsQuery() {
+  return query(collection(db, "emplois"), where("deadline", ">", Timestamp.now()));
+}
+
 /** Offres actives (visibles et non expirées), triées de la plus récente à la plus ancienne. */
 export function useActiveJobs(): UseJobsResult {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -101,7 +111,7 @@ export function useActiveJobs(): UseJobsResult {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
-      collection(db, "emplois"),
+      activeJobsQuery(),
       (snapshot) => {
         const eligible = docsToJobs(snapshot.docs);
         setJobs(eligible);
@@ -129,7 +139,7 @@ export function useActiveJobs(): UseJobsResult {
   const refresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      const snapshot = await getDocsFromServer(collection(db, "emplois"));
+      const snapshot = await getDocsFromServer(activeJobsQuery());
       const eligible = docsToJobs(snapshot.docs);
       setJobs(eligible);
       setError(null);

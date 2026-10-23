@@ -6,18 +6,23 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DOMPurify from "isomorphic-dompurify";
 import { CompanyTile } from "@/components/CompanyTile";
 import { CountdownGrid } from "@/components/CountdownGrid";
 import { useCompanyLogos } from "@/hooks/useCompanyLogos";
 import { formatJobBody } from "@/lib/job-body";
+import { recordJobView } from "@/lib/job-views";
 import type { Job } from "@/types/job";
+import { safeExternalUrl } from "@/lib/safe-url";
 
 type TabKey = "description" | "competences" | "entreprise";
 
 export function JobDetailContent({ job }: { job: Job }) {
   const [activeTab, setActiveTab] = useState<TabKey>("description");
+  useEffect(() => {
+    recordJobView(job.id);
+  }, [job.id]);
   const logos = useCompanyLogos([job.company]);
   const logoUrl = job.company ? logos[job.company] : null;
 
@@ -28,6 +33,7 @@ export function JobDetailContent({ job }: { job: Job }) {
   const safeBody = DOMPurify.sanitize(formatJobBody(job.body || "") || "Pas de description disponible pour cette offre.");
   const safeLanguages = job.languages ? DOMPurify.sanitize(job.languages) : null;
   const email = job.email || null;
+  const site = safeExternalUrl(job.site);
   const mailtoLink = email
     ? `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent("Candidature - " + (job.title || "Offre Sala"))}`
     : null;
@@ -122,11 +128,11 @@ export function JobDetailContent({ job }: { job: Job }) {
               <span dangerouslySetInnerHTML={{ __html: safeCity }} />
             </div>
           )}
-          {job.site && (
+          {site && (
             <div className="mb-2">
               <i className="fas fa-globe text-success me-2"></i>
-              <a href={job.site} target="_blank" rel="noopener">
-                {job.site}
+              <a href={site} target="_blank" rel="noopener">
+                {site}
               </a>
             </div>
           )}
@@ -142,7 +148,7 @@ export function JobDetailContent({ job }: { job: Job }) {
               {email}
             </div>
           )}
-          {!job.city && !job.site && !job.tel && !email && (
+          {!job.city && !site && !job.tel && !email && (
             <p className="text-muted small mb-0">Aucune coordonnée supplémentaire renseignée.</p>
           )}
         </div>
@@ -153,9 +159,9 @@ export function JobDetailContent({ job }: { job: Job }) {
           <a href={mailtoLink} className="btn-sala-primary w-100 py-3 fw-bold">
             <i className="fas fa-paper-plane me-2"></i>Postuler en 1 clic
           </a>
-        ) : job.site ? (
+        ) : site ? (
           // Pas d'e-mail : la candidature se fait sur le site du recruteur.
-          <a href={job.site} target="_blank" rel="noopener" className="btn-sala-primary w-100 py-3 fw-bold">
+          <a href={site} target="_blank" rel="noopener" className="btn-sala-primary w-100 py-3 fw-bold">
             <i className="fas fa-external-link-alt me-2"></i>Postuler sur le site du recruteur
           </a>
         ) : (

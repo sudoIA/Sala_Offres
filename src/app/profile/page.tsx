@@ -1,5 +1,6 @@
 // src/app/profile/page.tsx
-// Profil candidat : à propos, CV enregistrés, candidatures, favoris.
+// Profil candidat : à propos, CV enregistrés, candidatures, favoris,
+// alertes emploi et gestion du compte (suppression).
 
 "use client";
 
@@ -11,17 +12,22 @@ import { useAuth } from "@/context/AuthContext";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { FabCv } from "@/components/layout/FabCv";
+import { AccountDeletionPanel } from "@/components/profile/AccountDeletionPanel";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
-import { loadUserProfile, logoutUser, updateUserProfile, type ProfileUpdateData } from "@/lib/candidate-profile";
+import { JobAlertsPanel } from "@/components/profile/JobAlertsPanel";
+import { loadUserProfile, logoutUser, saveJobAlerts, updateUserProfile, type ProfileUpdateData } from "@/lib/candidate-profile";
+import type { JobAlertPrefs } from "@/lib/job-alerts";
 import type { UserProfile } from "@/types/user-profile";
 
-type Tab = "about" | "cv" | "applications" | "favorites";
+type Tab = "about" | "cv" | "applications" | "favorites" | "alerts" | "account";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "about", label: "À propos" },
   { key: "cv", label: "CV enregistrés" },
   { key: "applications", label: "Mes candidatures" },
   { key: "favorites", label: "Favoris" },
+  { key: "alerts", label: "Alertes emploi" },
+  { key: "account", label: "Compte" },
 ];
 
 export default function ProfilePage() {
@@ -48,6 +54,12 @@ export default function ProfilePage() {
     if (!user) return;
     await updateUserProfile(user.uid, data);
     setProfile((p) => (p ? { ...p, ...data } : p));
+  }
+
+  async function handleSaveAlerts(jobAlerts: JobAlertPrefs) {
+    if (!user) return;
+    await saveJobAlerts(user.uid, jobAlerts);
+    setProfile((p) => (p ? { ...p, jobAlerts } : p));
   }
 
   if (authLoading || !user || !emailVerified) {
@@ -193,6 +205,12 @@ export default function ProfilePage() {
                 </div>
               </div>
             )}
+
+            {tab === "alerts" && (
+              <JobAlertsPanel email={profile?.email || user.email || ""} alerts={profile?.jobAlerts} onSave={handleSaveAlerts} />
+            )}
+
+            {tab === "account" && <AccountDeletionPanel user={user} />}
           </div>
         </div>
       </div>

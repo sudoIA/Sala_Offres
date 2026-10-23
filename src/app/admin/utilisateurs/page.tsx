@@ -4,6 +4,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { useUsersAdmin } from "@/hooks/useUsersAdmin";
 import { CompanyTile } from "@/components/CompanyTile";
 import { confirmAction, notify } from "@/lib/notify";
@@ -11,6 +12,7 @@ import type { UserProfile } from "@/types/user-profile";
 
 export default function AdminUsersPage() {
   const { users, adminUids, loading, promote, demote } = useUsersAdmin();
+  const { user: currentUser } = useAuth();
   const [search, setSearch] = useState("");
 
   const term = search.trim().toLowerCase();
@@ -19,6 +21,17 @@ export default function AdminUsersPage() {
   async function handleToggleAdmin(user: UserProfile) {
     const isAdmin = adminUids.has(user.id);
     const label = user.fullName || user.email || "cet utilisateur";
+    // Garde-fous : ne jamais laisser le back-office sans administrateur, ni
+    // un admin se retirer ses propres droits par mégarde (il serait aussitôt
+    // expulsé du tableau de bord sans pouvoir annuler).
+    if (isAdmin && user.id === currentUser?.uid) {
+      notify("Vous ne pouvez pas retirer vos propres droits. Demandez à un autre administrateur.", "error");
+      return;
+    }
+    if (isAdmin && adminUids.size <= 1) {
+      notify("Impossible : c'est le dernier administrateur. Promouvez d'abord quelqu'un d'autre.", "error");
+      return;
+    }
     const confirmed = isAdmin
       ? await confirmAction("Confirmer", `Retirer les droits administrateur de « ${label} » ?`, "#e30613")
       : await confirmAction("Confirmer", `Donner les droits administrateur (accès complet à ce tableau de bord) à « ${label} » ?`);

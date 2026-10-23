@@ -1,5 +1,6 @@
 // src/app/admin/page.tsx
-// Vue d'ensemble : statistiques globales + actions rapides.
+// Vue d'ensemble : statistiques globales, indicateurs d'activité
+// (voir AdminInsights) + actions rapides.
 
 "use client";
 
@@ -11,6 +12,7 @@ import { useAdminJobs } from "@/hooks/useAdminJobs";
 import { useEvents } from "@/hooks/useEvents";
 import { useLegislationAdmin } from "@/hooks/useLegislationAdmin";
 import { useUsersAdmin } from "@/hooks/useUsersAdmin";
+import { AdminInsights } from "@/components/admin/AdminInsights";
 
 export default function AdminOverviewPage() {
   const router = useRouter();
@@ -97,6 +99,8 @@ export default function AdminOverviewPage() {
           </div>
         </div>
       </div>
+
+      <AdminInsights jobs={jobs} />
 
       <div className="admin-panel">
         <h2>Actions rapides</h2>

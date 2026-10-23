@@ -53,6 +53,14 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     subtitle: "Fiches thématiques affichées sur la page Législation.",
   },
   {
+    href: "/admin/actualites",
+    icon: "fas fa-newspaper",
+    label: "News Sala",
+    mobileLabel: "News",
+    title: "News Sala",
+    subtitle: "Actualités de l'ONG affichées sur la page publique « Actualités ».",
+  },
+  {
     href: "/admin/imports",
     icon: "fas fa-cloud-download-alt",
     label: "Imports",
@@ -67,6 +75,14 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     mobileLabel: "Utilisateurs",
     title: "Utilisateurs",
     subtitle: "Comptes candidats inscrits. Promouvoir un compte donne accès à ce tableau de bord.",
+  },
+  {
+    href: "/admin/journal",
+    icon: "fas fa-history",
+    label: "Journal",
+    mobileLabel: "Journal",
+    title: "Journal",
+    subtitle: "Historique des actions de l'équipe et erreurs rencontrées par les visiteurs.",
   },
   {
     href: "/admin/parametres",

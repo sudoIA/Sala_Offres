@@ -13,6 +13,7 @@ import { db } from "@/lib/firebase";
 import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import type { SalaEvent } from "@/types/event";
+import { logAdminAction } from "@/lib/admin-log";
 
 interface EventFormModalProps {
   open: boolean;
@@ -85,9 +86,11 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
     try {
       if (event) {
         await updateDoc(doc(db, "events", event.id), eventData);
+        await logAdminAction("update", "events", String(eventData.title || "Événement"), event.id);
         notify("Événement mis à jour.");
       } else {
-        await addDoc(collection(db, "events"), eventData);
+        const ref = await addDoc(collection(db, "events"), eventData);
+        await logAdminAction("create", "events", String(eventData.title || "Événement"), ref.id);
         notify("Événement ajouté avec succès !");
       }
       onClose();

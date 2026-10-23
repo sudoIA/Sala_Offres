@@ -3,7 +3,7 @@
 // active, pour que les moteurs de recherche découvrent chaque offre.
 
 import type { MetadataRoute } from "next";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { getSiteUrl } from "@/lib/site-url";
 
@@ -15,6 +15,7 @@ const STATIC_PATHS = [
   "",
   "/offres",
   "/evenements",
+  "/actualites",
   "/annuaires",
   "/legislation",
   "/entretiens",
@@ -33,7 +34,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let jobEntries: MetadataRoute.Sitemap = [];
   try {
-    const snap = await getDocs(collection(db, "emplois"));
+    // Offres encore ouvertes uniquement : inutile de signaler aux moteurs de
+    // recherche des milliers d'offres expirées.
+    const snap = await getDocs(query(collection(db, "emplois"), where("deadline", ">", Timestamp.now())));
     jobEntries = snap.docs
       .filter((d) => d.data().visibility !== false)
       .map((d) => ({ url: `${base}/offres/${d.id}`, lastModified: now }));

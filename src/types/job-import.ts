@@ -34,4 +34,8 @@ export interface ImportedJob {
   lastCheckedAt?: string;
 
   duplicateOf?: string;
+  /** Offre "emplois" créée à partir de cet import (publication manuelle ou automatique). */
+  publishedJobId?: string;
+  /** Vrai si publiée automatiquement par la tâche planifiée (source de confiance). */
+  autoPublished?: boolean;
 }

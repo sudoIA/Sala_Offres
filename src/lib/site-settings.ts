@@ -12,6 +12,7 @@ export interface SectionsVisible {
   annuaires: boolean;
   entretiens: boolean;
   legislation: boolean;
+  actualites: boolean;
 }
 
 export interface SiteSettings {
@@ -36,6 +37,9 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     annuaires: true,
     entretiens: true,
     legislation: true,
+    // Masquée par défaut : à activer dans Admin > Paramètres une fois les
+    // premiers articles News Sala publiés (évite une page vide).
+    actualites: false,
   },
 };
 

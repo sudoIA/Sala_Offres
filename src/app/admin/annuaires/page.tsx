@@ -20,6 +20,7 @@ import { Pagination } from "@/components/admin/Pagination";
 import { confirmDelete, notify } from "@/lib/notify";
 import { annuaireModalTitle } from "@/lib/annuaire-helpers";
 import { ANNUAIRE_COLLECTIONS, type AnnuaireCategory, type AnnuaireItem } from "@/types/annuaire";
+import { logAdminAction } from "@/lib/admin-log";
 
 const SUBTABS: { category: AnnuaireCategory; icon: string; label: string }[] = [
   { category: "universities", icon: "fas fa-graduation-cap", label: "Universités & Écoles" },
@@ -53,6 +54,7 @@ export default function AdminAnnuairesPage() {
     if (await confirmDelete(item.name || "cette fiche")) {
       try {
         await deleteDoc(doc(db, ANNUAIRE_COLLECTIONS[category], item.id));
+        await logAdminAction("delete", ANNUAIRE_COLLECTIONS[category], item.name || "Fiche annuaire", item.id);
         notify("Fiche supprimée.");
         setPreviewItem((current) => (current?.id === item.id ? null : current));
       } catch (err) {

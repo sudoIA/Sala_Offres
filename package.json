@@ -6,7 +6,9 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-sala \"node tests/firestore-rules.test.mjs\""
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
@@ -15,19 +17,27 @@
     "firebase": "^12.18.0",
     "firebase-admin": "^14.4.0",
     "html2canvas": "^1.4.1",
-    "isomorphic-dompurify": "^4.1.0",
+    "isomorphic-dompurify": "^4.6.0",
     "jspdf": "^4.2.1",
-    "next": "16.3.4",
+    "next": "16.4.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sweetalert2": "^11.26.25"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.4",
-    "typescript": "^5"
+    "eslint-config-next": "16.4.3",
+    "firebase-tools": "^15.34.1",
+    "typescript": "^5",
+    "vitest": "^3.2.7"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.6",
+    "serialize-javascript": "^7.0.5",
+    "uuid": "^11.1.1"
   }
 }

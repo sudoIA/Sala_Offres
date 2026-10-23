@@ -15,6 +15,8 @@ import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import type { Job } from "@/types/job";
 import type { ImportedJobRecord } from "@/hooks/useJobImports";
+import { safeExternalUrl } from "@/lib/safe-url";
+import { logAdminAction } from "@/lib/admin-log";
 
 function dateInputValue(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -120,12 +122,15 @@ export function JobFormModal({ open, job, importRecord, onApproveImport, onClose
     try {
       if (onApproveImport) {
         await onApproveImport(jobData);
+        await logAdminAction("publish", "emplois", `${jobData.title} (import relu)`);
         notify("Offre publiée avec succès !");
       } else if (job) {
         await updateDoc(doc(db, "emplois", job.id), jobData);
+        await logAdminAction("update", "emplois", jobData.title, job.id);
         notify("Offre mise à jour.");
       } else {
-        await addDoc(collection(db, "emplois"), jobData);
+        const ref = await addDoc(collection(db, "emplois"), jobData);
+        await logAdminAction("create", "emplois", jobData.title, ref.id);
         notify("Offre publiée avec succès !");
       }
       onClose();
@@ -147,7 +152,7 @@ export function JobFormModal({ open, job, importRecord, onApproveImport, onClose
         {importRecord && (
           <p className="text-muted small mb-3">
             Offre importée depuis {importRecord.source.toUpperCase()} - relisez et corrigez les champs avant de publier.{" "}
-            <a href={importRecord.sourceUrl} target="_blank" rel="noopener">
+            <a href={safeExternalUrl(importRecord.sourceUrl) ?? undefined} target="_blank" rel="noopener">
               Voir l&apos;annonce d&apos;origine <i className="fas fa-external-link-alt"></i>
             </a>
           </p>

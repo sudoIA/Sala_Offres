@@ -19,6 +19,25 @@ import { useCompanyLogos } from "@/hooks/useCompanyLogos";
 import { formatRelativeTime } from "@/lib/job-helpers";
 import type { Job } from "@/types/job";
 
+type SortKey = "recent" | "deadline";
+
+/** Clé de comparaison insensible à la casse et aux espaces ("BRAZZAVILLE" = "Brazzaville "). */
+function normalizeLabel(value: string | undefined): string {
+  return (value || "").trim().toLowerCase();
+}
+
+/** Valeurs distinctes non vides, libellé lisible conservé, triées alphabétiquement. */
+function distinctValues(values: (string | undefined)[]): { value: string; label: string }[] {
+  const map = new Map<string, string>();
+  for (const v of values) {
+    const key = normalizeLabel(v);
+    if (key && !map.has(key)) map.set(key, (v || "").trim());
+  }
+  return [...map.entries()]
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, "fr"));
+}
+
 export default function OffresPage() {
   const { jobs, loading, error, lastUpdated, offline, refreshing, refresh } = useActiveJobs();
   // Force un nouveau rendu régulier pour garder "il y a X min" à jour.
@@ -28,22 +47,49 @@ export default function OffresPage() {
     return () => clearInterval(id);
   }, []);
   const [searchTerm, setSearchTerm] = useState("");
+  const [cityFilter, setCityFilter] = useState("");
+  const [contractFilter, setContractFilter] = useState("");
+  const [sortBy, setSortBy] = useState<SortKey>("recent");
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [hasAutoSelected, setHasAutoSelected] = useState(false);
 
+  // Valeurs proposées dans les filtres : uniquement celles présentes dans les
+  // offres actives, pour ne jamais proposer un filtre qui ne renvoie rien.
+  const cityOptions = useMemo(() => distinctValues(jobs.map((j) => j.city)), [jobs]);
+  const contractOptions = useMemo(() => distinctValues(jobs.map((j) => j.contract)), [jobs]);
+
   const filtered = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    if (!term) return jobs;
-    return jobs.filter(
+    const result = jobs.filter(
       (job) =>
-        job.title?.toLowerCase().includes(term) ||
-        job.company?.toLowerCase().includes(term) ||
-        job.city?.toLowerCase().includes(term) ||
-        job.contract?.toLowerCase().includes(term)
+        (!term ||
+          job.title?.toLowerCase().includes(term) ||
+          job.company?.toLowerCase().includes(term) ||
+          job.city?.toLowerCase().includes(term) ||
+          job.contract?.toLowerCase().includes(term)) &&
+        (!cityFilter || normalizeLabel(job.city) === cityFilter) &&
+        (!contractFilter || normalizeLabel(job.contract) === contractFilter)
     );
-  }, [jobs, searchTerm]);
+    // "jobs" arrive déjà trié du plus récent au plus ancien.
+    if (sortBy === "deadline") {
+      return [...result].sort(
+        (a, b) => (a.deadlineDate?.getTime() ?? Infinity) - (b.deadlineDate?.getTime() ?? Infinity)
+      );
+    }
+    return result;
+  }, [jobs, searchTerm, cityFilter, contractFilter, sortBy]);
 
-  const { pageItems, page, totalPages, setPage } = usePagination(filtered, searchTerm.trim().toLowerCase());
+  const hasFilters = !!(searchTerm || cityFilter || contractFilter);
+  function resetFilters() {
+    setSearchTerm("");
+    setCityFilter("");
+    setContractFilter("");
+  }
+
+  const { pageItems, page, totalPages, setPage } = usePagination(
+    filtered,
+    [searchTerm.trim().toLowerCase(), cityFilter, contractFilter, sortBy].join("|")
+  );
 
   // Sélection automatique de la première offre sur bureau, une seule fois.
   useEffect(() => {
@@ -95,6 +141,29 @@ export default function OffresPage() {
                   </button>
                 )}
               </div>
+
+              <div className="sala-offres-filters">
+                <select aria-label="Filtrer par ville" value={cityFilter} onChange={(e) => setCityFilter(e.target.value)}>
+                  <option value="">Toutes les villes</option>
+                  {cityOptions.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                <select aria-label="Filtrer par type de contrat" value={contractFilter} onChange={(e) => setContractFilter(e.target.value)}>
+                  <option value="">Tous les contrats</option>
+                  {contractOptions.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+                <select aria-label="Trier les offres" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortKey)}>
+                  <option value="recent">Plus récentes</option>
+                  <option value="deadline">Date limite proche</option>
+                </select>
+              </div>
             </div>
 
             <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
@@ -134,8 +203,8 @@ export default function OffresPage() {
                 <div className="text-center py-5 bg-white rounded-3 p-4 shadow-sm">
                   <i className="fas fa-search fa-3x text-muted mb-3"></i>
                   <h5 className="fw-bold text-dark">Aucune offre ne correspond à votre recherche</h5>
-                  <p className="text-muted mb-3">Essayez d&apos;ajuster vos mots-clés de recherche.</p>
-                  <button className="btn-sala-outline btn-sm" onClick={() => setSearchTerm("")}>
+                  <p className="text-muted mb-3">Essayez d&apos;ajuster vos mots-clés ou vos filtres.</p>
+                  <button className="btn-sala-outline btn-sm" onClick={resetFilters} disabled={!hasFilters}>
                     Réinitialiser la recherche
                   </button>
                 </div>
