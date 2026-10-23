@@ -112,6 +112,45 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // --- Application mobile ---
+    // Ce projet Firebase est partagé avec l'app mobile : ces règles doivent
+    // rester ici, sinon une publication depuis le site les écraserait (et
+    // inversement, une publication depuis l'app mobile a déjà écrasé celles
+    // du site le 2 octobre 2026). Toujours fusionner, jamais remplacer.
+
+    // Questions d'entretien : lisibles une fois connecté.
+    match /Questions/{questionId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // Réponses et profils de l'app : chacun ne lit/écrit que les siens.
+    match /Reponse/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /utilisateurs/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /droit_du_travail/{docId} {
+      allow read: if true;
+    }
+
+    // Publicités (nom des collections conservé tel quel, y compris
+    // "InterstialAds", pour correspondre à la base).
+    match /NativeAds/{docId} {
+      allow read: if true;
+    }
+
+    match /InterstialAds/{docId} {
+      allow read: if true;
+    }
+
+    match /BannerAds/{docId} {
+      allow read: if true;
+    }
+
     // Tout le reste est refusé par défaut.
     match /{document=**} {
       allow read, write: if false;

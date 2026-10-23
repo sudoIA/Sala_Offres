@@ -36,13 +36,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      // Repasse en "chargement" tant que le rôle n'est pas connu : sans ça,
+      // juste après une connexion, la garde admin voyait un utilisateur
+      // connecté avec isAdmin encore à false et le renvoyait à l'accueil.
+      setLoading(true);
       setUser(firebaseUser);
       setEmailVerified(firebaseUser?.emailVerified ?? false);
       if (firebaseUser) {
         try {
           const roleSnap = await getDoc(doc(db, "roles", firebaseUser.uid));
           setIsAdmin(roleSnap.exists() && roleSnap.data()?.role === "admin");
-        } catch {
+        } catch (err) {
+          console.error("Lecture du rôle impossible :", err);
           setIsAdmin(false);
         }
       } else {
