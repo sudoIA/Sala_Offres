@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "cg.ongsala.sala",
+      "sha256_cert_fingerprints": [
+        "EC:E8:60:21:77:7B:E7:7D:FC:9B:DD:4C:A3:FB:0D:3F:CE:0E:6D:CB:41:DC:44:4E:A7:CF:87:34:E0:56:43:12"
+      ]
+    }
+  }
+]
