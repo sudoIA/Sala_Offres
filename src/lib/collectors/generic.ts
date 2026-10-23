@@ -28,6 +28,8 @@ interface Candidate {
 }
 
 const MAX_ITEMS = 15;
+/** En dessous de cette longueur, le contenu d'un flux n'est qu'un résumé. */
+const MIN_FULL_TEXT = 600;
 const JOB_HINT = /offre|emploi|job|recrut|stage|poste|carri|career|vacan|avis|appel|candidat|opportunit|consultant/i;
 const NOT_JOB = /\/(tag|tags|category|categorie|categories|page|author|auteur|login|connexion|register|inscription|contact|about|a-propos|mentions|privacy|confidentialite|cgu|faq|search|recherche|wp-admin|feed)(\/|$)|#|\.(pdf|jpg|jpeg|png|zip|docx?)$/i;
 
@@ -209,7 +211,21 @@ export async function collectGenericSource(
   }
   if (feedXml) {
     const items = parseFeed(feedXml).filter(keep).slice(0, maxItems);
-    if (items.length) return { method: "rss", jobs: items.map((c) => toImportedJob(sourceKey, c, now)) };
+    if (items.length) {
+      // Beaucoup de flux ne donnent qu'un résumé d'une ligne (ex. MTN Congo) :
+      // on lit alors la page de l'offre pour en récupérer le texte complet.
+      for (const item of items) {
+        if ((item.html || "").replace(/<[^>]+>/g, "").trim().length >= MIN_FULL_TEXT) continue;
+        try {
+          const detail = extractDetail((await fetchText(item.url)).text);
+          if (detail.html.replace(/<[^>]+>/g, "").trim().length > (item.html || "").length) item.html = detail.html;
+        } catch (err) {
+          console.warn(`Page de l'offre illisible, résumé du flux conservé (${item.url}) :`, err);
+        }
+        await sleep(300);
+      }
+      return { method: "rss", jobs: items.map((c) => toImportedJob(sourceKey, c, now)) };
+    }
   }
 
   // 2. Liens d'offres sur la page, puis lecture de chaque offre.
