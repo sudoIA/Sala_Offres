@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { useAdminJobs } from "@/hooks/useAdminJobs";
+import { ADMIN_RECENT_DAYS, useAdminJobs } from "@/hooks/useAdminJobs";
 import { usePagination } from "@/hooks/usePagination";
 import { CompanyTile } from "@/components/CompanyTile";
 import { JobFormModal } from "@/components/admin/JobFormModal";
@@ -17,7 +17,8 @@ import type { Job } from "@/types/job";
 import { logAdminAction } from "@/lib/admin-log";
 
 export default function AdminJobsPage() {
-  const { jobs, loading } = useAdminJobs();
+  const [fullHistory, setFullHistory] = useState(false);
+  const { jobs, loading } = useAdminJobs(fullHistory);
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingJob, setEditingJob] = useState<Job | null>(null);
@@ -66,7 +67,19 @@ export default function AdminJobsPage() {
       <div className="admin-section-header">
         <div>
           <h1 className="admin-page-title">Offres d&apos;emploi</h1>
-          <p className="admin-page-subtitle">Publiez, modifiez ou masquez les offres visibles sur le site.</p>
+          <p className="admin-page-subtitle">
+            Publiez, modifiez ou masquez les offres visibles sur le site.{" "}
+            {fullHistory ? (
+              <>Tout l&apos;historique est affiché.</>
+            ) : (
+              <>
+                Offres publiées ces {Math.round(ADMIN_RECENT_DAYS / 30)} derniers mois.{" "}
+                <button type="button" className="btn btn-link btn-sm p-0 align-baseline" onClick={() => setFullHistory(true)}>
+                  Afficher tout l&apos;historique (plus lent)
+                </button>
+              </>
+            )}
+          </p>
         </div>
         <button
           className="btn-sala-primary"

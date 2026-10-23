@@ -6,7 +6,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { collection, getCountFromServer, getDocs, limit, orderBy, query, Timestamp, where } from "firebase/firestore";
+import { collection, doc, getCountFromServer, getDoc, getDocs, limit, orderBy, query, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { IMPORT_SOURCES } from "@/lib/import-sources";
 import { customSourceKey } from "@/lib/custom-sources";
@@ -92,7 +92,21 @@ export function AdminInsights({ jobs }: { jobs: Job[] }) {
   const maxWeekly = Math.max(1, ...weekly.map((w) => w.count));
   const totalWeekly = weekly.reduce((s, w) => s + w.count, 0);
 
-  const titles = useMemo(() => new Map(jobs.map((j) => [j.id, `${j.title || "Offre"} — ${j.company || ""}`])), [jobs]);
+  const recentTitles = useMemo(() => new Map(jobs.map((j) => [j.id, `${j.title || "Offre"} — ${j.company || ""}`])), [jobs]);
+  // Titres des offres plus anciennes que la fenêtre chargée (useAdminJobs).
+  const [olderTitles, setOlderTitles] = useState<Map<string, string>>(new Map());
+  useEffect(() => {
+    const missing = (topViewed || []).map((v) => v.id).filter((id) => !recentTitles.has(id));
+    if (missing.length === 0) return;
+    Promise.all(
+      missing.map(async (id) => {
+        const snap = await getDoc(doc(db, "emplois", id)).catch(() => null);
+        const data = snap?.exists() ? snap.data() : null;
+        return [id, data ? `${data.title || "Offre"} — ${data.company || ""}` : "Offre supprimée"] as const;
+      })
+    ).then((entries) => setOlderTitles(new Map(entries)));
+  }, [topViewed, recentTitles]);
+  const titles = useMemo(() => new Map([...olderTitles, ...recentTitles]), [olderTitles, recentTitles]);
 
   return (
     <>

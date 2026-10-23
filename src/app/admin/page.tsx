@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getCountFromServer, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAdminJobs } from "@/hooks/useAdminJobs";
 import { useEvents } from "@/hooks/useEvents";
@@ -21,8 +21,13 @@ export default function AdminOverviewPage() {
   const { fiches } = useLegislationAdmin();
   const { users } = useUsersAdmin();
   const [annuaireCount, setAnnuaireCount] = useState<string | number>("—");
+  // Total réel de la collection (useAdminJobs ne charge que les offres récentes).
+  const [totalJobs, setTotalJobs] = useState<string | number>("—");
 
   useEffect(() => {
+    getCountFromServer(collection(db, "emplois"))
+      .then((snap) => setTotalJobs(snap.data().count))
+      .catch(() => setTotalJobs("—"));
     Promise.all([
       getDocs(collection(db, "universites")),
       getDocs(collection(db, "entreprises")),
@@ -58,7 +63,7 @@ export default function AdminOverviewPage() {
             <i className="fas fa-layer-group"></i>
           </div>
           <div>
-            <div className="stat-value">{jobs.length}</div>
+            <div className="stat-value">{totalJobs}</div>
             <div className="stat-label">Offres au total (tous statuts)</div>
           </div>
         </div>

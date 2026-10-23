@@ -28,13 +28,24 @@ export async function fetchRecentJobsOnce(): Promise<Job[]> {
   return snapshot.docs.map((d) => toJob(d.id, d.data() as JobDoc));
 }
 
-export function useAdminJobs() {
+/** Fenêtre affichée par défaut dans le back-office (en jours). */
+export const ADMIN_RECENT_DAYS = 120;
+
+/**
+ * Offres pour le back-office, en temps réel. Par défaut, seulement celles
+ * publiées ces ADMIN_RECENT_DAYS derniers jours : charger tout l'historique
+ * (plus de 2 600 offres) à chaque ouverture ralentissait l'écran et coûtait
+ * autant de lectures Firestore. `fullHistory` charge tout, à la demande.
+ */
+export function useAdminJobs(fullHistory = false) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
+    const since = Timestamp.fromMillis(Date.now() - ADMIN_RECENT_DAYS * 24 * 3600 * 1000);
     const unsubscribe = onSnapshot(
-      collection(db, "emplois"),
+      fullHistory ? collection(db, "emplois") : query(collection(db, "emplois"), where("timestamp", ">", since)),
       (snapshot) => {
         const list: Job[] = snapshot.docs.map((d) => toJob(d.id, d.data() as JobDoc));
         list.sort((a, b) => (b.timestamp?.toMillis?.() || 0) - (a.timestamp?.toMillis?.() || 0));
@@ -47,7 +58,7 @@ export function useAdminJobs() {
       }
     );
     return unsubscribe;
-  }, []);
+  }, [fullHistory]);
 
   return { jobs, loading };
 }

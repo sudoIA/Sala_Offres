@@ -9,6 +9,12 @@ export interface CustomSourceConfig {
   url: string;
   /** Optionnel : ne garder que les offres contenant ce mot (ex. "Congo"). */
   keyword?: string;
+  /**
+   * Optionnel : entreprise à indiquer sur toutes les offres de ce site
+   * (ex. "MTN Congo" pour la page carrières de MTN), au lieu de la saisir à
+   * chaque relecture.
+   */
+  defaultCompany?: string;
   /** Optionnel (avancé) : sélecteur CSS des liens vers les offres. */
   selector?: string;
   /** Incluse dans la collecte automatique quotidienne. */

@@ -13,6 +13,11 @@ import { JobCard } from "@/components/JobCard";
 import { useActiveJobs } from "@/hooks/useJobs";
 import { useCompanyLogos } from "@/hooks/useCompanyLogos";
 
+/** Texte brut (certains champs d'offres importées contiennent du HTML). */
+function plainText(value: string | undefined): string {
+  return (value || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 export default function HomePage() {
   const { jobs, loading, error } = useActiveJobs();
   const latestJobs = jobs.slice(0, 5);
@@ -61,47 +66,37 @@ export default function HomePage() {
               </div>
             </div>
             <div className="col-lg-6 d-none d-lg-block">
+              {/* Aperçu des 3 dernières vraies offres (auparavant, des exemples écrits
+                  en dur avec de vrais noms d'entreprises, trompeurs pour un visiteur). */}
               <div className="hero-preview-card">
-                <div className="sala-job-card">
-                  <div className="d-flex justify-content-between align-items-start">
-                    <div>
-                      <div className="sala-job-card-title">Technicien de Maintenance</div>
-                      <div className="sala-job-card-company">
-                        <i className="fas fa-building text-success me-1"></i>TotalEnergies EP Congo
-                      </div>
+                {loading &&
+                  [70, 60, 65].map((w, i) => (
+                    <div className="sala-job-card" key={i}>
+                      <div className="skeleton-line" style={{ width: `${w}%`, height: 18 }}></div>
+                      <div className="skeleton-line" style={{ width: `${w - 25}%` }}></div>
                     </div>
-                  </div>
-                  <div className="sala-job-card-meta">
-                    <span>
-                      <i className="fas fa-map-marker-alt"></i> Pointe-Noire
-                    </span>
-                    <span className="badge-sala-contract">CDI</span>
-                  </div>
-                </div>
-                <div className="sala-job-card">
-                  <div className="sala-job-card-title">Assistant(e) de Direction</div>
-                  <div className="sala-job-card-company">
-                    <i className="fas fa-building text-success me-1"></i>MTN Congo
-                  </div>
-                  <div className="sala-job-card-meta">
-                    <span>
-                      <i className="fas fa-map-marker-alt"></i> Brazzaville
-                    </span>
-                    <span className="badge-sala-contract">CDD</span>
-                  </div>
-                </div>
-                <div className="sala-job-card">
-                  <div className="sala-job-card-title">Chargé d&apos;Approvisionnement</div>
-                  <div className="sala-job-card-company">
-                    <i className="fas fa-building text-success me-1"></i>AGL Congo
-                  </div>
-                  <div className="sala-job-card-meta">
-                    <span>
-                      <i className="fas fa-map-marker-alt"></i> Brazzaville
-                    </span>
-                    <span className="badge-sala-contract">Stage</span>
-                  </div>
-                </div>
+                  ))}
+                {!loading &&
+                  jobs.slice(0, 3).map((job) => (
+                    <Link href={`/offres/${job.id}`} className="sala-job-card d-block text-decoration-none" key={job.id}>
+                      <div className="sala-job-card-title">{plainText(job.title) || "Offre d'emploi"}</div>
+                      <div className="sala-job-card-company">
+                        <i className="fas fa-building text-success me-1"></i>
+                        {plainText(job.company) || "Entreprise au Congo"}
+                      </div>
+                      <div className="sala-job-card-meta">
+                        {job.city && (
+                          <span>
+                            <i className="fas fa-map-marker-alt"></i> {plainText(job.city)}
+                          </span>
+                        )}
+                        {job.contract && <span className="badge-sala-contract">{plainText(job.contract)}</span>}
+                      </div>
+                    </Link>
+                  ))}
+                {!loading && jobs.length === 0 && (
+                  <div className="sala-job-card text-muted">Les nouvelles offres apparaîtront ici.</div>
+                )}
               </div>
             </div>
           </div>

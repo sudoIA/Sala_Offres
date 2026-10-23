@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const denied = await requireAdmin(req);
   if (denied) return denied;
 
-  let body: { source?: string; url?: string; selector?: string; keyword?: string };
+  let body: { source?: string; url?: string; selector?: string; keyword?: string; defaultCompany?: string };
   try {
     body = await req.json();
   } catch {
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       url: body.url || "",
       selector: (body.selector || "").trim() || undefined,
       keyword: (body.keyword || "").trim() || undefined,
+      defaultCompany: (body.defaultCompany || "").trim().slice(0, 120) || undefined,
     });
     return NextResponse.json({ ok: true, method: result.method, jobs: result.jobs, count: result.jobs.length });
   } catch (err) {

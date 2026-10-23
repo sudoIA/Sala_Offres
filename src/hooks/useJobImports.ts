@@ -64,7 +64,13 @@ export function useJobImports() {
       ? await fetch("/api/jobs/import/custom", {
           method: "POST",
           headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken || ""}` },
-          body: JSON.stringify({ source, url: custom.url, selector: custom.selector, keyword: custom.keyword }),
+          body: JSON.stringify({
+            source,
+            url: custom.url,
+            selector: custom.selector,
+            keyword: custom.keyword,
+            defaultCompany: custom.defaultCompany,
+          }),
         })
       : await fetch(`/api/jobs/import/${source}`, {
           method: "POST",

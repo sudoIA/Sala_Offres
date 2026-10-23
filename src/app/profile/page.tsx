@@ -14,6 +14,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { FabCv } from "@/components/layout/FabCv";
 import { AccountDeletionPanel } from "@/components/profile/AccountDeletionPanel";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { FavoritesPanel } from "@/components/profile/FavoritesPanel";
 import { JobAlertsPanel } from "@/components/profile/JobAlertsPanel";
 import { SavedCvsPanel } from "@/components/profile/SavedCvsPanel";
 import { loadUserProfile, logoutUser, saveJobAlerts, updateUserProfile, type ProfileUpdateData } from "@/lib/candidate-profile";
@@ -182,16 +183,7 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {tab === "favorites" && (
-              <div>
-                <h5 className="fw-bold mb-3">Offres sauvegardées</h5>
-                <div className="text-center py-4 text-muted">
-                  <i className="fas fa-bookmark fa-3x text-muted mb-3" style={{ opacity: 0.5 }}></i>
-                  <p className="mb-2">Vous n&apos;avez pas encore d&apos;offres en favoris.</p>
-                  <Link href="/offres" className="btn-sala-outline btn-sm mt-1">Découvrir les offres</Link>
-                </div>
-              </div>
-            )}
+            {tab === "favorites" && <FavoritesPanel />}
 
             {tab === "alerts" && (
               <JobAlertsPanel email={profile?.email || user.email || ""} alerts={profile?.jobAlerts} onSave={handleSaveAlerts} />

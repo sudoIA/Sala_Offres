@@ -6,10 +6,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { addDoc, collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, onSnapshot, query, updateDoc, where } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { logAdminAction } from "@/lib/admin-log";
-import type { CustomSource, CustomSourceConfig } from "@/lib/custom-sources";
+import { customSourceKey, type CustomSource, type CustomSourceConfig } from "@/lib/custom-sources";
 import type { ImportedJob } from "@/types/job-import";
 
 export interface SourceTestResult {
@@ -18,7 +18,9 @@ export interface SourceTestResult {
 }
 
 /** Interroge une adresse avec le collecteur générique, sans rien enregistrer. */
-export async function testCustomSource(config: Pick<CustomSourceConfig, "url" | "selector" | "keyword">): Promise<SourceTestResult> {
+export async function testCustomSource(
+  config: Pick<CustomSourceConfig, "url" | "selector" | "keyword" | "defaultCompany">
+): Promise<SourceTestResult> {
   const idToken = await auth.currentUser?.getIdToken();
   const res = await fetch("/api/jobs/import/custom", {
     method: "POST",
@@ -57,10 +59,27 @@ export function useCustomSources() {
     }
   }
 
+  /**
+   * Change l'entreprise par défaut d'une source et la reporte sur ses offres
+   * encore en attente de relecture qui n'ont pas d'entreprise. Renvoie le
+   * nombre d'offres complétées.
+   */
+  async function setDefaultCompany(source: CustomSource, defaultCompany: string): Promise<number> {
+    await updateDoc(doc(db, "import_sources", source.id), { defaultCompany });
+    await logAdminAction("update", "import_sources", `${source.name} — entreprise par défaut : ${defaultCompany || "aucune"}`, source.id);
+    if (!defaultCompany) return 0;
+    const pending = await getDocs(
+      query(collection(db, "emplois_import"), where("source", "==", customSourceKey(source.id)), where("status", "==", "pending"))
+    );
+    const toFill = pending.docs.filter((d) => !d.data().company);
+    await Promise.all(toFill.map((d) => updateDoc(d.ref, { company: defaultCompany })));
+    return toFill.length;
+  }
+
   async function removeSource(source: CustomSource) {
     await deleteDoc(doc(db, "import_sources", source.id));
     await logAdminAction("delete", "import_sources", source.name, source.id);
   }
 
-  return { sources, addSource, updateSource, removeSource };
+  return { sources, addSource, updateSource, setDefaultCompany, removeSource };
 }

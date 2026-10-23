@@ -7,6 +7,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Swal from "sweetalert2";
+import type { CustomSource } from "@/lib/custom-sources";
 import { confirmDelete, notify } from "@/lib/notify";
 import { testCustomSource, useCustomSources, type SourceTestResult } from "@/hooks/useCustomSources";
 
@@ -16,10 +18,10 @@ const METHOD_LABELS: Record<SourceTestResult["method"], string> = {
   selecteur: "liens désignés par le sélecteur avancé",
 };
 
-const EMPTY = { name: "", url: "", keyword: "", selector: "" };
+const EMPTY = { name: "", url: "", keyword: "", defaultCompany: "", selector: "" };
 
 export function CustomSourcesPanel() {
-  const { sources, addSource, updateSource, removeSource } = useCustomSources();
+  const { sources, addSource, updateSource, setDefaultCompany, removeSource } = useCustomSources();
   const [form, setForm] = useState(EMPTY);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [testing, setTesting] = useState(false);
@@ -29,7 +31,7 @@ export function CustomSourcesPanel() {
 
   function set<K extends keyof typeof EMPTY>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
-    if (key !== "name") setTest(null); // un test ne vaut que pour la configuration testée
+    if (key !== "name" && key !== "defaultCompany") setTest(null); // un test ne vaut que pour la configuration testée
   }
 
   async function handleTest() {
@@ -38,7 +40,14 @@ export function CustomSourcesPanel() {
     setTest(null);
     setTestError(null);
     try {
-      setTest(await testCustomSource({ url: form.url.trim(), keyword: form.keyword.trim(), selector: form.selector.trim() }));
+      setTest(
+        await testCustomSource({
+          url: form.url.trim(),
+          keyword: form.keyword.trim(),
+          selector: form.selector.trim(),
+          defaultCompany: form.defaultCompany.trim(),
+        })
+      );
     } catch (err) {
       setTestError((err as Error).message);
     } finally {
@@ -55,6 +64,7 @@ export function CustomSourcesPanel() {
         name: form.name.trim(),
         url: form.url.trim(),
         keyword: form.keyword.trim(),
+        defaultCompany: form.defaultCompany.trim(),
         selector: form.selector.trim(),
         enabled: true,
       });
@@ -65,6 +75,27 @@ export function CustomSourcesPanel() {
       notify("Erreur : " + (err as Error).message, "error");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function editDefaultCompany(source: CustomSource) {
+    const result = await Swal.fire({
+      title: "Entreprise par défaut",
+      text: `Entreprise indiquée sur toutes les offres de « ${source.name} » (laisser vide pour aucune).`,
+      input: "text",
+      inputValue: source.defaultCompany || "",
+      inputPlaceholder: "Ex : MTN Congo",
+      showCancelButton: true,
+      confirmButtonText: "Enregistrer",
+      cancelButtonText: "Annuler",
+      confirmButtonColor: "#3b9452",
+    });
+    if (!result.isConfirmed) return;
+    try {
+      const filled = await setDefaultCompany(source, String(result.value || "").trim().slice(0, 120));
+      notify(filled ? `Enregistré, et ajouté à ${filled} offre(s) en attente.` : "Enregistré.");
+    } catch (err) {
+      notify("Erreur : " + (err as Error).message, "error");
     }
   }
 
@@ -83,6 +114,7 @@ export function CustomSourcesPanel() {
             <thead>
               <tr>
                 <th>Site</th>
+                <th>Entreprise par défaut</th>
                 <th>Collecte quotidienne</th>
                 <th>Dernier passage</th>
                 <th></th>
@@ -94,6 +126,11 @@ export function CustomSourcesPanel() {
                   <td>
                     <div className="fw-semibold">{s.name}</div>
                     <div className="small text-muted text-break">{s.url}</div>
+                  </td>
+                  <td className="small">
+                    <button type="button" className="btn btn-link btn-sm p-0 text-start" onClick={() => editDefaultCompany(s)} title="Modifier">
+                      {s.defaultCompany || <span className="text-muted">Aucune</span>} <i className="fas fa-pen ms-1"></i>
+                    </button>
                   </td>
                   <td>
                     <label className="admin-switch" title="Inclure dans la collecte automatique de 6 h">
@@ -136,6 +173,10 @@ export function CustomSourcesPanel() {
           <div className="form-group">
             <label htmlFor="srcUrl">Adresse de la page des offres (ou de son flux RSS)</label>
             <input id="srcUrl" type="url" placeholder="https://..." value={form.url} onChange={(e) => set("url", e.target.value)} required />
+          </div>
+          <div className="form-group">
+            <label htmlFor="srcCompany">Entreprise (facultatif, si le site est celui d&apos;un seul recruteur)</label>
+            <input id="srcCompany" type="text" placeholder="Ex : MTN Congo" value={form.defaultCompany} onChange={(e) => set("defaultCompany", e.target.value)} maxLength={120} />
           </div>
           <div className="form-group">
             <label htmlFor="srcKeyword">Ne garder que les offres contenant (facultatif)</label>

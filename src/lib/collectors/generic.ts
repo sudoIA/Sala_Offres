@@ -169,12 +169,12 @@ function stableId(url: string): string {
   return h1.toString(36) + h2.toString(36);
 }
 
-function toImportedJob(sourceKey: string, c: Candidate, now: string): ImportedJob {
+function toImportedJob(sourceKey: string, c: Candidate, now: string, defaultCompany?: string): ImportedJob {
   const description = c.html ? cleanSourceHtml(c.html) : "";
   const text = description.replace(/<[^>]+>/g, " ");
   return {
     title: c.title.slice(0, 200),
-    company: extractCompanyFromTitle(c.title),
+    company: defaultCompany || extractCompanyFromTitle(c.title),
     description: description || undefined,
     email: extractEmail(text),
     source: sourceKey,
@@ -188,10 +188,11 @@ function toImportedJob(sourceKey: string, c: Candidate, now: string): ImportedJo
 /** Collecte une source personnalisée (voir la stratégie en tête de fichier). */
 export async function collectGenericSource(
   sourceKey: string,
-  config: { url: string; selector?: string; keyword?: string },
+  config: { url: string; selector?: string; keyword?: string; defaultCompany?: string },
   maxItems = MAX_ITEMS
 ): Promise<GenericCollectResult> {
   const now = new Date().toISOString();
+  const company = (config.defaultCompany || "").trim() || undefined;
   const keyword = (config.keyword || "").trim().toLowerCase();
   const keep = (c: Candidate) => !keyword || `${c.title} ${c.html || ""}`.toLowerCase().includes(keyword);
 
@@ -224,7 +225,7 @@ export async function collectGenericSource(
         }
         await sleep(300);
       }
-      return { method: "rss", jobs: items.map((c) => toImportedJob(sourceKey, c, now)) };
+      return { method: "rss", jobs: items.map((c) => toImportedJob(sourceKey, c, now, company)) };
     }
   }
 
@@ -236,7 +237,7 @@ export async function collectGenericSource(
     try {
       const detail = extractDetail((await fetchText(link.url)).text);
       const candidate = { title: detail.title || link.title, url: link.url, html: detail.html };
-      if (keep(candidate)) jobs.push(toImportedJob(sourceKey, candidate, now));
+      if (keep(candidate)) jobs.push(toImportedJob(sourceKey, candidate, now, company));
     } catch (err) {
       console.warn(`Offre illisible (${link.url}) :`, err);
     }

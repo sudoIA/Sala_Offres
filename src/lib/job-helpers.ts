@@ -102,7 +102,8 @@ export function formatRelativeTime(date: Date): string {
 
 const FAVORIS_KEY = "sala_favoris";
 
-function readFavoris(): string[] {
+/** Identifiants des offres mises en favori sur cet appareil (Profil > Favoris). */
+export function readFavoris(): string[] {
   try {
     return JSON.parse(localStorage.getItem(FAVORIS_KEY) || "[]");
   } catch {
