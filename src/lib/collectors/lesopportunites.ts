@@ -26,7 +26,7 @@
 
 import * as cheerio from "cheerio";
 import type { ImportedJob } from "@/types/job-import";
-import { IMPORT_USER_AGENT, extractCompanyFromTitle, extractEmail, sleep } from "./shared";
+import { IMPORT_USER_AGENT, cleanSourceHtml, extractCompanyFromTitle, extractEmail, sleep } from "./shared";
 
 const SOURCE = "lesopportunites";
 // La pagination de "/opportunite/republique-du-congo/page/2/" renvoie un 404
@@ -58,7 +58,9 @@ async function fetchDetail(item: ListItem, now: string): Promise<ImportedJob | n
   try {
     const html = await fetchHtml(item.href);
     const $ = cheerio.load(html);
-    const description = $(".post-content").first().text().replace(/\s+/g, " ").trim() || undefined;
+    const content = $(".post-content").first();
+    const description = content.text().trim() ? cleanSourceHtml(content.html() || "") : undefined;
+    const contentText = content.text().replace(/\s+/g, " ").trim();
 
     const slugMatch = item.href.match(/\/([^/]+)\/?$/);
     const sourceId = slugMatch ? slugMatch[1] : item.href;
@@ -67,7 +69,7 @@ async function fetchDetail(item: ListItem, now: string): Promise<ImportedJob | n
       title: item.title,
       company: extractCompanyFromTitle(item.title),
       description,
-      email: description ? extractEmail(description) : undefined,
+      email: contentText ? extractEmail(contentText) : undefined,
       source: SOURCE,
       sourceUrl: item.href,
       sourceId,

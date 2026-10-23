@@ -21,7 +21,7 @@
 
 import * as cheerio from "cheerio";
 import type { ImportedJob } from "@/types/job-import";
-import { IMPORT_USER_AGENT, extractEmail, parseFrDate } from "./shared";
+import { IMPORT_USER_AGENT, cleanSourceHtml, extractEmail, parseFrDate } from "./shared";
 
 const SOURCE = "acpe";
 const LIST_URL = "https://acpe.cg/public/offres-emplois";
@@ -38,7 +38,7 @@ function extractSourceId(detailUrl: string): string | null {
  * intitulé de contrat en toutes lettres. Sélecteurs vérifiés le 2026-09-11
  * sur https://acpe.cg/public/details-offre-emplois/4452 :
  *   .badge.bg-primary                              -> type de contrat en toutes lettres
- *   carte "Description du poste" -> .card-body      -> texte complet de l'offre
+ *   carte "Description du poste" -> .card-body      -> texte complet de l'offre (HTML nettoyé conservé)
  *   carte "L'entreprise" -> .card-body               -> contient un e-mail de contact
  * Best-effort : si la page détail échoue ou change de forme, on renvoie
  * l'offre de base inchangée plutôt que de faire échouer tout l'import.
@@ -60,7 +60,7 @@ export async function enrichAcpeJob(job: ImportedJob): Promise<ImportedJob> {
         .next(".card-body");
 
     const contractFull = $(".badge.bg-primary").first().text().trim();
-    const description = cardBodyAfter("Description du poste").text().replace(/\s+/g, " ").trim();
+    const description = cleanSourceHtml(cardBodyAfter("Description du poste").html() || "");
     const companyText = cardBodyAfter("entreprise").text();
     const email = extractEmail(companyText);
 

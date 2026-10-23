@@ -7,8 +7,10 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import DOMPurify from "isomorphic-dompurify";
 import { addDoc, collection, doc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { formatJobBody } from "@/lib/job-body";
 import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import type { Job } from "@/types/job";
@@ -181,8 +183,14 @@ export function JobFormModal({ open, job, importRecord, onApproveImport, onClose
             </datalist>
           </div>
           <div className="form-group">
-            <label htmlFor="jobEmail">Email de contact</label>
-            <input id="jobEmail" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} required />
+            <label htmlFor="jobEmail">Email de contact (facultatif)</label>
+            <input
+              id="jobEmail"
+              type="email"
+              placeholder="Vide si l'on postule sur le site du recruteur"
+              value={form.email}
+              onChange={(e) => set("email", e.target.value)}
+            />
           </div>
           <div className="form-group">
             <label htmlFor="site">Site Web</label>
@@ -218,6 +226,12 @@ export function JobFormModal({ open, job, importRecord, onApproveImport, onClose
         <div className="form-group full-width">
           <label htmlFor="body">Description de l&apos;offre</label>
           <textarea id="body" rows={6} value={form.body} onChange={(e) => set("body", e.target.value)} required />
+          {form.body.trim() && (
+            <details className="job-body-preview">
+              <summary>Aperçu tel qu&apos;affiché sur le site</summary>
+              <div className="sala-job-body" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatJobBody(form.body)) }} />
+            </details>
+          )}
         </div>
         <div className="form-group full-width">
           <label htmlFor="competences">Compétences requises (séparées par des virgules)</label>

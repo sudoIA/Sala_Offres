@@ -41,7 +41,7 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     themeColors: { bg: "#eaf6ed", color: "var(--sala-green)" },
     title: "Des offres d'emploi quotidiennes",
     description:
-      "La publication des offres d'emploi et de stages disponibles en République du Congo, vérifiées et mises à jour chaque jour.",
+      "La publication des offres d'emploi et de stages disponibles en République du Congo, vérifiées et mises à jour en permanence.",
     btnText: "Suivant",
   },
   {
@@ -50,7 +50,7 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     themeColors: { bg: "#fee2e2", color: "var(--sala-red)" },
     title: "Générateur de CV professionnel",
     description:
-      "Créez votre CV directement sur l'application, enregistrez-le en PDF sur votre téléphone, puis partagez-le par e-mail ou sur les réseaux sociaux.",
+      "Créez votre CV directement sur l'application, enregistrez-le en PDF sur votre téléphone, puis partagez-le par e-mail ou via les réseaux sociaux.",
     btnText: "Suivant",
   },
   {

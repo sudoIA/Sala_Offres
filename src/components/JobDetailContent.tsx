@@ -11,6 +11,7 @@ import DOMPurify from "isomorphic-dompurify";
 import { CompanyTile } from "@/components/CompanyTile";
 import { CountdownGrid } from "@/components/CountdownGrid";
 import { useCompanyLogos } from "@/hooks/useCompanyLogos";
+import { formatJobBody } from "@/lib/job-body";
 import type { Job } from "@/types/job";
 
 type TabKey = "description" | "competences" | "entreprise";
@@ -24,7 +25,7 @@ export function JobDetailContent({ job }: { job: Job }) {
   const safeCompany = DOMPurify.sanitize(job.company || "Entreprise au Congo");
   const safeCity = DOMPurify.sanitize(job.city || "Congo");
   const safeContract = DOMPurify.sanitize(job.contract || "Contrat");
-  const safeBody = DOMPurify.sanitize(job.body || "Pas de description disponible pour cette offre.");
+  const safeBody = DOMPurify.sanitize(formatJobBody(job.body || "") || "Pas de description disponible pour cette offre.");
   const safeLanguages = job.languages ? DOMPurify.sanitize(job.languages) : null;
   const email = job.email || null;
   const mailtoLink = email
@@ -83,10 +84,7 @@ export function JobDetailContent({ job }: { job: Job }) {
           <div className="mb-2" style={{ fontFamily: "var(--sala-font-display)", fontWeight: 700, fontSize: "0.92rem" }}>
             Description du poste
           </div>
-          <div
-            style={{ color: "var(--sala-text-secondary)", lineHeight: 1.6, fontSize: "0.88rem" }}
-            dangerouslySetInnerHTML={{ __html: safeBody }}
-          />
+          <div className="sala-job-body" dangerouslySetInnerHTML={{ __html: safeBody }} />
           {publishedDate && (
             <p className="text-muted small mt-3 mb-0">
               Publiée le {publishedDate.toLocaleDateString("fr-FR")}
@@ -154,6 +152,11 @@ export function JobDetailContent({ job }: { job: Job }) {
         {mailtoLink ? (
           <a href={mailtoLink} className="btn-sala-primary w-100 py-3 fw-bold">
             <i className="fas fa-paper-plane me-2"></i>Postuler en 1 clic
+          </a>
+        ) : job.site ? (
+          // Pas d'e-mail : la candidature se fait sur le site du recruteur.
+          <a href={job.site} target="_blank" rel="noopener" className="btn-sala-primary w-100 py-3 fw-bold">
+            <i className="fas fa-external-link-alt me-2"></i>Postuler sur le site du recruteur
           </a>
         ) : (
           <button className="btn-sala-primary w-100 py-3 fw-bold" disabled>

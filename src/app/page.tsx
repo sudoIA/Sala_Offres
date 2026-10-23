@@ -56,7 +56,7 @@ export default function HomePage() {
                   <i className="fas fa-hand-holding-heart"></i> 100% gratuit
                 </div>
                 <div className="hero-trust-item">
-                  <i className="fas fa-bolt"></i> Offres mises à jour chaque jour
+                  <i className="fas fa-bolt"></i> Offres mises à jour en permanence
                 </div>
               </div>
             </div>
