@@ -143,6 +143,13 @@ export default function PrivacyPolicyPage() {
             <li><strong>Chiffrement des mots de passe :</strong> Les mots de passe sont hashés et jamais stockés en clair (via Firebase Auth)</li>
             <li><strong>Règles de sécurité Firestore :</strong> L&apos;accès aux données est limité aux utilisateurs authentifiés et autorisés</li>
             <li><strong>Accès administrateur restreint :</strong> Seuls les administrateurs vérifiés peuvent accéder aux données sensibles</li>
+            <li>
+              <strong>Protection contre les robots :</strong> Le site est protégé par Google reCAPTCHA (via Firebase App Check), qui
+              analyse de façon invisible l&apos;utilisation du site pour distinguer les visiteurs réels des programmes automatisés. Les{" "}
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">règles de confidentialité</a> et les{" "}
+              <a href="https://policies.google.com/terms" target="_blank" rel="noopener">conditions d&apos;utilisation</a> de Google
+              s&apos;appliquent.
+            </li>
           </ul>
           <p>Malgré ces mesures, aucun système n&apos;est infaillible. En cas de violation de données, nous nous engageons à vous en informer dans les meilleurs délais.</p>
         </section>

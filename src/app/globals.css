@@ -4221,3 +4221,10 @@ body.dashboard-body {
   color: var(--sala-text-secondary);
   font-weight: 600;
 }
+
+/* Badge reCAPTCHA (App Check) masqué : il recouvrait la barre de navigation
+   mobile. Google l'autorise si une mention est affichée ailleurs (pied de
+   page et politique de confidentialité). */
+.grecaptcha-badge {
+  visibility: hidden;
+}

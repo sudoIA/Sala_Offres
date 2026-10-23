@@ -19,8 +19,12 @@ import { getFirestore, type Firestore } from "firebase/firestore";
 const WEB_API_KEY = "AIzaSyBOUDvMP-5A8PxhHwxPseMFRfkEpeHdePY";
 const WEB_APP_ID = "1:329607043816:web:1b86d8a85cedc6ec4e475d";
 
-/** Clé de site reCAPTCHA v3 utilisée par App Check (publique par nature). */
-const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
+/**
+ * Clé de site reCAPTCHA v3 utilisée par App Check (publique par nature ; la
+ * clé secrète associée n'est enregistrée que dans Console Firebase > App
+ * Check). Domaine autorisé : ongsala.com et ses sous-domaines.
+ */
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6Leyjf0tAAAAADjDAiS9Cg9Zr9p1Z19Q57h0OQvq";
 
 const firebaseConfig = {
   apiKey: WEB_API_KEY,
