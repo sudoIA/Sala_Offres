@@ -14,10 +14,10 @@ import { getFirestore, type Firestore } from "firebase/firestore";
 // distincte, et la clé API Web peut alors être restreinte aux domaines du
 // site sans toucher à celle de l'app mobile. Valeurs publiques par nature
 // (elles sont visibles dans le navigateur de tout visiteur).
-// TODO App Check : remplacer par la configuration de l'application Web
-// "Sala - site web" une fois créée dans la console (voir docs/app-mobile-app-check.md).
-const WEB_API_KEY = "AIzaSyATVsmjgNZD5j5jTkSbVCuw0dtHNMFop7A";
-const WEB_APP_ID = "1:329607043816:android:774a1bf373ca8cca";
+// Application Web "Sala - site web", créée le 23/10/2026 (la clé et l'appId
+// Android restent ceux de l'app mobile, voir docs/app-mobile-app-check.md).
+const WEB_API_KEY = "AIzaSyBOUDvMP-5A8PxhHwxPseMFRfkEpeHdePY";
+const WEB_APP_ID = "1:329607043816:web:1b86d8a85cedc6ec4e475d";
 
 /** Clé de site reCAPTCHA v3 utilisée par App Check (publique par nature). */
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
