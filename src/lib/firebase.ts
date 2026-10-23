@@ -4,7 +4,7 @@
 // dans chaque fichier ; ce module n'exporte que les instances déjà initialisées.
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import { getAuth, GoogleAuthProvider, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
@@ -20,9 +20,10 @@ const WEB_API_KEY = "AIzaSyBOUDvMP-5A8PxhHwxPseMFRfkEpeHdePY";
 const WEB_APP_ID = "1:329607043816:web:1b86d8a85cedc6ec4e475d";
 
 /**
- * Clé de site reCAPTCHA v3 utilisée par App Check (publique par nature ; la
- * clé secrète associée n'est enregistrée que dans Console Firebase > App
- * Check). Domaine autorisé : ongsala.com et ses sous-domaines.
+ * Clé de site reCAPTCHA utilisée par App Check (publique par nature).
+ * Enregistrée dans Console Firebase > App Check via "Fraud Defense" (ex
+ * reCAPTCHA Enterprise) : Firebase n'accepte plus le reCAPTCHA v3 classique.
+ * Domaine autorisé : ongsala.com et ses sous-domaines.
  */
 const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "6Leyjf0tAAAAADjDAiS9Cg9Zr9p1Z19Q57h0OQvq";
 
@@ -43,7 +44,7 @@ export const app: FirebaseApp = getApps().length ? getApp() : initializeApp(fire
 
 // App Check (protection anti-robots : seules les requêtes venant réellement
 // du site sont acceptées par Firestore une fois l'application activée côté
-// console). Ne s'active que si la clé reCAPTCHA v3 est configurée, et
+// console). Ne s'active que si la clé reCAPTCHA est configurée, et
 // uniquement dans le navigateur.
 if (typeof window !== "undefined" && RECAPTCHA_SITE_KEY) {
   try {
@@ -54,7 +55,7 @@ if (typeof window !== "undefined" && RECAPTCHA_SITE_KEY) {
       (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
     }
     initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(RECAPTCHA_SITE_KEY),
+      provider: new ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),
       isTokenAutoRefreshEnabled: true,
     });
   } catch (err) {
