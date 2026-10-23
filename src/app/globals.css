@@ -1151,6 +1151,29 @@ footer.sala-footer .footer-bottom {
   color: #8fa398;
 }
 
+/* Dans la bande du bas, les liens restent dans le fil du texte (la règle
+   générale ci-dessus en fait des blocs, une ligne par lien). */
+footer.sala-footer .footer-bottom a {
+  display: inline;
+  margin-bottom: 0;
+  font-size: inherit;
+  color: #8fa398;
+}
+
+footer.sala-footer .footer-bottom a:hover { color: #ffffff; }
+
+footer.sala-footer .footer-recaptcha a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+footer.sala-footer .footer-recaptcha {
+  margin-top: 4px;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  max-width: 520px;
+}
+
 /* ==========================================================================
    PAGE OFFRES D'EMPLOI
    ========================================================================== */

@@ -75,15 +75,16 @@ export function Footer() {
           </div>
         </div>
         <div className="footer-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
-          <span>
-            &copy; 2026 ONG Sala. Tous droits réservés.
+          <div>
+            <div>&copy; 2026 ONG Sala. Tous droits réservés.</div>
             {/* Mention exigée par Google quand le badge reCAPTCHA est masqué (voir globals.css). */}
-            <span className="d-block small" style={{ color: "#8fa398" }}>
-              Site protégé par reCAPTCHA :{" "}
-              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" style={{ color: "#8fa398" }}>confidentialité</a> et{" "}
-              <a href="https://policies.google.com/terms" target="_blank" rel="noopener" style={{ color: "#8fa398" }}>conditions</a> de Google.
-            </span>
-          </span>
+            <div className="footer-recaptcha">
+              Site protégé par reCAPTCHA. Les{" "}
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">règles de confidentialité</a> et les{" "}
+              <a href="https://policies.google.com/terms" target="_blank" rel="noopener">conditions d&apos;utilisation</a> de Google
+              s&apos;appliquent.
+            </div>
+          </div>
           <div className="d-flex align-items-center gap-3">
             <Link href="/privacy-policy" style={{ color: "#8fa398", display: "inline" }}>Politique de confidentialité</Link>
             <Link href="/connexion" className="d-none d-lg-inline-block" title="Administration" style={{ color: "#8fa398" }}>

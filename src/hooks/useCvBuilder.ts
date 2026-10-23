@@ -20,7 +20,9 @@ import {
   type CvTemplate,
 } from "@/types/cv";
 
-const STORAGE_KEY = "sala_current_cv";
+/** Clé du CV en cours d'édition (reprise aussi depuis Profil > CV enregistrés). */
+export const CV_SESSION_KEY = "sala_current_cv";
+const STORAGE_KEY = CV_SESSION_KEY;
 
 function loadFromSession(): CvState | null {
   try {

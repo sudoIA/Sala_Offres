@@ -105,6 +105,12 @@ await check("vue : remise à zéro refusée", assertFails(setDoc(doc(anon, "job_
 await check("visiteur ne lit pas les compteurs", assertFails(getDoc(doc(anon, "job_views/job1"))));
 await check("admin lit les compteurs", assertSucceeds(getDoc(doc(admin, "job_views/job1"))));
 
+console.log("Sources personnalisées");
+await check("admin ajoute une source", assertSucceeds(setDoc(doc(admin, "import_sources/s1"), { name: "Site", url: "https://exemple.cg/offres", enabled: true })));
+await check("admin lit les sources", assertSucceeds(getDocs(collection(admin, "import_sources"))));
+await check("candidat ne lit pas les sources", assertFails(getDocs(collection(user, "import_sources"))));
+await check("visiteur n'ajoute pas de source", assertFails(setDoc(doc(anon, "import_sources/s2"), { name: "x", url: "https://x.cg", enabled: true })));
+
 console.log("Application mobile");
 await check("Questions lisibles une fois connecté", assertSucceeds(getDoc(doc(user, "Questions/q1"))));
 await check("Questions illisibles sans compte", assertFails(getDoc(doc(anon, "Questions/q1"))));

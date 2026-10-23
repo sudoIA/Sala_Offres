@@ -15,6 +15,7 @@ import { FabCv } from "@/components/layout/FabCv";
 import { AccountDeletionPanel } from "@/components/profile/AccountDeletionPanel";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { JobAlertsPanel } from "@/components/profile/JobAlertsPanel";
+import { SavedCvsPanel } from "@/components/profile/SavedCvsPanel";
 import { loadUserProfile, logoutUser, saveJobAlerts, updateUserProfile, type ProfileUpdateData } from "@/lib/candidate-profile";
 import type { JobAlertPrefs } from "@/lib/job-alerts";
 import type { UserProfile } from "@/types/user-profile";
@@ -168,21 +169,7 @@ export default function ProfilePage() {
               </div>
             )}
 
-            {tab === "cv" && (
-              <div>
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <h5 className="fw-bold mb-0">Mes CVs professionnels</h5>
-                  <Link href="/cv-builder" className="btn-sala-accent btn-sm">
-                    <i className="fas fa-plus me-1"></i> Nouveau CV
-                  </Link>
-                </div>
-                <div className="text-center py-4 text-muted">
-                  <i className="fas fa-file-invoice fa-3x text-muted mb-3" style={{ opacity: 0.5 }}></i>
-                  <p className="mb-2">Vous n&apos;avez pas encore généré de CV en ligne.</p>
-                  <Link href="/cv-builder" className="btn-sala-primary btn-sm mt-1">Lancer le Générateur de CV</Link>
-                </div>
-              </div>
-            )}
+            {tab === "cv" && <SavedCvsPanel uid={user.uid} />}
 
             {tab === "applications" && (
               <div>

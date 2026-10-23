@@ -11,6 +11,9 @@
 // - publication automatique des offres des sources "de confiance" cochées
 //   dans Admin > Paramètres (settings/imports.autoPublishSources) — les
 //   autres restent en attente de relecture manuelle comme avant ;
+// - collecte des sources personnalisées ajoutées par l'équipe et cochées
+//   « collecte quotidienne » (collection "import_sources", collecteur
+//   générique) — jamais publiées automatiquement ;
 // - envoi des alertes emploi aux candidats abonnés (voir alert-emails.ts).
 //
 // Sécurité : seul Vercel Cron doit pouvoir déclencher cette route. Vercel
@@ -25,6 +28,8 @@ import { getAdminDb } from "@/lib/firebase-admin";
 import { collectAcpePage, enrichAcpeJob } from "@/lib/collectors/acpe";
 import { collectAfriqueemploisPage } from "@/lib/collectors/afriqueemplois";
 import { collectLesOpportunitesPage } from "@/lib/collectors/lesopportunites";
+import { collectGenericSource } from "@/lib/collectors/generic";
+import { customSourceKey, type CustomSourceConfig } from "@/lib/custom-sources";
 import { sleep } from "@/lib/collectors/shared";
 import { sendJobAlertDigests, type AlertRunResult } from "@/lib/alert-emails";
 import { DEDUPE_WINDOW_DAYS, buildImportDocId, findDuplicatePublishedJob, importToJobData, stripUndefined } from "@/lib/job-import-helpers";
@@ -36,7 +41,8 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 interface SourceRunResult {
-  source: ImportSourceKey;
+  /** Clé intégrée (ImportSourceKey) ou "custom_<id>" pour une source personnalisée. */
+  source: string;
   created: number;
   updated: number;
   autoPublished: number;
@@ -89,14 +95,26 @@ export async function GET(request: NextRequest) {
     Array.isArray(importSettings?.autoPublishSources) ? importSettings.autoPublishSources : []
   );
 
-  for (const { key: source } of IMPORT_SOURCES) {
+  // Sources intégrées, puis sources personnalisées actives.
+  const tasks: { source: string; customId?: string; collect: () => Promise<ImportedJob[]> }[] = IMPORT_SOURCES.map(({ key }) => ({
+    source: key,
+    collect: () => collectSource(key),
+  }));
+  const customSnap = await db.collection("import_sources").where("enabled", "==", true).get();
+  for (const d of customSnap.docs) {
+    const cfg = d.data() as CustomSourceConfig;
+    const key = customSourceKey(d.id);
+    tasks.push({ source: key, customId: d.id, collect: async () => (await collectGenericSource(key, cfg)).jobs });
+  }
+
+  for (const { source, customId, collect } of tasks) {
     let created = 0;
     let updated = 0;
     let autoPublished = 0;
     let total = 0;
     let error: string | null = null;
     try {
-      const jobs = await collectSource(source);
+      const jobs = await collect();
       total = jobs.length;
       for (const job of jobs) {
         const id = buildImportDocId(job.source, job.sourceId);
@@ -131,6 +149,13 @@ export async function GET(request: NextRequest) {
       console.error(`Collecte automatique "${source}" en échec :`, err);
     }
     results.push({ source, created, updated, autoPublished, total, error });
+    if (customId) {
+      await db
+        .collection("import_sources")
+        .doc(customId)
+        .update({ lastRunAt: new Date().toISOString(), lastCount: total, lastError: error })
+        .catch((err) => console.warn("Suivi de la source personnalisée non mis à jour :", err));
+    }
   }
 
   let alerts: AlertRunResult | { error: string };

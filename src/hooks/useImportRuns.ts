@@ -11,7 +11,8 @@ import { db } from "@/lib/firebase";
 import type { ImportSourceKey } from "@/lib/import-sources";
 
 export interface ImportRunSourceResult {
-  source: ImportSourceKey;
+  /** Clé intégrée ou "custom_<id>" (source personnalisée). */
+  source: ImportSourceKey | string;
   created: number;
   updated: number;
   total: number;

@@ -20,6 +20,7 @@ import { buildImportDocId, findDuplicatePublishedJob, stripUndefined } from "@/l
 import { IMPORT_SOURCES, type ImportSourceKey } from "@/lib/import-sources";
 import type { ImportedJob } from "@/types/job-import";
 import type { Job } from "@/types/job";
+import type { CustomSource } from "@/lib/custom-sources";
 import { logAdminAction } from "@/lib/admin-log";
 
 export interface ImportedJobRecord extends ImportedJob {
@@ -55,14 +56,21 @@ export function useJobImports() {
    * jour `lastCheckedAt` sur les imports déjà connus, sans jamais écraser une
    * décision déjà prise (approuvée/rejetée/doublon) par un admin.
    */
-  const runCollection = useCallback(async (source: ImportSourceKey, page: number, publishedJobs: Job[]) => {
+  const runCollection = useCallback(async (source: ImportSourceKey | string, page: number, publishedJobs: Job[], custom?: CustomSource) => {
     // La route vérifie ce jeton côté serveur (voir src/lib/admin-auth.ts).
     const idToken = await auth.currentUser?.getIdToken();
-    const res = await fetch(`/api/jobs/import/${source}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken || ""}` },
-      body: JSON.stringify({ page, withDetails: true }),
-    });
+    // Source personnalisée : collecteur générique, avec sa configuration.
+    const res = custom
+      ? await fetch("/api/jobs/import/custom", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken || ""}` },
+          body: JSON.stringify({ source, url: custom.url, selector: custom.selector, keyword: custom.keyword }),
+        })
+      : await fetch(`/api/jobs/import/${source}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken || ""}` },
+          body: JSON.stringify({ page, withDetails: true }),
+        });
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || "Échec de la collecte.");
 

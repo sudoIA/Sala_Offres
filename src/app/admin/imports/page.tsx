@@ -11,6 +11,9 @@ import { IMPORT_SOURCES, useJobImports, type ImportedJobRecord, type ImportSourc
 import { useImportRuns } from "@/hooks/useImportRuns";
 import { usePagination } from "@/hooks/usePagination";
 import { CompanyTile } from "@/components/CompanyTile";
+import { CustomSourcesPanel } from "@/components/admin/CustomSourcesPanel";
+import { useCustomSources } from "@/hooks/useCustomSources";
+import { customSourceKey } from "@/lib/custom-sources";
 import { JobFormModal } from "@/components/admin/JobFormModal";
 import { Pagination } from "@/components/admin/Pagination";
 import { notify } from "@/lib/notify";
@@ -40,7 +43,18 @@ export default function AdminImportsPage() {
   const { imports, loading, runCollection, finalizeImportApproval, rejectImport, markDuplicate } = useJobImports();
   const { runs: importRuns } = useImportRuns();
   const [tab, setTab] = useState<Tab>("pending");
-  const [source, setSource] = useState<ImportSourceKey>("acpe");
+  const { sources: customSources, updateSource } = useCustomSources();
+  const [source, setSource] = useState<ImportSourceKey | string>("acpe");
+  const selectedCustom = customSources.find((s) => customSourceKey(s.id) === source);
+
+  /** Libellé lisible d'une source (intégrée ou ajoutée par l'équipe). */
+  function sourceLabel(key: string): string {
+    return (
+      IMPORT_SOURCES.find((s) => s.key === key)?.label ||
+      customSources.find((s) => customSourceKey(s.id) === key)?.name ||
+      key
+    );
+  }
   const [sourcePage, setSourcePage] = useState(1);
   const [collecting, setCollecting] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -53,10 +67,16 @@ export default function AdminImportsPage() {
     setCollecting(true);
     try {
       const publishedJobs = await fetchRecentJobsOnce();
-      const result = await runCollection(source, sourcePage, publishedJobs);
+      const result = await runCollection(source, sourcePage, publishedJobs, selectedCustom);
+      if (selectedCustom) {
+        await updateSource(selectedCustom, { lastRunAt: new Date().toISOString(), lastCount: result.total, lastError: null });
+      }
       notify(`${result.created} nouvelle(s) offre(s), ${result.updated} déjà connue(s) mise(s) à jour.`);
     } catch (err) {
       console.error("Erreur collecte :", err);
+      if (selectedCustom) {
+        await updateSource(selectedCustom, { lastRunAt: new Date().toISOString(), lastError: (err as Error).message }).catch(() => {});
+      }
       notify("La collecte a échoué. Réessayez plus tard.", "error");
     } finally {
       setCollecting(false);
@@ -121,7 +141,7 @@ export default function AdminImportsPage() {
                   run.results.map((r) => (
                     <tr key={`${run.id}_${r.source}`}>
                       <td>{run.ranAt ? run.ranAt.toLocaleString("fr-FR") : "—"}</td>
-                      <td>{IMPORT_SOURCES.find((s) => s.key === r.source)?.label || r.source}</td>
+                      <td>{sourceLabel(r.source)}</td>
                       <td>{r.created}</td>
                       <td>{r.updated}</td>
                       <td>
@@ -144,23 +164,35 @@ export default function AdminImportsPage() {
         </div>
       )}
 
+      <CustomSourcesPanel />
+
       <div className="admin-toolbar">
         <label className="d-flex align-items-center gap-2 mb-0">
           <span className="small text-muted">Source</span>
           <select
             value={source}
-            onChange={(e) => setSource(e.target.value as ImportSourceKey)}
+            onChange={(e) => setSource(e.target.value)}
             className="admin-search-input"
-            style={{ width: 180 }}
+            style={{ width: 200 }}
           >
             {IMPORT_SOURCES.map((s) => (
               <option key={s.key} value={s.key}>
                 {s.label}
               </option>
             ))}
+            {customSources.length > 0 && (
+              <optgroup label="Sources personnalisées">
+                {customSources.map((s) => (
+                  <option key={s.id} value={customSourceKey(s.id)}>
+                    {s.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </select>
         </label>
-        <label className="d-flex align-items-center gap-2 mb-0">
+        {/* Les sources personnalisées n'ont pas de pagination : seule la page indiquée est lue. */}
+        <label className={`d-flex align-items-center gap-2 mb-0${selectedCustom ? " d-none" : ""}`}>
           <span className="small text-muted">Page</span>
           <input
             type="number"
@@ -225,7 +257,7 @@ export default function AdminImportsPage() {
                       <div className="subtitle">{record.company || "Entreprise non précisée"}</div>
                     </div>
                   </div>
-                  <span className="admin-badge">{record.source.toUpperCase()}</span>
+                  <span className="admin-badge">{sourceLabel(record.source).toUpperCase()}</span>
                 </div>
                 <div className="admin-card-meta">
                   <span><i className="fas fa-map-marker-alt"></i>{record.city || "—"}</span>

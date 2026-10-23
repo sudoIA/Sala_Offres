@@ -48,11 +48,14 @@ export const app: FirebaseApp = getApps().length ? getApp() : initializeApp(fire
 // uniquement dans le navigateur.
 if (typeof window !== "undefined" && RECAPTCHA_SITE_KEY) {
   try {
-    // En local, reCAPTCHA ne valide pas "localhost" : Firebase affiche alors
-    // dans la console du navigateur un jeton de débogage, à déclarer une fois
-    // dans Console Firebase > App Check > Gérer les jetons de débogage.
+    // En local, reCAPTCHA ne valide pas "localhost" : on utilise un jeton de
+    // débogage fixe (NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN dans .env.local, jamais
+    // commité), déclaré une fois dans Console Firebase > App Check > Gérer les
+    // jetons de débogage. Sans lui, Firebase en génère un nouveau à chaque
+    // fois et l'affiche dans la console du navigateur.
     if (process.env.NODE_ENV === "development") {
-      (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+      (self as unknown as { FIREBASE_APPCHECK_DEBUG_TOKEN?: string | boolean }).FIREBASE_APPCHECK_DEBUG_TOKEN =
+        process.env.NEXT_PUBLIC_APPCHECK_DEBUG_TOKEN || true;
     }
     initializeAppCheck(app, {
       provider: new ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY),

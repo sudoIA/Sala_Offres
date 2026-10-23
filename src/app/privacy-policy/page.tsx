@@ -18,7 +18,7 @@ export default function PrivacyPolicyPage() {
         <div className="pp-badge">Application Mobile &amp; Plateforme Web</div>
         <h1>Politique de Confidentialité</h1>
         <p>Comment <strong>Sala</strong> collecte, utilise et protège vos données personnelles</p>
-        <div className="pp-meta">Dernière mise à jour : <strong>13 avril 2026</strong> &nbsp;|&nbsp; Version 2.0</div>
+        <div className="pp-meta">Dernière mise à jour : <strong>23 octobre 2026</strong> &nbsp;|&nbsp; Version 2.1</div>
       </header>
 
       <main className="pp-main">

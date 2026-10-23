@@ -69,6 +69,12 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // --- Sources de collecte ajoutées par l'équipe (Admin > Imports) ---
+    // Configuration interne (adresses des sites collectés) : admins seulement.
+    match /import_sources/{sourceId} {
+      allow read, write: if isAdmin();
+    }
+
     // --- Historique des collectes automatiques (tâche planifiée) ---
     // Écrit uniquement par le SDK Admin côté serveur (jamais soumis à ces
     // règles) ; l'équipe admin peut seulement le consulter, pas le modifier.

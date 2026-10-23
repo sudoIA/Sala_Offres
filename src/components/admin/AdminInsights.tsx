@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { collection, getCountFromServer, getDocs, limit, orderBy, query, Timestamp, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { IMPORT_SOURCES } from "@/lib/import-sources";
+import { customSourceKey } from "@/lib/custom-sources";
 import type { Job } from "@/types/job";
 
 const WEEKS = 8;
@@ -40,10 +41,14 @@ export function AdminInsights({ jobs }: { jobs: Job[] }) {
       .then((snap) => setTopViewed(snap.docs.map((d) => ({ id: d.id, count: Number(d.data().count) || 0 }))))
       .catch(() => setTopViewed([]));
 
-    getDocs(collection(db, "emplois_import"))
-      .then((snap) => {
+    Promise.all([getDocs(collection(db, "emplois_import")), getDocs(collection(db, "import_sources"))])
+      .then(([snap, customSnap]) => {
         const bySource = new Map<string, ImportStats>(
           IMPORT_SOURCES.map((s) => [s.key, { source: s.label, pending: 0, approved: 0, auto: 0, rejected: 0 }])
+        );
+        // Sources personnalisées ajoutées par l'équipe (Admin > Imports).
+        customSnap.docs.forEach((d) =>
+          bySource.set(customSourceKey(d.id), { source: String(d.data().name || "Source personnalisée"), pending: 0, approved: 0, auto: 0, rejected: 0 })
         );
         snap.docs.forEach((d) => {
           const data = d.data();
