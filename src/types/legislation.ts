@@ -36,6 +36,11 @@ export interface LegislationDoc {
   /** Lien vers le texte de loi source, quand disponible. */
   sourceUrl?: string;
   sourceLabel?: string;
+  /** Pour l'app mobile (même format que l'ancienne collection "droit_du_travail") :
+   *  HTML complet de la fiche, recalculé à chaque enregistrement. */
+  description?: string;
+  /** Pour l'app mobile : minutes de lecture, en texte ("3"). */
+  readingTime?: string;
 }
 
 export interface LegislationFiche extends LegislationDoc {

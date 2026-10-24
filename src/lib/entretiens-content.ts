@@ -1,6 +1,8 @@
 // src/lib/entretiens-content.ts
-// Contenu statique de la page Entretiens : guide des questions fréquentes et
-// quiz d'entraînement (10 questions).
+// Contenu de la page Entretiens : guide des questions fréquentes et quiz
+// d'entraînement d'origine (10 questions, voir QUIZ_QUESTIONS).
+
+import type { QuizQuestion } from "@/types/quiz";
 
 export interface InterviewQuestion {
   number: number;
@@ -93,18 +95,12 @@ export const INTERVIEW_QUESTIONS: InterviewQuestion[] = [
   },
 ];
 
-export interface QuizOption {
-  text: string;
-  correct: boolean;
-  explanation: string;
-}
-
-export interface QuizQuestion {
-  question: string;
-  options: QuizOption[];
-}
-
-export const QUIZ_QUESTIONS: QuizQuestion[] = [
+/**
+ * Questions du quiz d'entretien d'origine. La source est désormais la
+ * collection Firestore "quiz" (Admin > Quiz) : cette liste sert à la remplir
+ * une première fois, et de repli si la base est vide ou inaccessible.
+ */
+export const QUIZ_QUESTIONS: Pick<QuizQuestion, "question" | "options">[] = [
   {
     question: "Quand le recruteur vous demande : « Parlez-moi de votre plus grand défaut », que répondez-vous ?",
     options: [

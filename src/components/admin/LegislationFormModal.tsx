@@ -8,7 +8,8 @@ import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
-import type { LegislationFiche, LegislationTopic } from "@/types/legislation";
+import { TOPIC_LABELS, type LegislationFiche, type LegislationTopic } from "@/types/legislation";
+import { withMobileFields } from "@/lib/legislation-mobile";
 import { logAdminAction } from "@/lib/admin-log";
 
 interface LegislationFormModalProps {
@@ -28,6 +29,8 @@ const EMPTY_FORM = {
   bodyHtml: "",
   faqQuestion: "",
   faqAnswer: "",
+  sourceUrl: "",
+  sourceLabel: "",
 };
 
 export function LegislationFormModal({ open, fiche, nextOrder, onClose }: LegislationFormModalProps) {
@@ -46,6 +49,8 @@ export function LegislationFormModal({ open, fiche, nextOrder, onClose }: Legisl
       bodyHtml: fiche?.bodyHtml || "",
       faqQuestion: fiche?.faqQuestion || "",
       faqAnswer: fiche?.faqAnswer || "",
+      sourceUrl: fiche?.sourceUrl || "",
+      sourceLabel: fiche?.sourceLabel || "",
     });
   }, [open, fiche, nextOrder]);
 
@@ -56,7 +61,8 @@ export function LegislationFormModal({ open, fiche, nextOrder, onClose }: Legisl
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const data = {
+    // description et readingTime (lus par l'app mobile) sont recalculés.
+    const data = withMobileFields({
       topic: form.topic,
       topicLabel: form.topicLabel.trim(),
       articleRef: form.articleRef.trim(),
@@ -66,7 +72,9 @@ export function LegislationFormModal({ open, fiche, nextOrder, onClose }: Legisl
       bodyHtml: form.bodyHtml.trim(),
       faqQuestion: form.faqQuestion.trim(),
       faqAnswer: form.faqAnswer.trim(),
-    };
+      sourceUrl: form.sourceUrl.trim(),
+      sourceLabel: form.sourceLabel.trim(),
+    });
 
     try {
       if (fiche) {
@@ -94,11 +102,9 @@ export function LegislationFormModal({ open, fiche, nextOrder, onClose }: Legisl
           <div className="form-group">
             <label htmlFor="legTopic">Thème (filtre affiché sur la page)</label>
             <select id="legTopic" value={form.topic} onChange={(e) => set("topic", e.target.value as LegislationTopic)} required>
-              <option value="contrat">Contrat de Travail</option>
-              <option value="salaire">Salaire &amp; SMIG</option>
-              <option value="horaires">Horaires &amp; Heures sup</option>
-              <option value="conges">Congés &amp; Maternité</option>
-              <option value="rupture">Rupture &amp; Préavis</option>
+              {(Object.keys(TOPIC_LABELS) as LegislationTopic[]).map((key) => (
+                <option key={key} value={key}>{TOPIC_LABELS[key]}</option>
+              ))}
             </select>
           </div>
           <div className="form-group">
@@ -142,6 +148,14 @@ export function LegislationFormModal({ open, fiche, nextOrder, onClose }: Legisl
           <div className="form-group full-width">
             <label htmlFor="legFaqAnswer">Réponse FAQ (optionnel)</label>
             <textarea id="legFaqAnswer" rows={2} value={form.faqAnswer} onChange={(e) => set("faqAnswer", e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="legSourceUrl">Lien vers la source (optionnel)</label>
+            <input id="legSourceUrl" type="url" placeholder="https://..." value={form.sourceUrl} onChange={(e) => set("sourceUrl", e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="legSourceLabel">Nom de la source</label>
+            <input id="legSourceLabel" type="text" placeholder="Ex : Code du travail (sgg.cg)" value={form.sourceLabel} onChange={(e) => set("sourceLabel", e.target.value)} />
           </div>
         </div>
         <div className="form-actions">

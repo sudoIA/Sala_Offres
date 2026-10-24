@@ -50,7 +50,15 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     label: "Droit du Travail",
     mobileLabel: "Droit du Travail",
     title: "Droit du Travail",
-    subtitle: "Fiches thématiques affichées sur la page Législation.",
+    subtitle: "Fiches thématiques du site et de l'application mobile.",
+  },
+  {
+    href: "/admin/quiz",
+    icon: "fas fa-gamepad",
+    label: "Quiz",
+    mobileLabel: "Quiz",
+    title: "Quiz",
+    subtitle: "Questions des quiz du site et de l'application mobile.",
   },
   {
     href: "/admin/actualites",

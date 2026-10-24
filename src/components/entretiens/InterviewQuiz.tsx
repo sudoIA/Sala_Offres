@@ -1,17 +1,40 @@
 // src/components/entretiens/InterviewQuiz.tsx
-// Quiz d'entraînement interactif (10 questions à choix multiple).
+// Quiz d'entraînement interactif à choix multiple. Les questions viennent de
+// la collection "quiz" (Admin > Quiz), par thème : entretiens ou droit du
+// travail.
 
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import { QUIZ_QUESTIONS, type QuizOption } from "@/lib/entretiens-content";
+import { usePublicQuiz } from "@/hooks/useQuiz";
+import type { QuizOption, QuizTheme } from "@/types/quiz";
 import { Confetti } from "@/components/Confetti";
 import { EncourageFace } from "@/components/EncourageFace";
 
 type Phase = "intro" | "play" | "result";
 
-export function InterviewQuiz() {
+const TEXTS: Record<QuizTheme, { title: string; subtitle: string; excellent: string; good: string; study: string }> = {
+  entretiens: {
+    title: "Quiz d'Évaluation : Êtes-vous prêt pour l'entretien ?",
+    subtitle: "questions concrètes pour tester vos réflexes face à un recruteur.",
+    excellent: "Vous maîtrisez parfaitement la posture et les réponses attendues par les recruteurs congolais. Vous avez toutes les chances de réussir votre prochain entretien !",
+    good: "Vous avez de bons réflexes professionnels. Relisez le guide des questions pour sécuriser les points où vous avez hésité.",
+    study: "L'entretien d'embauche obéit à des codes stricts. Consultez attentivement nos fiches de conseils ci-dessus pour vous entraîner à nouveau.",
+  },
+  droit_du_travail: {
+    title: "Quiz : Connaissez-vous vos droits au travail ?",
+    subtitle: "questions pour tester vos connaissances du Code du travail congolais.",
+    excellent: "Vous connaissez très bien vos droits et devoirs de travailleur. Bravo !",
+    good: "Vous avez de bonnes bases. Relisez les fiches où vous avez hésité pour les consolider.",
+    study: "Le Code du travail vous protège : prenez le temps de lire les fiches ci-dessus, puis réessayez.",
+  },
+};
+
+/** `minQuestions` : en dessous, le quiz ne s'affiche pas du tout. */
+export function InterviewQuiz({ theme = "entretiens", minQuestions = 1 }: { theme?: QuizTheme; minQuestions?: number }) {
+  const { questions, loading } = usePublicQuiz(theme);
+  const texts = TEXTS[theme];
   const [phase, setPhase] = useState<Phase>("intro");
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
@@ -31,7 +54,7 @@ export function InterviewQuiz() {
   }
 
   function next() {
-    if (step + 1 < QUIZ_QUESTIONS.length) {
+    if (step + 1 < questions.length) {
       setStep((s) => s + 1);
       setSelected(null);
     } else {
@@ -39,25 +62,29 @@ export function InterviewQuiz() {
     }
   }
 
+  if (minQuestions > 1 && (loading || questions.length < minQuestions)) return null;
+
   if (phase === "intro") {
     return (
       <div className="interview-card p-4 text-center">
         <i className="fas fa-graduation-cap fa-3x text-success mb-3"></i>
-        <h4 className="fw-bold mb-2">Quiz d&apos;Évaluation : Êtes-vous prêt pour l&apos;entretien ?</h4>
-        <p className="text-muted mb-4">10 questions concrètes pour tester vos réflexes face à un recruteur.</p>
-        <button className="btn-sala-primary rounded-pill px-5 py-3 fw-bold" onClick={start}>
-          Commencer le Quiz (10 min) <i className="fas fa-play ms-2"></i>
+        <h4 className="fw-bold mb-2">{texts.title}</h4>
+        <p className="text-muted mb-4">
+          {loading ? "Chargement des questions..." : `${questions.length} ${texts.subtitle}`}
+        </p>
+        <button className="btn-sala-primary rounded-pill px-5 py-3 fw-bold" onClick={start} disabled={loading || questions.length === 0}>
+          Commencer le Quiz ({Math.max(1, questions.length)} min) <i className="fas fa-play ms-2"></i>
         </button>
       </div>
     );
   }
 
   if (phase === "play") {
-    const q = QUIZ_QUESTIONS[step];
+    const q = questions[step];
     return (
       <div className="interview-card p-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <span className="badge-sala-green">Question {step + 1} / {QUIZ_QUESTIONS.length}</span>
+          <span className="badge-sala-green">Question {step + 1} / {questions.length}</span>
           <span className="small text-muted">Score : {score} pt{score > 1 ? "s" : ""}</span>
         </div>
 
@@ -89,7 +116,7 @@ export function InterviewQuiz() {
         <div className="text-end mt-4">
           {selected && (
             <button className="btn-sala-primary rounded-pill px-4" onClick={next}>
-              {step + 1 < QUIZ_QUESTIONS.length ? "Question suivante" : "Voir le résultat"} <i className="fas fa-arrow-right ms-2"></i>
+              {step + 1 < questions.length ? "Question suivante" : "Voir le résultat"} <i className="fas fa-arrow-right ms-2"></i>
             </button>
           )}
         </div>
@@ -97,11 +124,11 @@ export function InterviewQuiz() {
     );
   }
 
-  const percent = score / QUIZ_QUESTIONS.length;
+  const percent = score / questions.length;
   const icon =
-    percent >= 0.8 ? { i: "fa-trophy text-warning", title: "Excellent ! Vous êtes fin prêt(e)", msg: "Vous maîtrisez parfaitement la posture et les réponses attendues par les recruteurs congolais. Vous avez toutes les chances de réussir votre prochain entretien !" }
-    : percent >= 0.6 ? { i: "fa-thumbs-up text-success", title: "Bon niveau, quelques détails à peaufiner", msg: "Vous avez de bons réflexes professionnels. Relisez le guide des questions pour sécuriser les points où vous avez hésité." }
-    : { i: "fa-book-reader text-primary", title: "Prenez le temps d'étudier le guide", msg: "L'entretien d'embauche obéit à des codes stricts. Consultez attentivement nos fiches de conseils ci-dessus pour vous entraîner à nouveau." };
+    percent >= 0.8 ? { i: "fa-trophy text-warning", title: "Excellent ! Vous êtes fin prêt(e)", msg: texts.excellent }
+    : percent >= 0.6 ? { i: "fa-thumbs-up text-success", title: "Bon niveau, quelques détails à peaufiner", msg: texts.good }
+    : { i: "fa-book-reader text-primary", title: "Prenez le temps d'étudier le guide", msg: texts.study };
 
   return (
     <div className="interview-card p-5 text-center">
@@ -115,7 +142,7 @@ export function InterviewQuiz() {
       )}
       <h3 className="fw-bold mb-2">{icon.title}</h3>
       <p className="text-muted mb-4">{icon.msg}</p>
-      <div className="h2 fw-bold text-success mb-4">{score} / {QUIZ_QUESTIONS.length}</div>
+      <div className="h2 fw-bold text-success mb-4">{score} / {questions.length}</div>
       <div className="d-flex flex-wrap justify-content-center gap-3">
         <button className="btn-sala-outline rounded-pill px-4" onClick={() => setPhase("intro")}>Recommencer</button>
         <Link href="/offres" className="btn-sala-primary rounded-pill px-4">Postuler à une offre</Link>

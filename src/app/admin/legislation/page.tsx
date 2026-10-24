@@ -3,11 +3,12 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { useLegislationAdmin } from "@/hooks/useLegislationAdmin";
+import { importLegislationFiches, useLegislationAdmin } from "@/hooks/useLegislationAdmin";
+import { initialLegislationTopics } from "@/lib/legislation-content";
 import { CompanyTile } from "@/components/CompanyTile";
 import { LegislationFormModal } from "@/components/admin/LegislationFormModal";
 import { confirmDelete, notify } from "@/lib/notify";
@@ -19,7 +20,27 @@ export default function AdminLegislationPage() {
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingFiche, setEditingFiche] = useState<LegislationFiche | null>(null);
+  const [importing, setImporting] = useState(false);
   const searchParams = useSearchParams();
+
+  // Fiches intégrées au site ou fiches de l'app pas encore copiées dans la base.
+  const existingIds = useMemo(() => new Set(fiches.map((f) => f.id)), [fiches]);
+  const importNeeded =
+    initialLegislationTopics.some((f) => !existingIds.has(f.id)) || !fiches.some((f) => f.id.startsWith("app-"));
+
+  async function handleImport() {
+    setImporting(true);
+    try {
+      const added = await importLegislationFiches(existingIds);
+      if (added) await logAdminAction("create", "legislation", `${added} fiche(s) importée(s)`);
+      notify(added ? `${added} fiche(s) copiée(s) dans la base.` : "Toutes les fiches sont déjà dans la base.");
+    } catch (err) {
+      console.error("Erreur import fiches législation :", err);
+      notify("Erreur : " + (err as Error).message, "error");
+    } finally {
+      setImporting(false);
+    }
+  }
   const router = useRouter();
 
   useEffect(() => {
@@ -51,7 +72,7 @@ export default function AdminLegislationPage() {
       <div className="admin-section-header">
         <div>
           <h1 className="admin-page-title">Droit du Travail</h1>
-          <p className="admin-page-subtitle">Fiches thématiques affichées sur la page Législation (legislation.html).</p>
+          <p className="admin-page-subtitle">Fiches thématiques affichées sur la page Droit du Travail du site et dans l&apos;application mobile.</p>
         </div>
         <button
           className="btn-sala-primary"
@@ -63,6 +84,19 @@ export default function AdminLegislationPage() {
           <i className="fas fa-plus me-1"></i> Ajouter une fiche
         </button>
       </div>
+
+      {!loading && importNeeded && (
+        <div className="alert alert-info d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <span className="small">
+            <i className="fas fa-info-circle me-1"></i>
+            Les fiches du guide intégré au site et celles de l&apos;app mobile ne sont pas encore toutes dans la base.
+            Copiez-les pour pouvoir les modifier ici et les rendre disponibles à l&apos;app.
+          </span>
+          <button className="btn-sala-primary btn-sm" onClick={handleImport} disabled={importing}>
+            {importing ? "Copie en cours..." : "Copier les fiches dans la base"}
+          </button>
+        </div>
+      )}
 
       <div className="admin-toolbar">
         <div className="admin-search-wrap">
@@ -86,8 +120,8 @@ export default function AdminLegislationPage() {
 
         {!loading && fiches.length === 0 && (
           <div className="admin-card-empty admin-empty">
-            Aucune fiche personnalisée pour le moment — la page Législation affiche actuellement le guide intégré par défaut.
-            Ajoutez une fiche ici pour commencer à le personnaliser.
+            Aucune fiche dans la base pour le moment — la page Droit du Travail affiche le guide intégré par défaut.
+            Utilisez « Copier les fiches dans la base » ci-dessus pour commencer.
           </div>
         )}
 

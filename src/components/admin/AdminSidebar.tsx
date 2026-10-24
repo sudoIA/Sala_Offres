@@ -40,8 +40,6 @@ export function AdminSidebar() {
           </Link>
         ))}
 
-        <div className="sala-nav-section-title">Bientôt disponible</div>
-        <span className="sala-nav-item disabled"><i className="fas fa-gamepad"></i> Jeux</span>
       </div>
     </aside>
   );

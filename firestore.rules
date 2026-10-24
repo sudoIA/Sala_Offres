@@ -42,6 +42,22 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Questions de quiz (Admin > Quiz), lues par le site et l'app mobile.
+    // Schéma contrôlé : un document = une question et 2 à 6 réponses.
+    function validQuiz(d) {
+      return d.keys().hasOnly(['theme', 'question', 'options', 'order']) &&
+        d.theme in ['entretiens', 'droit_du_travail'] &&
+        d.question is string && d.question.size() > 0 && d.question.size() <= 500 &&
+        d.options is list && d.options.size() >= 2 && d.options.size() <= 6 &&
+        d.order is number;
+    }
+
+    match /quiz/{questionId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && validQuiz(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
     match /universites/{itemId} {
       allow read: if true;
       allow write: if isAdmin();

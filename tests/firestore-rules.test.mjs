@@ -111,6 +111,16 @@ await check("admin lit les sources", assertSucceeds(getDocs(collection(admin, "i
 await check("candidat ne lit pas les sources", assertFails(getDocs(collection(user, "import_sources"))));
 await check("visiteur n'ajoute pas de source", assertFails(setDoc(doc(anon, "import_sources/s2"), { name: "x", url: "https://x.cg", enabled: true })));
 
+console.log("Quiz");
+const quiz = { theme: "entretiens", question: "Q ?", options: [{ text: "A", correct: true, explanation: "" }, { text: "B", correct: false, explanation: "" }], order: 1 };
+await check("admin ajoute une question", assertSucceeds(setDoc(doc(admin, "quiz/q1"), quiz)));
+await check("visiteur lit le quiz", assertSucceeds(getDocs(query(collection(anon, "quiz"), where("theme", "==", "entretiens")))));
+await check("candidat n'ajoute pas de question", assertFails(setDoc(doc(user, "quiz/q2"), quiz)));
+await check("thème inconnu refusé", assertFails(setDoc(doc(admin, "quiz/q3"), { ...quiz, theme: "autre" })));
+await check("une seule réponse refusée", assertFails(setDoc(doc(admin, "quiz/q3"), { ...quiz, options: [quiz.options[0]] })));
+await check("champ inconnu refusé", assertFails(setDoc(doc(admin, "quiz/q3"), { ...quiz, extra: 1 })));
+await check("admin supprime une question", assertSucceeds(deleteDoc(doc(admin, "quiz/q1"))));
+
 console.log("Application mobile");
 await check("Questions lisibles une fois connecté", assertSucceeds(getDoc(doc(user, "Questions/q1"))));
 await check("Questions illisibles sans compte", assertFails(getDoc(doc(anon, "Questions/q1"))));

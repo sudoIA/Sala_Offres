@@ -10,6 +10,7 @@ import { AppTopbar } from "@/components/layout/AppTopbar";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { FabCv } from "@/components/layout/FabCv";
 import { LegislationCard } from "@/components/LegislationCard";
+import { InterviewQuiz } from "@/components/entretiens/InterviewQuiz";
 import { usePublicLegislation } from "@/hooks/usePublicLegislation";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -201,6 +202,11 @@ export default function LegislationPage() {
                   <h5 className="fw-bold">Aucune fiche ne correspond à votre recherche</h5>
                 </div>
               )}
+            </div>
+
+            {/* Quiz Droit du Travail (Admin > Quiz), affiché à partir de 3 questions. */}
+            <div className="mx-auto my-4" style={{ maxWidth: 840 }}>
+              <InterviewQuiz theme="droit_du_travail" minQuestions={3} />
             </div>
 
             <div
