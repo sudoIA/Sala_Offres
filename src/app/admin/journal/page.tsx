@@ -44,6 +44,7 @@ const TARGET_LABELS: Record<string, string> = {
   emplois: "Offre",
   emplois_import: "Import",
   events: "Événement",
+  inscriptions_evenements: "Inscriptions",
   legislation: "Droit du travail",
   quiz: "Quiz",
   universites: "Université",

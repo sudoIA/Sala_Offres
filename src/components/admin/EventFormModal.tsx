@@ -1,8 +1,8 @@
 // src/components/admin/EventFormModal.tsx
 // Formulaire de création/édition d'un événement (collection Firestore
 // "events", partagée avec l'app mobile — les noms de champs ci-dessous
-// reprennent exactement les siens : title, body, host, city, site, image,
-// deadline, deadline2, visibility. "resume" est propre au site web (aperçu
+// reprennent exactement les siens : title, body, host, city, place, tel,
+// email, site, image, deadline, deadline2, visibility. "resume" est propre au site web (aperçu
 // sur la carte de la liste, distinct de la description complète "body").
 
 "use client";
@@ -25,6 +25,9 @@ const EMPTY_FORM = {
   title: "",
   host: "",
   city: "",
+  place: "",
+  tel: "",
+  email: "",
   resume: "",
   body: "",
   site: "",
@@ -51,6 +54,9 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
       title: event?.title || "",
       host: event?.host || "",
       city: event?.city || "",
+      place: event?.place || "",
+      tel: event?.tel || "",
+      email: event?.email || "",
       resume: event?.resume || "",
       body: event?.body || "",
       site: event?.site || "",
@@ -73,6 +79,9 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
       title: form.title.trim(),
       host: form.host.trim(),
       city: form.city.trim(),
+      place: form.place.trim(),
+      tel: form.tel.trim(),
+      email: form.email.trim(),
       resume: form.resume.trim(),
       body: form.body.trim(),
       site: form.site.trim(),
@@ -119,6 +128,10 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
             <input id="eventCity" type="text" value={form.city} onChange={(e) => set("city", e.target.value)} required />
           </div>
           <div className="form-group">
+            <label htmlFor="eventPlace">Lieu précis (optionnel)</label>
+            <input id="eventPlace" type="text" placeholder="Ex : Salle des fêtes, avenue..." value={form.place} onChange={(e) => set("place", e.target.value)} />
+          </div>
+          <div className="form-group">
             <label htmlFor="eventDeadline">Date &amp; heure de début</label>
             <input id="eventDeadline" type="datetime-local" value={form.deadline} onChange={(e) => set("deadline", e.target.value)} required />
           </div>
@@ -127,8 +140,16 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
             <input id="eventDeadline2" type="datetime-local" value={form.deadline2} onChange={(e) => set("deadline2", e.target.value)} />
           </div>
           <div className="form-group">
-            <label htmlFor="eventSite">Lien (site, groupe WhatsApp...)</label>
+            <label htmlFor="eventSite">Lien d&apos;inscription (formulaire, site, groupe WhatsApp...)</label>
             <input id="eventSite" type="url" placeholder="https://..." value={form.site} onChange={(e) => set("site", e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="eventTel">Téléphone de l&apos;organisateur (optionnel)</label>
+            <input id="eventTel" type="tel" placeholder="+242 06 ..." value={form.tel} onChange={(e) => set("tel", e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="eventEmail">E-mail de l&apos;organisateur (optionnel)</label>
+            <input id="eventEmail" type="email" placeholder="contact@..." value={form.email} onChange={(e) => set("email", e.target.value)} />
           </div>
           <div className="form-group">
             <label htmlFor="eventImage">Image (nom de fichier ou URL, optionnel)</label>

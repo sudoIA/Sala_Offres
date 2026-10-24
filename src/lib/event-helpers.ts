@@ -3,6 +3,7 @@
 // date exploitable étant affichés en dernier plutôt qu'exclus.
 
 import { findStorageFileUrl } from "@/lib/storage-lookup";
+import { safeExternalUrl } from "@/lib/safe-url";
 import type { EventDoc, SalaEvent } from "@/types/event";
 
 /**
@@ -49,6 +50,52 @@ export function eventCardSummary(evt: Pick<SalaEvent, "resume" | "body">, max = 
   const plain = (evt.body || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
   if (!plain) return "";
   return plain.length > max ? `${plain.slice(0, max).trimEnd()}…` : plain;
+}
+
+export interface EventContactLink {
+  kind: "site" | "whatsapp-group" | "tel" | "whatsapp" | "email";
+  href: string;
+  label: string;
+}
+
+/**
+ * Numéro en format international pour tel: et wa.me. Les numéros saisis
+ * dans l'app ont des formes variées ("00242 068477993 ", "06 847 79 93") :
+ * "00" devient "+", et un numéro local congolais (9 chiffres commençant par
+ * 0) reçoit l'indicatif +242. Renvoie null si ce n'est pas un numéro.
+ */
+export function normalizePhone(raw?: string | null): string | null {
+  let value = (raw || "").trim().replace(/[^\d+]/g, "");
+  if (value.startsWith("00")) value = "+" + value.slice(2);
+  if (!value.startsWith("+") && /^0\d{8}$/.test(value)) value = "+242" + value;
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 8 && digits.length <= 15 ? (value.startsWith("+") ? "+" + digits : digits) : null;
+}
+
+/**
+ * Moyens de participer à un événement : Sala est un site vitrine, on
+ * n'enregistre pas d'inscriptions ; on renvoie vers l'organisateur (lien
+ * d'inscription, téléphone, WhatsApp, e-mail) quand il les a fournis.
+ */
+export function eventContactLinks(evt: Pick<EventDoc, "site" | "tel" | "email">): EventContactLink[] {
+  const links: EventContactLink[] = [];
+  const site = safeExternalUrl(evt.site);
+  if (site) {
+    const isWhatsApp = /(^|\.)(chat\.whatsapp\.com|wa\.me|whatsapp\.com)$/i.test(new URL(site).hostname);
+    links.push(
+      isWhatsApp
+        ? { kind: "whatsapp-group", href: site, label: "Rejoindre le groupe WhatsApp" }
+        : { kind: "site", href: site, label: "S'inscrire chez l'organisateur" }
+    );
+  }
+  const phone = normalizePhone(evt.tel);
+  if (phone) {
+    links.push({ kind: "tel", href: `tel:${phone}`, label: "Appeler" });
+    links.push({ kind: "whatsapp", href: `https://wa.me/${phone.replace(/\D/g, "")}`, label: "WhatsApp" });
+  }
+  const email = (evt.email || "").trim();
+  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) links.push({ kind: "email", href: `mailto:${email}`, label: "Écrire" });
+  return links;
 }
 
 /** Construit un objet SalaEvent à partir d'un document Firestore brut. */

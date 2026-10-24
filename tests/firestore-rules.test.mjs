@@ -19,6 +19,7 @@ await env.withSecurityRulesDisabled(async (ctx) => {
   await setDoc(doc(db, "users/legacy"), { fullName: "Ancien", lastLogin: "2020-01-01" });
   await setDoc(doc(db, "job_views/job1"), { count: 3 });
   await setDoc(doc(db, "Questions/q1"), { title: "Q" });
+  await setDoc(doc(db, "inscriptions_evenements/old1"), { name: "Ancien", eventId: "e1" });
 });
 
 const anon = env.unauthenticatedContext().firestore();
@@ -69,14 +70,14 @@ await check("CV : email vérifié -> autorisé", assertSucceeds(addDoc(collectio
 await check("CV : email non vérifié -> refusé", assertFails(addDoc(collection(unverified, "users/u2/cvs"), { name: "CV" })));
 await check("suppression de son propre profil", assertSucceeds(deleteDoc(doc(user, "users/u1"))));
 
-console.log("Inscriptions aux événements");
+console.log("Anciennes inscriptions aux événements");
 const reg = { eventId: "e1", eventTitle: "Salon", name: "Awa", email: "awa@mail.cg", phone: "060000000", registeredAt: new Date().toISOString() };
-await check("inscription valide", assertSucceeds(addDoc(collection(anon, "inscriptions_evenements"), reg)));
-await check("inscription sans email", assertSucceeds(addDoc(collection(anon, "inscriptions_evenements"), { ...reg, email: "" })));
-await check("email invalide refusé", assertFails(addDoc(collection(anon, "inscriptions_evenements"), { ...reg, email: "pas-un-email" })));
-await check("nom démesuré refusé", assertFails(addDoc(collection(anon, "inscriptions_evenements"), { ...reg, name: "x".repeat(500) })));
-await check("champ en trop refusé", assertFails(addDoc(collection(anon, "inscriptions_evenements"), { ...reg, spam: "x" })));
+await check("visiteur ne peut plus s'inscrire", assertFails(addDoc(collection(anon, "inscriptions_evenements"), reg)));
+await check("admin non plus", assertFails(addDoc(collection(admin, "inscriptions_evenements"), reg)));
 await check("visiteur ne lit pas les inscrits", assertFails(getDocs(collection(anon, "inscriptions_evenements"))));
+await check("admin lit les anciennes inscriptions", assertSucceeds(getDocs(collection(admin, "inscriptions_evenements"))));
+await check("admin supprime une ancienne inscription", assertSucceeds(deleteDoc(doc(admin, "inscriptions_evenements/old1"))));
+await check("candidat ne supprime pas", assertFails(deleteDoc(doc(user, "inscriptions_evenements/old1"))));
 
 console.log("News Sala");
 await check("visiteur lit un article visible", assertSucceeds(getDoc(doc(anon, "news/visible"))));

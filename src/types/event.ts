@@ -12,7 +12,10 @@ export interface EventDoc {
   body?: string; // description complète (peut contenir des balises HTML simples : <b>, <br>...), affichée au clic
   host?: string; // organisateur
   city?: string;
-  site?: string; // lien externe pour en savoir plus / s'inscrire (ex : groupe WhatsApp)
+  site?: string; // lien d'inscription chez l'organisateur (formulaire, site, groupe WhatsApp...)
+  place?: string; // lieu précis (adresse, salle)
+  tel?: string; // téléphone de l'organisateur
+  email?: string; // e-mail de l'organisateur
   image?: string; // optionnel — pas toujours une URL exploitable
   deadline?: Timestamp; // date et heure de l'événement
   deadline2?: Timestamp; // date et heure de fin (optionnel)
@@ -25,11 +28,4 @@ export interface SalaEvent extends EventDoc {
   id: string;
   deadlineDate: Date | null;
   deadline2Date: Date | null;
-}
-
-export interface Registration {
-  name?: string;
-  email?: string;
-  phone?: string;
-  eventId?: string;
 }

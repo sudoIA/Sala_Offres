@@ -1,14 +1,12 @@
 // src/app/evenements/page.tsx
-// Événements à venir — recherche, filtre par ville, inscription rapide
-// (enregistrée dans Firestore), ajout à Google Agenda, lien externe optionnel
-// (ex : groupe WhatsApp) fourni par l'organisateur.
+// Événements à venir — recherche, filtre par ville, ajout à l'agenda.
+// Sala est un site vitrine : on n'enregistre pas d'inscriptions, la fiche
+// renvoie vers l'organisateur (lien d'inscription, téléphone, WhatsApp, e-mail).
 
 "use client";
 
 import { useMemo, useState } from "react";
-import { addDoc, collection } from "firebase/firestore";
 import DOMPurify from "isomorphic-dompurify";
-import { db } from "@/lib/firebase";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -16,7 +14,7 @@ import { FabCv } from "@/components/layout/FabCv";
 import { Modal } from "@/components/Modal";
 import { usePublicEvents } from "@/hooks/usePublicEvents";
 import { useEventImages } from "@/hooks/useEventImages";
-import { eventCardSummary } from "@/lib/event-helpers";
+import { eventCardSummary, eventContactLinks, type EventContactLink } from "@/lib/event-helpers";
 import type { SalaEvent } from "@/types/event";
 
 function escapeIcsText(text: string): string {
@@ -49,7 +47,7 @@ function eventIcsDataUrl(evt: SalaEvent): string {
     `DTEND:${toIcsDate(end)}`,
     `SUMMARY:${escapeIcsText(evt.title || "Événement Sala")}`,
     `DESCRIPTION:${escapeIcsText(`${plainBody}${evt.host ? " - Organisé par " + evt.host : ""}`)}`,
-    `LOCATION:${escapeIcsText(evt.city || "")}`,
+    `LOCATION:${escapeIcsText([evt.place, evt.city].filter(Boolean).join(", "))}`,
     evt.site ? `URL:${evt.site}` : "",
     "END:VEVENT",
     "END:VCALENDAR",
@@ -57,6 +55,14 @@ function eventIcsDataUrl(evt: SalaEvent): string {
 
   return `data:text/calendar;charset=utf-8,${encodeURIComponent(lines.join("\r\n"))}`;
 }
+
+const CONTACT_ICONS: Record<EventContactLink["kind"], string> = {
+  site: "fas fa-external-link-alt",
+  "whatsapp-group": "fab fa-whatsapp",
+  tel: "fas fa-phone",
+  whatsapp: "fab fa-whatsapp",
+  email: "fas fa-envelope",
+};
 
 function icsFilename(evt: SalaEvent): string {
   const slug = (evt.title || "evenement").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -68,10 +74,7 @@ export default function EvenementsPage() {
   const imageUrls = useEventImages(events);
   const [search, setSearch] = useState("");
   const [city, setCity] = useState("all");
-  const [registerTarget, setRegisterTarget] = useState<SalaEvent | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", phone: "" });
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [selected, setSelected] = useState<SalaEvent | null>(null);
 
   const cities = useMemo(() => {
     const set = new Set(events.map((e) => e.city).filter(Boolean) as string[]);
@@ -86,33 +89,6 @@ export default function EvenementsPage() {
       return matchCity && matchSearch;
     });
   }, [events, search, city]);
-
-  function openRegister(evt: SalaEvent) {
-    setRegisterTarget(evt);
-    setForm({ name: "", email: "", phone: "" });
-    setSubmitted(false);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!registerTarget) return;
-    setSubmitting(true);
-    try {
-      await addDoc(collection(db, "inscriptions_evenements"), {
-        eventId: registerTarget.id,
-        eventTitle: registerTarget.title || "Evenement",
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        registeredAt: new Date().toISOString(),
-      });
-    } catch (err) {
-      console.warn("Enregistrement local (Firestore hors ligne ou règles restreintes) :", err);
-    }
-    setSubmitting(false);
-    setSubmitted(true);
-    setTimeout(() => setRegisterTarget(null), 2500);
-  }
 
   return (
     <div className="sala-layout-wrapper">
@@ -190,7 +166,7 @@ export default function EvenementsPage() {
                   const imageUrl = imageUrls[evt.id];
                   return (
                     <div className="col-md-6 col-lg-6" key={evt.id}>
-                      <div className="event-card event-card-clickable" onClick={() => openRegister(evt)} role="button" tabIndex={0}>
+                      <div className="event-card event-card-clickable" onClick={() => setSelected(evt)} role="button" tabIndex={0}>
                         {imageUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
@@ -237,8 +213,8 @@ export default function EvenementsPage() {
                           >
                             <i className="far fa-calendar-plus me-1"></i> Agenda
                           </a>
-                          <button className="btn btn-sm btn-success rounded-pill px-3 fw-bold" onClick={() => openRegister(evt)}>
-                            <i className="fas fa-ticket-alt me-1"></i> Participer
+                          <button className="btn btn-sm btn-success rounded-pill px-3 fw-bold" onClick={() => setSelected(evt)}>
+                            <i className="fas fa-info-circle me-1"></i> Voir les détails
                           </button>
                         </div>
                       </div>
@@ -250,14 +226,14 @@ export default function EvenementsPage() {
         </div>
       </div>
 
-      <Modal open={!!registerTarget} onClose={() => setRegisterTarget(null)} title={registerTarget?.title || "Détails de l'événement"} size="md">
-        {registerTarget && (
+      <Modal open={!!selected} onClose={() => setSelected(null)} title={selected?.title || "Détails de l'événement"} size="md">
+        {selected && (
           <>
-            {imageUrls[registerTarget.id] && (
+            {imageUrls[selected.id] && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={imageUrls[registerTarget.id]}
-                alt={registerTarget.title || "Affiche de l'événement"}
+                src={imageUrls[selected.id]}
+                alt={selected.title || "Affiche de l'événement"}
                 className="event-poster-full mb-3"
                 onError={(e) => {
                   e.currentTarget.style.display = "none";
@@ -266,29 +242,29 @@ export default function EvenementsPage() {
             )}
 
             <div className="text-muted small mb-2">
-              <i className="fas fa-users-cog me-1"></i> {registerTarget.host}
+              <i className="fas fa-users-cog me-1"></i> {selected.host}
             </div>
             <p className="text-muted small mb-2">
-              <i className="fas fa-map-marker-alt text-danger me-1"></i> {registerTarget.city}
-              {registerTarget.deadlineDate && (
+              <i className="fas fa-map-marker-alt text-danger me-1"></i> {selected.city}
+              {selected.deadlineDate && (
                 <>
                   {" "}— <i className="far fa-clock text-primary me-1"></i>
-                  {registerTarget.deadlineDate.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
+                  {selected.deadlineDate.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
                 </>
               )}
             </p>
 
-            {registerTarget.body && (
+            {selected.body && (
               <div
                 className="small mb-3"
                 style={{ color: "var(--sala-text-secondary)", lineHeight: 1.6 }}
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(registerTarget.body) }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selected.body) }}
               />
             )}
 
             <a
-              href={eventIcsDataUrl(registerTarget)}
-              download={icsFilename(registerTarget)}
+              href={eventIcsDataUrl(selected)}
+              download={icsFilename(selected)}
               className="btn btn-sm btn-outline-secondary rounded-pill mb-3 d-inline-flex"
               title="Ajouter à mon agenda"
             >
@@ -296,35 +272,39 @@ export default function EvenementsPage() {
             </a>
 
             <hr />
-            <h6 className="fw-bold mb-3">S&apos;inscrire à cet événement</h6>
-
-            {!submitted ? (
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label className="form-label small fw-semibold">Nom complet</label>
-                  <input type="text" className="form-control rounded-3" required placeholder="Ex: Grace Samba" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label small fw-semibold">Adresse email</label>
-                  <input type="email" className="form-control rounded-3" required placeholder="nom@exemple.cg" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
-                </div>
-                <div className="mb-3">
-                  <label className="form-label small fw-semibold">Téléphone / WhatsApp</label>
-                  <input type="tel" className="form-control rounded-3" required placeholder="+242 06 ..." value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} />
-                </div>
-                <div className="d-grid mt-4">
-                  <button type="submit" className="btn btn-success rounded-pill fw-bold py-2" disabled={submitting}>
-                    <i className="fas fa-check-circle me-1"></i> {submitting ? "Envoi..." : "Confirmer ma place gratuite"}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="alert alert-success mt-3 rounded-3 text-center">
-                <i className="fas fa-check-double fa-2x mb-2 d-block"></i>
-                <strong>Inscription confirmée avec succès !</strong>
-                <p className="small mb-0 mt-1">Vous recevrez un rappel par WhatsApp / email avant l&apos;événement.</p>
-              </div>
-            )}
+            <h6 className="fw-bold mb-2">Comment participer</h6>
+            {(() => {
+              const links = eventContactLinks(selected);
+              return (
+                <>
+                  <p className="small text-muted mb-3">
+                    {links.length
+                      ? `L'inscription se fait directement auprès de l'organisateur${selected.host ? ` (${selected.host})` : ""}.`
+                      : `Pour participer, contactez directement l'organisateur${selected.host ? ` : ${selected.host}` : ""}.`}
+                  </p>
+                  {selected.place && (
+                    <p className="small mb-3">
+                      <i className="fas fa-map-pin text-danger me-1"></i> <strong>Lieu :</strong> {selected.place}
+                    </p>
+                  )}
+                  {links.length > 0 && (
+                    <div className="d-flex flex-wrap gap-2">
+                      {links.map((link, i) => (
+                        <a
+                          key={link.kind}
+                          href={link.href}
+                          target={link.kind === "tel" || link.kind === "email" ? undefined : "_blank"}
+                          rel="noopener"
+                          className={`btn btn-sm rounded-pill px-3 fw-bold ${i === 0 ? "btn-success" : "btn-outline-success"}`}
+                        >
+                          <i className={`${CONTACT_ICONS[link.kind]} me-1`}></i> {link.label}
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </>
         )}
       </Modal>

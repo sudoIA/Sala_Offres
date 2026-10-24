@@ -1,7 +1,7 @@
 // src/components/admin/AdminInsights.tsx
 // Indicateurs d'activité du tableau de bord admin : offres publiées par
 // semaine, offres les plus consultées (job_views), bilan des imports par
-// source, inscriptions aux événements et nouveaux candidats.
+// source et nouveaux candidats.
 
 "use client";
 
@@ -33,7 +33,6 @@ function startOfWeek(date: Date): Date {
 export function AdminInsights({ jobs }: { jobs: Job[] }) {
   const [topViewed, setTopViewed] = useState<{ id: string; count: number }[] | null>(null);
   const [importStats, setImportStats] = useState<ImportStats[] | null>(null);
-  const [registrations, setRegistrations] = useState<number | null>(null);
   const [newCandidates, setNewCandidates] = useState<number | null>(null);
 
   useEffect(() => {
@@ -62,10 +61,6 @@ export function AdminInsights({ jobs }: { jobs: Job[] }) {
         setImportStats([...bySource.values()]);
       })
       .catch(() => setImportStats([]));
-
-    getCountFromServer(collection(db, "inscriptions_evenements"))
-      .then((snap) => setRegistrations(snap.data().count))
-      .catch(() => setRegistrations(null));
 
     const since = Timestamp.fromMillis(Date.now() - 30 * DAY_MS);
     getCountFromServer(query(collection(db, "users"), where("createdAt", ">", since)))
@@ -111,15 +106,6 @@ export function AdminInsights({ jobs }: { jobs: Job[] }) {
   return (
     <>
       <div className="stat-grid">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: "#e0f2fe", color: "#0284c7" }}>
-            <i className="fas fa-user-check"></i>
-          </div>
-          <div>
-            <div className="stat-value">{registrations ?? "—"}</div>
-            <div className="stat-label">Inscriptions aux événements</div>
-          </div>
-        </div>
         <div className="stat-card">
           <div className="stat-icon" style={{ background: "#fefce8", color: "#b45309" }}>
             <i className="fas fa-user-plus"></i>
