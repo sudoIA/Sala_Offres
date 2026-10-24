@@ -10,10 +10,30 @@
 // Sans elles, l'étape est simplement ignorée (rien n'est cassé).
 
 import type { Firestore } from "firebase-admin/firestore";
-import { getAuth } from "firebase-admin/auth";
 import { getAdminApp } from "@/lib/firebase-admin";
 import { jobMatchesAlert, type JobAlertPrefs } from "@/lib/job-alerts";
 import { getSiteUrl } from "@/lib/site-url";
+
+/**
+ * E-mail et confirmation de l'adresse d'un compte, lus dans Firebase
+ * Authentication par son API REST avec le compte de service. Remplace
+ * firebase-admin/auth, qui ne se charge pas sur les serveurs Vercel (voir
+ * id-token.ts).
+ */
+async function lookupAuthUser(uid: string): Promise<{ email?: string; emailVerified: boolean }> {
+  const credential = getAdminApp().options.credential;
+  if (!credential) throw new Error("Compte de service Firebase absent.");
+  const { access_token } = await credential.getAccessToken();
+  const res = await fetch("https://identitytoolkit.googleapis.com/v1/projects/sala-a6c15/accounts:lookup", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${access_token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ localId: [uid] }),
+  });
+  if (!res.ok) throw new Error(`Firebase Authentication a répondu ${res.status}`);
+  const data = (await res.json()) as { users?: { email?: string; emailVerified?: boolean }[] };
+  const user = data.users?.[0];
+  return { email: user?.email, emailVerified: user?.emailVerified === true };
+}
 
 export interface AlertRunResult {
   skipped: string | null;
@@ -90,7 +110,6 @@ export async function sendJobAlertDigests(db: Firestore): Promise<AlertRunResult
   }
 
   const usersSnap = await db.collection("users").where("jobAlerts.enabled", "==", true).get();
-  const auth = getAuth(getAdminApp());
   const siteUrl = getSiteUrl();
 
   for (const userDoc of usersSnap.docs) {
@@ -101,7 +120,7 @@ export async function sendJobAlertDigests(db: Firestore): Promise<AlertRunResult
     result.recipients++;
     try {
       // Jamais d'envoi vers une adresse non confirmée (comptes fictifs).
-      const authUser = await auth.getUser(userDoc.id);
+      const authUser = await lookupAuthUser(userDoc.id);
       if (!authUser.emailVerified || !authUser.email) continue;
       const subject = matches.length > 1 ? `${matches.length} nouvelles offres pour vous sur Sala` : `Nouvelle offre pour vous : ${matches[0].title}`;
       await sendEmail(authUser.email, subject, buildEmailHtml(data.fullName || "", matches, siteUrl));

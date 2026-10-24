@@ -6,7 +6,7 @@
 "use client";
 
 import Link from "next/link";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import { CompanyTile } from "@/components/CompanyTile";
 import { formatExpiry, isFavori, shareJob, toggleFavori } from "@/lib/job-helpers";
 import { useEffect, useState } from "react";
@@ -27,10 +27,10 @@ export function JobCard({ job, active = false, interactive = false, onSelect, lo
     if (interactive) setFav(isFavori(job.id));
   }, [interactive, job.id]);
 
-  const safeTitle = DOMPurify.sanitize(job.title || "Offre sans titre");
-  const safeCompany = DOMPurify.sanitize(job.company || "Entreprise non précisée");
-  const safeCity = DOMPurify.sanitize(job.city || "Congo");
-  const safeContract = DOMPurify.sanitize(job.contract || "Contrat");
+  const safeTitle = sanitizeHtml(job.title || "Offre sans titre");
+  const safeCompany = sanitizeHtml(job.company || "Entreprise non précisée");
+  const safeCity = sanitizeHtml(job.city || "Congo");
+  const safeContract = sanitizeHtml(job.contract || "Contrat");
   const expiry = formatExpiry(job.deadlineDate);
   const href = `/offres/${encodeURIComponent(job.id)}`;
   const shareUrl = typeof window !== "undefined" ? `${window.location.origin}${href}` : href;

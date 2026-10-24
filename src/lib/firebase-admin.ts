@@ -42,9 +42,8 @@ export function getAdminApp(): App {
     throw new Error("FIREBASE_SERVICE_ACCOUNT ne contient pas un JSON valide.");
   }
 
-  // Application par défaut explicitement : une autre application nommée,
-  // sans compte de service, peut exister dans le même processus (vérification
-  // des jetons admin, voir admin-auth.ts) et ne doit jamais être réutilisée ici.
+  // Application par défaut explicitement : ne jamais réutiliser une autre
+  // application nommée qui existerait dans le même processus.
   appInstance = getApps().find((a) => a.name === "[DEFAULT]") ?? initializeApp({ credential: cert(serviceAccount) });
   return appInstance;
 }

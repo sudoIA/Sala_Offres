@@ -2,26 +2,19 @@
 // Vérifie côté serveur qu'une requête API vient d'un administrateur connecté.
 //
 // Le navigateur de l'admin envoie son jeton Firebase ("Authorization: Bearer
-// <idToken>"). On vérifie sa signature avec le SDK Admin - ce qui ne demande
-// que l'identifiant du projet, pas de compte de service - puis on lit
+// <idToken>"). On vérifie sa signature avec les clés publiques de Google
+// (voir id-token.ts) - ce qui ne demande que l'identifiant du projet, pas de
+// compte de service - puis on lit
 // roles/{uid} : par le SDK Admin en production (compte de service présent,
 // non soumis à App Check), sinon via l'API REST Firestore AVEC ce même jeton,
 // donc sous les règles de sécurité habituelles (cas du développement local,
 // où FIREBASE_SERVICE_ACCOUNT n'est pas défini).
 
 import { NextResponse, type NextRequest } from "next/server";
-import { getApps, initializeApp, type App } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
 import { getAdminDb, hasAdminCredentials } from "@/lib/firebase-admin";
+import { verifyFirebaseIdToken } from "@/lib/id-token";
 
 const PROJECT_ID = "sala-a6c15";
-// Application nommée, distincte de celle de firebase-admin.ts (qui, elle,
-// utilise le compte de service) pour ne jamais se marcher dessus.
-const VERIFIER_APP_NAME = "id-token-verifier";
-
-function verifierApp(): App {
-  return getApps().find((a) => a.name === VERIFIER_APP_NAME) ?? initializeApp({ projectId: PROJECT_ID }, VERIFIER_APP_NAME);
-}
 
 async function hasAdminRole(uid: string, idToken: string): Promise<boolean> {
   // En production, lecture par le SDK Admin (non soumis à App Check).
@@ -48,7 +41,7 @@ export async function requireAdmin(req: NextRequest): Promise<NextResponse | nul
   }
 
   try {
-    const decoded = await getAuth(verifierApp()).verifyIdToken(idToken);
+    const decoded = await verifyFirebaseIdToken(idToken, PROJECT_ID);
     if (!(await hasAdminRole(decoded.uid, idToken))) {
       return NextResponse.json({ ok: false, error: "Accès réservé aux administrateurs." }, { status: 403 });
     }

@@ -6,7 +6,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -258,7 +258,7 @@ export default function EvenementsPage() {
               <div
                 className="small mb-3"
                 style={{ color: "var(--sala-text-secondary)", lineHeight: 1.6 }}
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selected.body) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(selected.body) }}
               />
             )}
 

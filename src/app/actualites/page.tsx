@@ -6,7 +6,7 @@
 "use client";
 
 import { useState } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -93,7 +93,7 @@ export default function ActualitesPage() {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={safeExternalUrl(open.image) as string} alt="" className="news-article-image" />
             )}
-            <div className="sala-job-body" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatJobBody(open.body || "")) }} />
+            <div className="sala-job-body" dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatJobBody(open.body || "")) }} />
           </article>
         )}
       </Modal>

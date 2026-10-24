@@ -7,7 +7,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import { addDoc, collection, doc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { formatJobBody } from "@/lib/job-body";
@@ -235,7 +235,7 @@ export function JobFormModal({ open, job, importRecord, onApproveImport, onClose
           {form.body.trim() && (
             <details className="job-body-preview">
               <summary>Aperçu tel qu&apos;affiché sur le site</summary>
-              <div className="sala-job-body" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatJobBody(form.body)) }} />
+              <div className="sala-job-body" dangerouslySetInnerHTML={{ __html: sanitizeHtml(formatJobBody(form.body)) }} />
             </details>
           )}
         </div>

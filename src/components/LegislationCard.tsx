@@ -5,13 +5,13 @@
 "use client";
 
 import { useState } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import type { LegislationFiche } from "@/types/legislation";
 import { safeExternalUrl } from "@/lib/safe-url";
 
 export function LegislationCard({ fiche }: { fiche: LegislationFiche }) {
   const [faqOpen, setFaqOpen] = useState(false);
-  const safeBody = DOMPurify.sanitize(fiche.bodyHtml || "", { ADD_ATTR: ["style"] });
+  const safeBody = sanitizeHtml(fiche.bodyHtml || "", { ADD_ATTR: ["style"] });
 
   return (
     <div className="law-card">

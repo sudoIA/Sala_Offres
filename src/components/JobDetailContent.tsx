@@ -7,7 +7,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtml } from "@/lib/sanitize-html";
 import { CompanyTile } from "@/components/CompanyTile";
 import { CountdownGrid } from "@/components/CountdownGrid";
 import { useCompanyLogos } from "@/hooks/useCompanyLogos";
@@ -26,12 +26,12 @@ export function JobDetailContent({ job }: { job: Job }) {
   const logos = useCompanyLogos([job.company]);
   const logoUrl = job.company ? logos[job.company] : null;
 
-  const safeTitle = DOMPurify.sanitize(job.title || "Offre d'emploi");
-  const safeCompany = DOMPurify.sanitize(job.company || "Entreprise au Congo");
-  const safeCity = DOMPurify.sanitize(job.city || "Congo");
-  const safeContract = DOMPurify.sanitize(job.contract || "Contrat");
-  const safeBody = DOMPurify.sanitize(formatJobBody(job.body || "") || "Pas de description disponible pour cette offre.");
-  const safeLanguages = job.languages ? DOMPurify.sanitize(job.languages) : null;
+  const safeTitle = sanitizeHtml(job.title || "Offre d'emploi");
+  const safeCompany = sanitizeHtml(job.company || "Entreprise au Congo");
+  const safeCity = sanitizeHtml(job.city || "Congo");
+  const safeContract = sanitizeHtml(job.contract || "Contrat");
+  const safeBody = sanitizeHtml(formatJobBody(job.body || "") || "Pas de description disponible pour cette offre.");
+  const safeLanguages = job.languages ? sanitizeHtml(job.languages) : null;
   const email = job.email || null;
   const site = safeExternalUrl(job.site);
   const mailtoLink = email
@@ -111,7 +111,7 @@ export function JobDetailContent({ job }: { job: Job }) {
         <div className="tab-pane">
           {job.competences && job.competences.length > 0 ? (
             job.competences.map((c, i) => (
-              <span className="skill-chip" key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(c) }} />
+              <span className="skill-chip" key={i} dangerouslySetInnerHTML={{ __html: sanitizeHtml(c) }} />
             ))
           ) : (
             <p className="text-muted small mb-0">Compétences non renseignées par le recruteur pour cette offre.</p>

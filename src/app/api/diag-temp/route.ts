@@ -21,6 +21,11 @@ export async function GET() {
       return m.default.sanitize("<b>x</b><script>y</script>");
     }],
     ["jobs-server", () => import("@/lib/jobs-server")],
+    ["id-token (jose)", async () => {
+      const { verifyFirebaseIdToken } = await import("@/lib/id-token");
+      return verifyFirebaseIdToken("faux.jeton.x", "sala-a6c15");
+    }],
+    ["sanitize-html (dompurify)", async () => (await import("@/lib/sanitize-html")).sanitizeHtml("<b>x</b>")],
     ["verifyIdToken (faux jeton)", async () => {
       const { getApps, initializeApp } = await import("firebase-admin/app");
       const { getAuth } = await import("firebase-admin/auth");
