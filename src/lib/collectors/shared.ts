@@ -1,7 +1,7 @@
 // src/lib/collectors/shared.ts
 // Petits utilitaires réutilisés par tous les collecteurs de sources externes.
 
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeHtmlServer } from "@/lib/server-sanitize";
 
 /** Balises de mise en forme conservées dans la description importée. */
 const KEPT_TAGS = ["p", "br", "strong", "b", "em", "i", "ul", "ol", "li"];
@@ -13,7 +13,7 @@ const KEPT_TAGS = ["p", "br", "strong", "b", "em", "i", "ul", "ol", "li"];
  * les éléments de liste en un seul bloc illisible.
  */
 export function cleanSourceHtml(html: string): string {
-  return DOMPurify.sanitize(html, { ALLOWED_TAGS: KEPT_TAGS, ALLOWED_ATTR: [] })
+  return sanitizeHtmlServer(html, { allowedTags: KEPT_TAGS })
     .replace(/&nbsp;| /g, " ")
     .replace(/\s+/g, " ")
     .replace(/\s*(?:<br>\s*)*(?=<\/(?:p|li)>)/g, "")

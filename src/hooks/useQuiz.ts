@@ -8,17 +8,10 @@
 import { useEffect, useState } from "react";
 import { collection, doc, getDocs, onSnapshot, query, where, writeBatch } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { QUIZ_QUESTIONS } from "@/lib/entretiens-content";
+import { INITIAL_QUIZ } from "@/lib/quiz-content";
 import type { QuizDoc, QuizQuestion, QuizTheme } from "@/types/quiz";
 
-/** Questions d'origine du site, avec des identifiants fixes (entretiens-01...). */
-export const INITIAL_QUIZ: QuizQuestion[] = QUIZ_QUESTIONS.map((q, i) => ({
-  id: `entretiens-${String(i + 1).padStart(2, "0")}`,
-  theme: "entretiens",
-  question: q.question,
-  options: q.options,
-  order: i + 1,
-}));
+export { INITIAL_QUIZ };
 
 function byOrder(a: QuizQuestion, b: QuizQuestion) {
   return (a.order || 0) - (b.order || 0);

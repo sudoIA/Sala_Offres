@@ -5,6 +5,10 @@ Le site et l'app lisent désormais **les mêmes collections Firestore**. L'équi
 Sala gère leur contenu depuis le back-office du site : **Admin → Droit du
 Travail** et **Admin → Quiz**.
 
+> **Plus simple encore :** l'API en lecture seule (`https://www.ongsala.com/api/v1`,
+> voir [api-v1.md](api-v1.md)) renvoie ces mêmes contenus déjà filtrés et mis en
+> forme, sans dépendre de Firestore ni d'App Check.
+
 Les deux collections sont lisibles **sans connexion**. L'app ne peut **rien y
 écrire** : seuls les administrateurs du site le peuvent.
 

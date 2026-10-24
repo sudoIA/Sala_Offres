@@ -13,7 +13,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/admin/", "/connexion", "/profile"],
+        // /api/ : données pour l'app mobile, sans intérêt pour les moteurs de recherche.
+        disallow: ["/admin", "/admin/", "/connexion", "/profile", "/api/"],
       },
     ],
     sitemap: `${base}/sitemap.xml`,
