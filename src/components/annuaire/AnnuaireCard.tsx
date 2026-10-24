@@ -62,7 +62,7 @@ export function AnnuaireCard({ category, item, index = 0, onOpen, ctaLabel = "Vo
       </div>
       <div className="annuaire-card-body">
         <div className="text-muted small mb-2">
-          <i className="fas fa-map-marker-alt text-success me-1"></i> {item.city || "—"}
+          <i className="fas fa-map-marker-alt text-success me-1"></i> {item.city || "-"}
         </div>
         {summary && <p className="text-secondary small mb-0 annuaire-card-summary">{summary}</p>}
       </div>

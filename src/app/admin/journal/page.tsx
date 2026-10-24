@@ -135,7 +135,7 @@ export default function AdminJournalPage() {
                 const action = ACTION_LABELS[log.action] || { label: log.action, className: "text-bg-light" };
                 return (
                   <tr key={log.id}>
-                    <td className="text-nowrap small">{log.at ? log.at.toLocaleString("fr-FR") : "—"}</td>
+                    <td className="text-nowrap small">{log.at ? log.at.toLocaleString("fr-FR") : "-"}</td>
                     <td className="small">{log.email}</td>
                     <td>
                       <span className={`badge ${action.className}`}>{action.label}</span>
@@ -157,8 +157,8 @@ export default function AdminJournalPage() {
           {errors.map((e) => (
             <details className="admin-panel mb-0" key={e.id}>
               <summary style={{ cursor: "pointer" }}>
-                <span className="small text-muted me-2">{e.at ? e.at.toLocaleString("fr-FR") : "—"}</span>
-                <code>{e.page}</code> — {e.message}
+                <span className="small text-muted me-2">{e.at ? e.at.toLocaleString("fr-FR") : "-"}</span>
+                <code>{e.page}</code> - {e.message}
               </summary>
               <pre className="small mt-2 mb-1" style={{ whiteSpace: "pre-wrap" }}>{e.stack || "(pas de détail technique)"}</pre>
               <div className="small text-muted">{e.userAgent}</div>

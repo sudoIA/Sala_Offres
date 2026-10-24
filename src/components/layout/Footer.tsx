@@ -21,7 +21,7 @@ export function Footer() {
               <span style={{ fontFamily: "var(--sala-font-display)", fontWeight: 800, fontSize: "1.15rem", color: "#ffffff" }}>SALA</span>
             </div>
             <p style={{ color: "#a9bcb0", fontSize: "0.9rem", maxWidth: 320 }}>
-              ONG Sala — présenter les opportunités d&apos;emploi aux jeunes de la République du Congo et leur donner les moyens de les saisir.
+              ONG Sala - présenter les opportunités d&apos;emploi aux jeunes de la République du Congo et leur donner les moyens de les saisir.
             </p>
           </div>
           <div className="col-lg-2 col-md-6 col-6">

@@ -1,5 +1,5 @@
 // src/hooks/useEvents.ts
-// Événements Sala (collection Firestore "events" — partagée avec l'app
+// Événements Sala (collection Firestore "events" - partagée avec l'app
 // mobile), triés par date de début. Vue admin : tous les événements, quelle
 // que soit leur visibilité ou leur date passée/future.
 

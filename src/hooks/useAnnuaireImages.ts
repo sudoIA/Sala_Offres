@@ -2,10 +2,10 @@
 // Résout le logo et la photo du bâtiment d'une fiche annuaire. La plupart
 // des fiches existantes ne stockent ni logo ni photo comme une URL directe,
 // mais comme un nom de fichier (ex: logo: "esgae_logo.png", "image
-// batiment": "esgae_bati.jpg" — ce dernier avec une espace dans le nom du
+// batiment": "esgae_bati.jpg" - ce dernier avec une espace dans le nom du
 // champ, tel quel dans Firestore) à chercher dans le dossier Firebase
 // Storage de la catégorie ("universites" / "entreprises" / "clubs_anglais",
-// voir findStorageFileUrl) — même convention que les logos d'entreprise des
+// voir findStorageFileUrl) - même convention que les logos d'entreprise des
 // offres d'emploi (job-helpers.ts). Si le champ contient déjà une URL
 // http(s), typiquement une fiche créée depuis notre formulaire admin, on
 // l'utilise telle quelle sans recherche Storage.

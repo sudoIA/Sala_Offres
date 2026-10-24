@@ -1,5 +1,5 @@
 // src/lib/import-sources.ts
-// Liste des sources de collecte connectées — utilisée à la fois côté client
+// Liste des sources de collecte connectées - utilisée à la fois côté client
 // (écran admin "Imports", sélecteur de source) et côté serveur (tâche
 // planifiée, voir src/app/api/cron/collect-jobs/route.ts). Module neutre
 // (pas de "use client") pour rester importable depuis une route API Node.

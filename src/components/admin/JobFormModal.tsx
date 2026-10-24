@@ -17,6 +17,7 @@ import type { Job } from "@/types/job";
 import type { ImportedJobRecord } from "@/hooks/useJobImports";
 import { safeExternalUrl } from "@/lib/safe-url";
 import { logAdminAction } from "@/lib/admin-log";
+import { normalizeDashes } from "@/lib/dashes";
 
 function dateInputValue(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -102,7 +103,7 @@ export function JobFormModal({ open, job, importRecord, onApproveImport, onClose
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const jobData = {
+    const jobData = normalizeDashes({
       title: form.title.trim(),
       company: form.company.trim(),
       city: form.city.trim(),
@@ -117,7 +118,7 @@ export function JobFormModal({ open, job, importRecord, onApproveImport, onClose
       site: form.site.trim() || null,
       image: form.image.trim() || null,
       tel: form.tel.trim() || null,
-    };
+    });
 
     try {
       if (onApproveImport) {

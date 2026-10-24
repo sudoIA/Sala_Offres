@@ -1,5 +1,5 @@
 // src/app/annuaires/page.tsx
-// Les 3 annuaires Sala (universités, entreprises, clubs d'anglais) — même
+// Les 3 annuaires Sala (universités, entreprises, clubs d'anglais) - même
 // modèle d'affichage partout : carte compacte (bandeau coloré, logo, type,
 // ville, résumé) qui, au clic, ouvre le détail complet (description,
 // filières/domaines/activités, carte de localisation + itinéraire).

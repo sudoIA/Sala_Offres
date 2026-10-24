@@ -65,7 +65,7 @@ export function AppSidebar() {
 
   function handleShare() {
     shareLink(
-      "Sala — Emplois & Opportunités au Congo",
+      "Sala - Emplois & Opportunités au Congo",
       "Découvre Sala, la plateforme d'aide à l'emploi pour les jeunes en République du Congo.",
       typeof window !== "undefined" ? window.location.origin : "https://ongsala.com"
     );

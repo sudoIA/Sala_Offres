@@ -11,7 +11,7 @@ export interface ImportedJob {
   title: string;
   // Optionnels : certaines sources (ex. les annonces "en texte libre" sur
   // Afriqueemplois.com) n'ont pas de champ entreprise/ville/contrat qu'on
-  // puisse extraire avec confiance. Dans ce cas on ne devine rien — le champ
+  // puisse extraire avec confiance. Dans ce cas on ne devine rien - le champ
   // reste vide et l'admin le complète dans l'écran de relecture avant publication.
   company?: string;
   city?: string;

@@ -7,7 +7,7 @@ import { findStorageFileUrl } from "@/lib/storage-lookup";
 /**
  * Cherche le logo d'une entreprise dans le dossier Storage "entreprises/"
  * (partagé avec l'annuaire des entreprises) à partir de son nom. Renvoie
- * null si aucun fichier ne correspond — CompanyTile affiche alors ses
+ * null si aucun fichier ne correspond - CompanyTile affiche alors ses
  * initiales comme avant.
  */
 export function resolveCompanyLogoUrl(company?: string | null): Promise<string | null> {
@@ -87,7 +87,7 @@ export function formatExpiry(deadlineDate: Date | null): Expiry | null {
   return { expired: false, text: `Date limite : ${deadlineDate.toLocaleDateString("fr-FR")}`, urgent: false };
 }
 
-/** Ex: "à l'instant", "il y a 5 min", "il y a 2h" — pour l'indicateur "Mise à jour ...". */
+/** Ex: "à l'instant", "il y a 5 min", "il y a 2h" - pour l'indicateur "Mise à jour ...". */
 export function formatRelativeTime(date: Date): string {
   const diffSec = Math.max(0, Math.round((Date.now() - date.getTime()) / 1000));
   if (diffSec < 30) return "à l'instant";

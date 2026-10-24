@@ -2,8 +2,8 @@
 // Vérifie côté serveur qu'une requête API vient d'un administrateur connecté.
 //
 // Le navigateur de l'admin envoie son jeton Firebase ("Authorization: Bearer
-// <idToken>"). On vérifie sa signature avec le SDK Admin — ce qui ne demande
-// que l'identifiant du projet, pas de compte de service — puis on lit
+// <idToken>"). On vérifie sa signature avec le SDK Admin - ce qui ne demande
+// que l'identifiant du projet, pas de compte de service - puis on lit
 // roles/{uid} : par le SDK Admin en production (compte de service présent,
 // non soumis à App Check), sinon via l'API REST Firestore AVEC ce même jeton,
 // donc sous les règles de sécurité habituelles (cas du développement local,

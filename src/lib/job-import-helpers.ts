@@ -52,7 +52,7 @@ export const DEFAULT_DEADLINE_DAYS = 30;
 
 /**
  * Champs "emplois" d'une offre importée publiée AUTOMATIQUEMENT (sources de
- * confiance activées dans Admin > Paramètres) — même forme que ce qu'écrit
+ * confiance activées dans Admin > Paramètres) - même forme que ce qu'écrit
  * JobFormModal après relecture manuelle. Les dates sont des `Date` : le SDK
  * Admin (tâche planifiée) les convertit lui-même en Timestamp Firestore.
  */

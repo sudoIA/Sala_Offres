@@ -78,7 +78,7 @@ export function Step1Personal({ personal, invalidFields, onChange, onFieldTouche
         <div className="col-md-6 mb-3">
           <label htmlFor="fullName" className="form-label small fw-bold">Nom complet *</label>
           <input type="text" id="fullName" placeholder="Ex: Jean Paul MOUKOKO" {...field("fullName", true)} />
-          <div className="invalid-feedback">Merci d&apos;indiquer votre nom complet — il est indispensable sur un CV.</div>
+          <div className="invalid-feedback">Merci d&apos;indiquer votre nom complet - il est indispensable sur un CV.</div>
         </div>
         <div className="col-md-6 mb-3">
           <label htmlFor="jobTitle" className="form-label small fw-bold">Titre du poste recherché *</label>

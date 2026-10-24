@@ -20,14 +20,14 @@ export default function AdminOverviewPage() {
   const { events } = useEvents();
   const { fiches } = useLegislationAdmin();
   const { users } = useUsersAdmin();
-  const [annuaireCount, setAnnuaireCount] = useState<string | number>("—");
+  const [annuaireCount, setAnnuaireCount] = useState<string | number>("-");
   // Total réel de la collection (useAdminJobs ne charge que les offres récentes).
-  const [totalJobs, setTotalJobs] = useState<string | number>("—");
+  const [totalJobs, setTotalJobs] = useState<string | number>("-");
 
   useEffect(() => {
     getCountFromServer(collection(db, "emplois"))
       .then((snap) => setTotalJobs(snap.data().count))
-      .catch(() => setTotalJobs("—"));
+      .catch(() => setTotalJobs("-"));
     Promise.all([
       getDocs(collection(db, "universites")),
       getDocs(collection(db, "entreprises")),
@@ -36,7 +36,7 @@ export default function AdminOverviewPage() {
       .then(([uni, comp, club]) => setAnnuaireCount(uni.size + comp.size + club.size))
       .catch((err) => {
         console.error("Erreur comptage annuaires :", err);
-        setAnnuaireCount("—");
+        setAnnuaireCount("-");
       });
   }, []);
 

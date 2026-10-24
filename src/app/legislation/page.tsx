@@ -147,7 +147,7 @@ export default function LegislationPage() {
                         <i className="fas fa-map-marker-alt me-1"></i> Avenue Edith Lucie Bongo Ondimba, Zone Industrielle de Mpila, Brazzaville
                         <br />
                         <i className="fas fa-envelope me-1"></i> contact@acpe.cg
-                        {" — "}
+                        {" - "}
                         <a href="https://www.acpe.cg" target="_blank" rel="noopener">
                           www.acpe.cg
                         </a>
@@ -165,8 +165,8 @@ export default function LegislationPage() {
                       <p className="small text-muted mb-0">
                         <i className="fas fa-map-marker-alt me-1"></i> Bd Denis Sassou Nguesso, Rond-point de la Gare, Brazzaville
                         <br />
-                        <i className="fas fa-phone me-1"></i> +242 06 719 62 62 — <i className="fas fa-envelope me-1"></i> infos@cnss.cg
-                        {" — "}
+                        <i className="fas fa-phone me-1"></i> +242 06 719 62 62 - <i className="fas fa-envelope me-1"></i> infos@cnss.cg
+                        {" - "}
                         <a href="https://www.cnss.cg" target="_blank" rel="noopener">
                           www.cnss.cg
                         </a>
@@ -185,8 +185,8 @@ export default function LegislationPage() {
                       <p className="small text-muted mb-0">
                         <i className="fas fa-map-marker-alt me-1"></i> B.P. 131, Brazzaville
                         <br />
-                        <i className="fas fa-phone me-1"></i> +242 05 51 35 62 — <i className="fas fa-envelope me-1"></i> contact@fonction-publique.gouv.cg
-                        {" — "}
+                        <i className="fas fa-phone me-1"></i> +242 05 51 35 62 - <i className="fas fa-envelope me-1"></i> contact@fonction-publique.gouv.cg
+                        {" - "}
                         <a href="https://fonction-publique.gouv.cg" target="_blank" rel="noopener">
                           fonction-publique.gouv.cg
                         </a>

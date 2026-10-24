@@ -2,7 +2,7 @@
 // Barre supérieure de l'"app shell". Sur /offres, affiche le profil ; sur une
 // page de détail, affiche un lien de retour à la place. Le bouton du mode
 // hors-ligne n'apparaît qu'en mobile (sur bureau, il est déjà dans la
-// sidebar) — c'est le seul endroit où l'activer/désactiver depuis un
+// sidebar) - c'est le seul endroit où l'activer/désactiver depuis un
 // téléphone, puisque la sidebar y est masquée.
 
 "use client";

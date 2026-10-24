@@ -1,5 +1,5 @@
 // src/components/cv/CvCompletenessBox.tsx
-// Évaluation légère de complétude du CV — encourage, ne bloque jamais.
+// Évaluation légère de complétude du CV - encourage, ne bloque jamais.
 
 import type { CvState } from "@/types/cv";
 

@@ -22,6 +22,7 @@ import type { ImportedJob } from "@/types/job-import";
 import type { Job } from "@/types/job";
 import type { CustomSource } from "@/lib/custom-sources";
 import { logAdminAction } from "@/lib/admin-log";
+import { normalizeDashes } from "@/lib/dashes";
 
 export interface ImportedJobRecord extends ImportedJob {
   id: string;
@@ -80,7 +81,7 @@ export function useJobImports() {
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || "Échec de la collecte.");
 
-    const collectedJobs = data.jobs as ImportedJob[];
+    const collectedJobs = normalizeDashes(data.jobs as ImportedJob[]);
     let created = 0;
     let updated = 0;
 
@@ -112,7 +113,7 @@ export function useJobImports() {
 
   /**
    * Termine l'approbation d'un import : `jobData` vient de JobFormModal, donc
-   * potentiellement corrigé/complété par l'admin après relecture — jamais
+   * potentiellement corrigé/complété par l'admin après relecture - jamais
    * l'offre importée écrite telle quelle sans passer par cet écran.
    */
   async function finalizeImportApproval(importId: string, jobData: Record<string, unknown>) {
@@ -122,7 +123,7 @@ export function useJobImports() {
 
   function importLabel(id: string): string {
     const record = imports.find((r) => r.id === id);
-    return record ? `${record.title} — ${record.company || record.source}` : id;
+    return record ? `${record.title} - ${record.company || record.source}` : id;
   }
 
   async function rejectImport(id: string) {

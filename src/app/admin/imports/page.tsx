@@ -140,7 +140,7 @@ export default function AdminImportsPage() {
                 {importRuns.flatMap((run) =>
                   run.results.map((r) => (
                     <tr key={`${run.id}_${r.source}`}>
-                      <td>{run.ranAt ? run.ranAt.toLocaleString("fr-FR") : "—"}</td>
+                      <td>{run.ranAt ? run.ranAt.toLocaleString("fr-FR") : "-"}</td>
                       <td>{sourceLabel(r.source)}</td>
                       <td>{r.created}</td>
                       <td>{r.updated}</td>
@@ -260,8 +260,8 @@ export default function AdminImportsPage() {
                   <span className="admin-badge">{sourceLabel(record.source).toUpperCase()}</span>
                 </div>
                 <div className="admin-card-meta">
-                  <span><i className="fas fa-map-marker-alt"></i>{record.city || "—"}</span>
-                  <span className="admin-badge">{record.contract || "—"}</span>
+                  <span><i className="fas fa-map-marker-alt"></i>{record.city || "-"}</span>
+                  <span className="admin-badge">{record.contract || "-"}</span>
                   <span><i className="far fa-clock"></i>{deadline}</span>
                   {record.salary && <span><i className="fas fa-money-bill-wave"></i>{record.salary}</span>}
                 </div>

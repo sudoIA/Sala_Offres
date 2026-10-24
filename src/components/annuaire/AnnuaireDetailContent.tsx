@@ -1,6 +1,6 @@
 // src/components/annuaire/AnnuaireDetailContent.tsx
 // Contenu de la fiche détaillée d'un annuaire (coordonnées, présentation,
-// filières/activités, carte de localisation) — utilisé à l'identique sur le
+// filières/activités, carte de localisation) - utilisé à l'identique sur le
 // site public et dans l'aperçu admin, pour que les deux ne divergent jamais.
 
 "use client";

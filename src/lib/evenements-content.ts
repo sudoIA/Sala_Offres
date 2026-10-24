@@ -18,7 +18,7 @@ export const baselineEvenements: SalaEvent[] = [
   {
     id: "evt-atelier-cv-pnr",
     title: "Masterclass CV Gagnant & Simulation d'Entretien",
-    host: "ONG Sala — Antenne Pointe-Noire",
+    host: "ONG Sala - Antenne Pointe-Noire",
     city: "Pointe-Noire",
     body: "Atelier pratique interactif pour maîtriser la rédaction de CV aux normes internationales et réussir ses entretiens face aux DRH. Gratuit sur inscription, 14h00 - 17h30.",
     deadlineDate: new Date("2026-11-12T14:00:00"),

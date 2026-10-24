@@ -2,7 +2,7 @@
 // Deux usages de cette même page :
 // 1. Étape obligatoire après l'inscription : tant que l'email n'est pas
 //    vérifié, le candidat ne peut pas accéder à son profil ni sauvegarder
-//    son CV en ligne (voir hooks/useCvBuilder.ts) — évite les comptes créés
+//    son CV en ligne (voir hooks/useCvBuilder.ts) - évite les comptes créés
 //    avec une adresse fictive.
 // 2. Page de retour du lien de vérification reçu par email (voir
 //    actionCodeSettings dans candidate-auth.ts, qui pointe ici plutôt que
@@ -74,7 +74,7 @@ function VerifierEmailInner() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // Cas 2 : retour du lien reçu par email — applique le code auprès de
+  // Cas 2 : retour du lien reçu par email - applique le code auprès de
   // Firebase indépendamment de la session locale (l'appareil qui ouvre le
   // lien n'est pas forcément celui utilisé pour l'inscription).
   useEffect(() => {

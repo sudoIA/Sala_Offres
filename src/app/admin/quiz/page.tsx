@@ -123,7 +123,7 @@ export default function AdminQuizPage() {
                   )}
                 </div>
                 <div className="admin-card-footer">
-                  <span className="text-muted small">Ordre : {q.order ?? "—"}</span>
+                  <span className="text-muted small">Ordre : {q.order ?? "-"}</span>
                   <div className="admin-actions">
                     <button className="btn-icon btn-icon-edit" title="Modifier" onClick={() => openEditor(q)}>
                       <i className="fas fa-pen"></i>

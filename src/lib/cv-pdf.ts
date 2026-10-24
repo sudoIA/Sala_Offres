@@ -1,6 +1,6 @@
 // src/lib/cv-pdf.ts
 // Export PDF du CV : capture du rendu HTML en image (html2canvas) puis mise
-// en page manuelle dans le PDF (jsPDF) — contourne le découpage automatique
+// en page manuelle dans le PDF (jsPDF) - contourne le découpage automatique
 // de html2pdf.js, qui créait une 2e page quasi vide au moindre dépassement.
 // Les deux librairies ne sont importées qu'au moment de l'export (client
 // uniquement), jamais au chargement de la page.

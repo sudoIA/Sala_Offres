@@ -1,5 +1,5 @@
 // src/app/evenements/page.tsx
-// Événements à venir — recherche, filtre par ville, ajout à l'agenda.
+// Événements à venir - recherche, filtre par ville, ajout à l'agenda.
 // Sala est un site vitrine : on n'enregistre pas d'inscriptions, la fiche
 // renvoie vers l'organisateur (lien d'inscription, téléphone, WhatsApp, e-mail).
 
@@ -158,7 +158,7 @@ export default function EvenementsPage() {
 
               {!loading &&
                 filtered.map((evt) => {
-                  const day = evt.deadlineDate ? evt.deadlineDate.getDate() : "—";
+                  const day = evt.deadlineDate ? evt.deadlineDate.getDate() : "-";
                   const month = evt.deadlineDate
                     ? evt.deadlineDate.toLocaleDateString("fr-FR", { month: "short" }).toUpperCase()
                     : "DATE";
@@ -193,7 +193,7 @@ export default function EvenementsPage() {
                           <i className="fas fa-map-marker-alt text-danger me-1"></i> <strong>{evt.city}</strong>
                           {evt.deadlineDate && (
                             <>
-                              {" "}— <i className="far fa-clock text-primary me-1"></i>
+                              {" "}- <i className="far fa-clock text-primary me-1"></i>
                               {evt.deadlineDate.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
                             </>
                           )}
@@ -248,7 +248,7 @@ export default function EvenementsPage() {
               <i className="fas fa-map-marker-alt text-danger me-1"></i> {selected.city}
               {selected.deadlineDate && (
                 <>
-                  {" "}— <i className="far fa-clock text-primary me-1"></i>
+                  {" "}- <i className="far fa-clock text-primary me-1"></i>
                   {selected.deadlineDate.toLocaleString("fr-FR", { dateStyle: "long", timeStyle: "short" })}
                 </>
               )}

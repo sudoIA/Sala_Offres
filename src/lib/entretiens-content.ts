@@ -67,7 +67,7 @@ export const INTERVIEW_QUESTIONS: InterviewQuestion[] = [
     seeking: "Votre capacité à gérer la pression, à trouver des solutions et à en tirer des leçons.",
     doText:
       "Utilisez la méthode Situation - Action - Résultat : décrivez brièvement le contexte, ce que vous avez fait concrètement, puis le résultat obtenu.",
-    dontText: "Ne dites pas «Je n'ai jamais rencontré de difficulté» — cela paraît peu crédible et n'apporte aucune information utile au recruteur.",
+    dontText: "Ne dites pas «Je n'ai jamais rencontré de difficulté» - cela paraît peu crédible et n'apporte aucune information utile au recruteur.",
   },
   {
     number: 8,
@@ -91,7 +91,7 @@ export const INTERVIEW_QUESTIONS: InterviewQuestion[] = [
     seeking: "Votre capacité à valoriser ce qui vous distingue, sans dénigrer les autres candidats.",
     doText:
       "Mettez en avant votre valeur ajoutée spécifique : «Au-delà de mon diplôme, j'apporte une expérience de terrain concrète, directement utile pour les défis de ce poste.»",
-    dontText: "Ne critiquez jamais des candidats que vous ne connaissez pas — cela renvoie une image négative de vous-même, pas d'eux.",
+    dontText: "Ne critiquez jamais des candidats que vous ne connaissez pas - cela renvoie une image négative de vous-même, pas d'eux.",
   },
 ];
 

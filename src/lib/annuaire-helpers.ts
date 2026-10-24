@@ -18,7 +18,7 @@ export function annuaireCategoryClass(category: AnnuaireCategory): "uni" | "comp
 }
 
 /**
- * Titre générique pour la barre de la modale de détail — le nom de la fiche
+ * Titre générique pour la barre de la modale de détail - le nom de la fiche
  * est déjà affiché juste en dessous, à côté du logo, pas besoin de le
  * répéter ici.
  */

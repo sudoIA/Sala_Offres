@@ -1,5 +1,5 @@
 // src/context/DarkModeContext.tsx
-// Mode sombre, disponible partout sur le site (public comme back-office) —
+// Mode sombre, disponible partout sur le site (public comme back-office) -
 // une seule source de vérité pour que tous les boutons de bascule (topbar
 // public, topbar admin) restent synchronisés entre eux. La préférence est
 // lue depuis localStorage dans un effet (jamais pendant le rendu, ni dans un

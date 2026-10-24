@@ -6,7 +6,7 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 
 /* ==========================================================================
-   SALA DESIGN SYSTEM — SALA THEME CSS
+   SALA DESIGN SYSTEM - SALA THEME CSS
    Couleurs officielles :
    - Vert Sala : #3b9452 (principal) / #1e6b31 (foncé)
    - Rouge Sala : #e30613 (action/accent) / #c00410
@@ -63,7 +63,7 @@
    Ne redéfinit que les tons neutres (fond, surfaces, bordures, texte) : les
    couleurs d'accent (vert/rouge/jaune, y compris leurs variantes "light"
    utilisées pour les badges/pastilles) restent identiques dans les deux
-   modes — une pastille vert pâle avec texte vert foncé reste lisible et
+   modes - une pastille vert pâle avec texte vert foncé reste lisible et
    cohérente même posée sur un fond sombre, pas besoin de la réinventer.
    Activé en ajoutant la classe "dark-mode" sur <html> (voir DarkModeContext).
    ========================================================================== */
@@ -272,7 +272,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   FLOATING ACTION BUTTON (FAB) — FAIRE UN CV
+   FLOATING ACTION BUTTON (FAB) - FAIRE UN CV
    ========================================================================== */
 .sala-fab-cv {
   position: fixed;
@@ -772,7 +772,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ==========================================================================
-   PANNEAU DE DÉTAIL D'OFFRE — Compte à rebours & Onglets
+   PANNEAU DE DÉTAIL D'OFFRE - Compte à rebours & Onglets
    ========================================================================== */
 .sala-company-tile {
   width: 84px;
@@ -1925,7 +1925,7 @@ footer.sala-footer .footer-recaptcha {
 
 /* Ces encadrés gardent toujours un fond quasi blanc (même en mode sombre,
    voir plus bas) : le libellé en gras doit donc, lui aussi, toujours rester
-   d'une couleur foncée — assortie à l'icône qui le précède — plutôt que de
+   d'une couleur foncée - assortie à l'icône qui le précède - plutôt que de
    suivre la couleur de texte du thème (qui deviendrait clair et illisible). */
 .law-highlight strong:has(.text-success),
 .law-warning strong:has(.text-success) {
@@ -2124,7 +2124,7 @@ footer.sala-footer .footer-recaptcha {
 }
 
 /* ==========================================================================
-   ESPACE CANDIDAT — AUTH / PROFIL / ONBOARDING
+   ESPACE CANDIDAT - AUTH / PROFIL / ONBOARDING
    ========================================================================== */
 .candidate-auth-container {
   max-width: 960px;
@@ -2884,7 +2884,7 @@ footer.sala-footer .footer-recaptcha {
 }
 
 /* ==========================================================================
-   ADMINISTRATION SALA — Tableau de bord
+   ADMINISTRATION SALA - Tableau de bord
    ========================================================================== */
 body.dashboard-body {
   margin: 0;
@@ -3784,7 +3784,7 @@ body.dashboard-body {
 }
 
 .cv-item-list li::before {
-  content: "–";
+  content: "-";
   position: absolute;
   left: 0;
   color: #94a3b8;
@@ -3975,7 +3975,7 @@ body.dashboard-body {
 .tpl-moderne-col2 { flex: 1; min-width: 0; }
 
 /* ==========================================================================
-   MODE SOMBRE — compléments
+   MODE SOMBRE - compléments
    Ce qui ne pouvait pas passer par les variables (composants Bootstrap
    fournis tels quels par la librairie, dégradé du chargement "squelette").
    ========================================================================== */

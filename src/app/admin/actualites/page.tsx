@@ -31,7 +31,7 @@ export default function AdminNewsPage() {
     const visible = article.visibility === false;
     try {
       await updateDoc(doc(db, "news", article.id), { visibility: visible });
-      await logAdminAction("update", "news", `${article.title || "Article"} — ${visible ? "rendu visible" : "masqué"}`, article.id);
+      await logAdminAction("update", "news", `${article.title || "Article"} - ${visible ? "rendu visible" : "masqué"}`, article.id);
     } catch (err) {
       notify("Erreur : " + (err as Error).message, "error");
     }
@@ -101,7 +101,7 @@ export default function AdminNewsPage() {
               <div className="admin-card-meta">
                 <span>
                   <i className="far fa-calendar"></i>
-                  {article.publishedDate ? article.publishedDate.toLocaleDateString("fr-FR") : "—"}
+                  {article.publishedDate ? article.publishedDate.toLocaleDateString("fr-FR") : "-"}
                 </span>
                 <span className="admin-badge">{article.visibility === false ? "Masqué" : "Visible"}</span>
               </div>

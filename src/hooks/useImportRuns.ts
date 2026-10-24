@@ -1,6 +1,6 @@
 // src/hooks/useImportRuns.ts
 // Historique des exécutions de la tâche planifiée de collecte (voir
-// src/app/api/cron/collect-jobs/route.ts) — écrit par le SDK Admin côté
+// src/app/api/cron/collect-jobs/route.ts) - écrit par le SDK Admin côté
 // serveur, seulement lu ici pour suivi dans l'écran admin "Imports".
 
 "use client";

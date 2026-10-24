@@ -4,7 +4,7 @@
 // erreurs, voir src/app/api/client-errors/route.ts). Contrairement au
 // SDK client (@/lib/firebase.ts) utilisé partout ailleurs dans le site, le
 // SDK Admin s'authentifie avec un compte de service et n'est jamais soumis
-// aux règles de sécurité Firestore — à ne jamais importer depuis un
+// aux règles de sécurité Firestore - à ne jamais importer depuis un
 // composant "use client" ni exposer au navigateur.
 //
 // Nécessite une seule variable d'environnement côté serveur :
@@ -12,7 +12,7 @@
 // depuis Console Firebase > Paramètres du projet > Comptes de service >
 // Générer une nouvelle clé privée (copié-collé tel quel, sans rien modifier
 // dedans). Un seul bloc à copier-coller entièrement plutôt que d'en extraire
-// un seul champ (la clé privée) à la main — beaucoup plus fiable, un copier
+// un seul champ (la clé privée) à la main - beaucoup plus fiable, un copier
 // partiel de la clé privée étant une source d'erreur fréquente.
 //
 // L'initialisation est différée (pas au chargement du module) pour ne pas

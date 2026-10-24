@@ -4,7 +4,7 @@
 // (cheerio) suffit.
 //
 // Important : le site propose un bouton "Charger plus" qui appelle
-// https://afriqueemplois.com/api/load-more — cette route est explicitement
+// https://afriqueemplois.com/api/load-more - cette route est explicitement
 // interdite par leur robots.txt (`Disallow: /api/`), donc on ne l'utilise
 // jamais. La pagination normale `?page=N` (une vraie page HTML, pas l'API)
 // n'est elle pas bloquée et renvoie bien un lot différent d'offres à chaque
@@ -41,7 +41,7 @@ const LIST_URL = "https://afriqueemplois.com/cg";
 const SUMMARY_RE =
   /Entreprise\s*:\s*(.*?)Lieu\s*:\s*(.*?)Type de contrat\s*:\s*(.*?)(?:Salaire\s*:\s*(.*?))?Date limite\s*:\s*(\d{2}\/\d{2}\/\d{4})([\s\S]*)$/;
 
-// Toutes les étiquettes vues dans les annonces "texte libre" — utilisées
+// Toutes les étiquettes vues dans les annonces "texte libre" - utilisées
 // uniquement comme frontières pour ne pas laisser un champ avaler le texte
 // suivant, même celles qu'on n'extrait pas nous-mêmes (ex. "Durée du
 // contrat" : une durée n'est pas un type de contrat, on ne la récupère pas,

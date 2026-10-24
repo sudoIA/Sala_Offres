@@ -40,7 +40,7 @@ export function sortEventsByDate(events: SalaEvent[]): SalaEvent[] {
 /**
  * Résumé à afficher sur la carte de la liste : le champ "resume" s'il a été
  * renseigné, sinon un repli en texte brut (balises HTML retirées) tronqué
- * proprement — jamais le HTML de "body" coupé à mi-balise, qui rendait
+ * proprement - jamais le HTML de "body" coupé à mi-balise, qui rendait
  * l'affichage sale.
  */
 export function eventCardSummary(evt: Pick<SalaEvent, "resume" | "body">, max = 160): string {

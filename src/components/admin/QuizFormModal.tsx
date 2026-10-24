@@ -11,6 +11,7 @@ import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import { logAdminAction } from "@/lib/admin-log";
 import { QUIZ_THEME_LABELS, type QuizDoc, type QuizOption, type QuizQuestion, type QuizTheme } from "@/types/quiz";
+import { normalizeDashes } from "@/lib/dashes";
 
 interface QuizFormModalProps {
   open: boolean;
@@ -58,7 +59,7 @@ export function QuizFormModal({ open, question, defaultTheme, nextOrder, onClose
     if (cleaned.filter((o) => o.correct).length !== 1) return notify("Cochez une (et une seule) bonne réponse.", "error");
 
     setSaving(true);
-    const data: QuizDoc = { theme, question: text.trim(), options: cleaned, order: order || 1 };
+    const data: QuizDoc = normalizeDashes({ theme, question: text.trim(), options: cleaned, order: order || 1 });
     try {
       if (question) {
         await setDoc(doc(db, "quiz", question.id), data);

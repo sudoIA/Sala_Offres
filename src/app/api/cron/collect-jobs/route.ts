@@ -9,16 +9,16 @@
 //
 // Deux étapes s'ajoutent à la collecte :
 // - publication automatique des offres des sources "de confiance" cochées
-//   dans Admin > Paramètres (settings/imports.autoPublishSources) — les
+//   dans Admin > Paramètres (settings/imports.autoPublishSources) - les
 //   autres restent en attente de relecture manuelle comme avant ;
 // - collecte des sources personnalisées ajoutées par l'équipe et cochées
 //   « collecte quotidienne » (collection "import_sources", collecteur
-//   générique) — jamais publiées automatiquement ;
+//   générique) - jamais publiées automatiquement ;
 // - envoi des alertes emploi aux candidats abonnés (voir alert-emails.ts).
 //
 // Sécurité : seul Vercel Cron doit pouvoir déclencher cette route. Vercel
 // ajoute automatiquement l'en-tête "Authorization: Bearer <CRON_SECRET>"
-// quand la variable d'environnement CRON_SECRET est définie sur le projet —
+// quand la variable d'environnement CRON_SECRET est définie sur le projet -
 // toute autre requête est refusée, pour ne pas exposer une route publique
 // qui interroge des sites tiers à la demande de n'importe qui.
 
@@ -36,6 +36,7 @@ import { DEDUPE_WINDOW_DAYS, buildImportDocId, findDuplicatePublishedJob, import
 import { IMPORT_SOURCES, type ImportSourceKey } from "@/lib/import-sources";
 import type { ImportedJob } from "@/types/job-import";
 import type { Job } from "@/types/job";
+import { normalizeDashes } from "@/lib/dashes";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -114,7 +115,7 @@ export async function GET(request: NextRequest) {
     let total = 0;
     let error: string | null = null;
     try {
-      const jobs = await collect();
+      const jobs = normalizeDashes(await collect());
       total = jobs.length;
       for (const job of jobs) {
         const id = buildImportDocId(job.source, job.sourceId);

@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     };
   }
 
-  const title = `${job.title} — ${job.company} | Sala`;
+  const title = `${job.title} - ${job.company} | Sala`;
   const description = `${job.description} Poste basé à ${job.city}.`;
 
   const logo = { url: "/img/logo_share_black.png", width: 1200, height: 630, alt: "Logo Sala" };

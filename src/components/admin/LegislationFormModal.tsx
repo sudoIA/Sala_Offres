@@ -11,6 +11,7 @@ import { notify } from "@/lib/notify";
 import { TOPIC_LABELS, type LegislationFiche, type LegislationTopic } from "@/types/legislation";
 import { withMobileFields } from "@/lib/legislation-mobile";
 import { logAdminAction } from "@/lib/admin-log";
+import { normalizeDashes } from "@/lib/dashes";
 
 interface LegislationFormModalProps {
   open: boolean;
@@ -62,7 +63,7 @@ export function LegislationFormModal({ open, fiche, nextOrder, onClose }: Legisl
     e.preventDefault();
     setSaving(true);
     // description et readingTime (lus par l'app mobile) sont recalculés.
-    const data = withMobileFields({
+    const data = withMobileFields(normalizeDashes({
       topic: form.topic,
       topicLabel: form.topicLabel.trim(),
       articleRef: form.articleRef.trim(),
@@ -74,7 +75,7 @@ export function LegislationFormModal({ open, fiche, nextOrder, onClose }: Legisl
       faqAnswer: form.faqAnswer.trim(),
       sourceUrl: form.sourceUrl.trim(),
       sourceLabel: form.sourceLabel.trim(),
-    });
+    }));
 
     try {
       if (fiche) {

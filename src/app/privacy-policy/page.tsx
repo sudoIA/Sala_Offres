@@ -1,14 +1,14 @@
 // src/app/privacy-policy/page.tsx
-// Politique de confidentialité — contenu statique, restylé au design Sala
+// Politique de confidentialité - contenu statique, restylé au design Sala
 // (l'ancienne page utilisait une palette bleue incohérente avec le reste du site).
 
 import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Politique de Confidentialité — Sala",
+  title: "Politique de Confidentialité - Sala",
   description:
-    "Politique de confidentialité de la plateforme Sala — Emploi, Stage & Formation. Comment nous collectons, utilisons et protégeons vos données personnelles.",
+    "Politique de confidentialité de la plateforme Sala - Emploi, Stage & Formation. Comment nous collectons, utilisons et protégeons vos données personnelles.",
 };
 
 export default function PrivacyPolicyPage() {
@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
         <section className="pp-section" id="presentation">
           <h2><span className="pp-icon">🏢</span> 1. Présentation de l&apos;application</h2>
           <p>
-            <strong>Sala — Emploi, Stage &amp; Formation</strong> est une plateforme développée par <strong>ONG SALA</strong>,
+            <strong>Sala - Emploi, Stage &amp; Formation</strong> est une plateforme développée par <strong>ONG SALA</strong>,
             destinée à faciliter la mise en relation entre chercheurs d&apos;emploi, stagiaires et recruteurs en République du Congo.
           </p>
           <p>
@@ -122,7 +122,7 @@ export default function PrivacyPolicyPage() {
           <h3>Prestataires de services techniques</h3>
           <ul>
             <li>
-              <strong>Google Firebase</strong> (Google LLC) — Authentification, base de données Firestore, hébergement.
+              <strong>Google Firebase</strong> (Google LLC) - Authentification, base de données Firestore, hébergement.
               Politique de Google : <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">policies.google.com/privacy</a>
             </li>
           </ul>
@@ -203,7 +203,7 @@ export default function PrivacyPolicyPage() {
             la nouvelle politique.
           </p>
           <div className="pp-highlight">
-            <p>Historique des versions : v1.0 — Création initiale | v2.0 — Mise à jour 13 avril 2026</p>
+            <p>Historique des versions : v1.0 - Création initiale | v2.0 - Mise à jour 13 avril 2026</p>
           </div>
         </section>
 
@@ -212,7 +212,7 @@ export default function PrivacyPolicyPage() {
           <p>Pour toute question relative à cette politique de confidentialité, à vos données personnelles ou pour exercer vos droits, contactez-nous :</p>
           <div className="pp-contact-card">
             <p><strong>ONG SALA</strong></p>
-            <p>Plateforme : Sala — Emploi, Stage &amp; Formation</p>
+            <p>Plateforme : Sala - Emploi, Stage &amp; Formation</p>
             <p>E-mail : <a href="mailto:contact.ongsala@gmail.com">contact.ongsala@gmail.com</a></p>
           </div>
           <p style={{ marginTop: 16, fontSize: 14, color: "var(--sala-text-muted)" }}>
@@ -222,7 +222,7 @@ export default function PrivacyPolicyPage() {
       </main>
 
       <footer className="pp-footer">
-        <p>&copy; 2026 <strong>ONG SALA</strong> — Tous droits réservés &nbsp;|&nbsp; <Link href="/">Retour au site</Link></p>
+        <p>&copy; 2026 <strong>ONG SALA</strong> - Tous droits réservés &nbsp;|&nbsp; <Link href="/">Retour au site</Link></p>
       </footer>
     </>
   );

@@ -120,7 +120,7 @@ export default function AdminLegislationPage() {
 
         {!loading && fiches.length === 0 && (
           <div className="admin-card-empty admin-empty">
-            Aucune fiche dans la base pour le moment — la page Droit du Travail affiche le guide intégré par défaut.
+            Aucune fiche dans la base pour le moment - la page Droit du Travail affiche le guide intégré par défaut.
             Utilisez « Copier les fiches dans la base » ci-dessus pour commencer.
           </div>
         )}
@@ -143,14 +143,14 @@ export default function AdminLegislationPage() {
               </div>
               <div className="admin-card-meta">
                 <span className="admin-badge">
-                  {fiche.topicLabel || (fiche.topic && TOPIC_LABELS[fiche.topic]) || fiche.topic || "—"}
+                  {fiche.topicLabel || (fiche.topic && TOPIC_LABELS[fiche.topic]) || fiche.topic || "-"}
                 </span>
                 {fiche.faqQuestion && (
                   <span><i className="fas fa-question-circle"></i>FAQ incluse</span>
                 )}
               </div>
               <div className="admin-card-footer">
-                <span className="text-muted small">Ordre : {fiche.order ?? "—"}</span>
+                <span className="text-muted small">Ordre : {fiche.order ?? "-"}</span>
                 <div className="admin-actions">
                   <button
                     className="btn-icon btn-icon-edit"

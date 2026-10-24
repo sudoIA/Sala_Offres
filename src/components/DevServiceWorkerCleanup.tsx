@@ -3,7 +3,7 @@
 // enregistré sur localhost (par exemple après un `next build` / `next start`
 // local). Sinon il continue de servir depuis son cache une ancienne version
 // du JavaScript pendant 24 h, et les modifications du code n'apparaissent
-// pas malgré les rafraîchissements — piège déjà rencontré sur ce projet.
+// pas malgré les rafraîchissements - piège déjà rencontré sur ce projet.
 
 "use client";
 

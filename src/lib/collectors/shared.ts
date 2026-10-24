@@ -35,7 +35,7 @@ export function extractEmail(text: string): string | undefined {
 }
 
 /** Beaucoup de titres d'offres suivent le patron "Entreprise recrute/recherche
- * un(e) Poste" — fiable à extraire même quand aucun champ "Entreprise :"
+ * un(e) Poste" - fiable à extraire même quand aucun champ "Entreprise :"
  * explicite n'est présent dans le résumé/la description. */
 export function extractCompanyFromTitle(title: string): string | undefined {
   const match = title.match(/^(.*?)\s+(?:recrute|recherche)\b/i);

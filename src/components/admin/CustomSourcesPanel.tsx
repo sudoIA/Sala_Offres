@@ -139,7 +139,7 @@ export function CustomSourcesPanel() {
                     </label>
                   </td>
                   <td className="small">
-                    {s.lastRunAt ? new Date(s.lastRunAt).toLocaleString("fr-FR") : "—"}
+                    {s.lastRunAt ? new Date(s.lastRunAt).toLocaleString("fr-FR") : "-"}
                     {s.lastError ? (
                       <div className="text-danger" title={s.lastError}><i className="fas fa-exclamation-triangle me-1"></i>Échec</div>
                     ) : s.lastRunAt ? (

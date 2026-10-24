@@ -90,7 +90,7 @@ export default function AdminUsersPage() {
         {!loading &&
           filtered.map((u) => {
             const isAdmin = adminUids.has(u.id);
-            const joined = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString("fr-FR") : "—";
+            const joined = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString("fr-FR") : "-";
             return (
               <div className="admin-card" key={u.id}>
                 <div className="admin-card-top">
@@ -108,7 +108,7 @@ export default function AdminUsersPage() {
                   )}
                 </div>
                 <div className="admin-card-meta">
-                  <span><i className="fas fa-map-marker-alt"></i>{u.city || "—"}</span>
+                  <span><i className="fas fa-map-marker-alt"></i>{u.city || "-"}</span>
                   <span><i className="far fa-calendar"></i>Inscrit le {joined}</span>
                 </div>
                 <div className="admin-card-footer">

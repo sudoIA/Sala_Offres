@@ -1,6 +1,6 @@
 // src/components/EncourageFace.tsx
 // Petit visage triste mais animé (CSS pur), affiché quand le score du quiz
-// d'entretien n'atteint pas l'objectif de 80% — pour encourager la personne
+// d'entretien n'atteint pas l'objectif de 80% - pour encourager la personne
 // à réessayer plutôt que de la décourager.
 
 export function EncourageFace() {

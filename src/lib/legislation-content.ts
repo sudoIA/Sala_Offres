@@ -31,7 +31,7 @@ export const initialLegislationTopics: LegislationFiche[] = [
       </div>
     `,
     sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
-    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    sourceLabel: "Code du travail - Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "Existe-t-il un contrat d'apprentissage ou de stage ?",
     faqAnswer:
       "Oui. Le contrat d'apprentissage doit obligatoirement être rédigé par écrit et enregistré auprès de l'ACPE (Agence Congolaise Pour l'Emploi). L'employeur s'engage à assurer une formation méthodique et complète au stagiaire.",
@@ -59,7 +59,7 @@ export const initialLegislationTopics: LegislationFiche[] = [
       </div>
     `,
     sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
-    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    sourceLabel: "Code du travail - Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "Peut-on me faire des retenues sur salaire ?",
     faqAnswer:
       "Les retenues sont strictement encadrées par la loi : prélèvements fiscaux obligatoires, cotisations CNSS et cessions volontaires ou saisies ordonnées par un tribunal. Les amendes ou sanctions financières directes infligées unilatéralement par l'employeur sont interdites.",
@@ -91,7 +91,7 @@ export const initialLegislationTopics: LegislationFiche[] = [
       </div>
     `,
     sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
-    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    sourceLabel: "Code du travail - Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "",
     faqAnswer: "",
     order: 3,
@@ -120,7 +120,7 @@ export const initialLegislationTopics: LegislationFiche[] = [
       </div>
     `,
     sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
-    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    sourceLabel: "Code du travail - Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "",
     faqAnswer: "",
     order: 4,
@@ -152,7 +152,7 @@ export const initialLegislationTopics: LegislationFiche[] = [
       </div>
     `,
     sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
-    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    sourceLabel: "Code du travail - Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "",
     faqAnswer: "",
     order: 5,
@@ -181,7 +181,7 @@ export const initialLegislationTopics: LegislationFiche[] = [
       </div>
     `,
     sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
-    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    sourceLabel: "Code du travail - Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "Qui prend en charge un accident survenu sur le lieu de travail ?",
     faqAnswer:
       "Les accidents du travail et maladies professionnelles sont couverts par la CNSS (Caisse Nationale de Sécurité Sociale). L'employeur doit déclarer tout accident dans les délais légaux pour que le travailleur soit indemnisé.",
@@ -209,7 +209,7 @@ export const initialLegislationTopics: LegislationFiche[] = [
       </div>
     `,
     sourceUrl: "https://www.sgg.cg/codes/congo-code-1975-travail.pdf",
-    sourceLabel: "Code du travail — Secrétariat Général du Gouvernement (sgg.cg)",
+    sourceLabel: "Code du travail - Secrétariat Général du Gouvernement (sgg.cg)",
     faqQuestion: "Un employeur peut-il licencier un délégué du personnel librement ?",
     faqAnswer:
       "Non. Les délégués du personnel et délégués syndicaux bénéficient d'une protection spécifique : leur licenciement obéit à une procédure renforcée, précisément pour éviter les représailles liées à leur mandat de représentation.",
@@ -243,7 +243,7 @@ export const initialLegislationTopics: LegislationFiche[] = [
       </div>
     `,
     sourceUrl: "https://fonction-publique.gouv.cg/fr/mission-de-conciliation",
-    sourceLabel: "Mission de conciliation — Ministère de la Fonction Publique, du Travail et de la Sécurité Sociale",
+    sourceLabel: "Mission de conciliation - Ministère de la Fonction Publique, du Travail et de la Sécurité Sociale",
     faqQuestion: "Le délai pour agir en justice est-il suspendu pendant la conciliation ?",
     faqAnswer:
       "Oui. La prescription (délai légal pour agir, article 99) est suspendue jusqu'à la clôture du procès-verbal de conciliation, afin de ne pas pénaliser un travailleur qui tente d'abord un règlement amiable.",

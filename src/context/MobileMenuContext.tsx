@@ -1,6 +1,6 @@
 // src/context/MobileMenuContext.tsx
 // État partagé du menu mobile (sidebar en tiroir) : le bouton burger est dans
-// AppTopbar, le tiroir lui-même dans AppSidebar — ces deux composants sont
+// AppTopbar, le tiroir lui-même dans AppSidebar - ces deux composants sont
 // rendus indépendamment sur chaque page, ce contexte évite d'avoir à faire
 // remonter l'état manuellement page par page (même logique que DarkModeContext).
 

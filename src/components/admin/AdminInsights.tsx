@@ -87,7 +87,7 @@ export function AdminInsights({ jobs }: { jobs: Job[] }) {
   const maxWeekly = Math.max(1, ...weekly.map((w) => w.count));
   const totalWeekly = weekly.reduce((s, w) => s + w.count, 0);
 
-  const recentTitles = useMemo(() => new Map(jobs.map((j) => [j.id, `${j.title || "Offre"} — ${j.company || ""}`])), [jobs]);
+  const recentTitles = useMemo(() => new Map(jobs.map((j) => [j.id, `${j.title || "Offre"} - ${j.company || ""}`])), [jobs]);
   // Titres des offres plus anciennes que la fenêtre chargée (useAdminJobs).
   const [olderTitles, setOlderTitles] = useState<Map<string, string>>(new Map());
   useEffect(() => {
@@ -97,7 +97,7 @@ export function AdminInsights({ jobs }: { jobs: Job[] }) {
       missing.map(async (id) => {
         const snap = await getDoc(doc(db, "emplois", id)).catch(() => null);
         const data = snap?.exists() ? snap.data() : null;
-        return [id, data ? `${data.title || "Offre"} — ${data.company || ""}` : "Offre supprimée"] as const;
+        return [id, data ? `${data.title || "Offre"} - ${data.company || ""}` : "Offre supprimée"] as const;
       })
     ).then((entries) => setOlderTitles(new Map(entries)));
   }, [topViewed, recentTitles]);
@@ -111,7 +111,7 @@ export function AdminInsights({ jobs }: { jobs: Job[] }) {
             <i className="fas fa-user-plus"></i>
           </div>
           <div>
-            <div className="stat-value">{newCandidates ?? "—"}</div>
+            <div className="stat-value">{newCandidates ?? "-"}</div>
             <div className="stat-label">Nouveaux candidats (30 derniers jours)</div>
           </div>
         </div>

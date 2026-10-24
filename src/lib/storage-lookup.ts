@@ -1,7 +1,7 @@
 // src/lib/storage-lookup.ts
 // Recherche générique d'un fichier dans un dossier Firebase Storage à partir
 // d'un mot-clé partiel (ex : "eco" -> "ecobank-fintech.jpg", "Air France" ->
-// "airFrance.jpg") — utilisé pour les affiches d'événements et les logos
+// "airFrance.jpg") - utilisé pour les affiches d'événements et les logos
 // d'entreprise, qui suivent tous les deux cette même convention côté
 // mobile : un champ Firestore contient un mot-clé, pas le nom de fichier
 // exact ni une URL.

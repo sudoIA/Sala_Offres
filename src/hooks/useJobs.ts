@@ -5,8 +5,8 @@
 // dont une poignée seulement encore ouvertes), et la télécharger en entier à
 // chaque visite coûtait des milliers de lectures facturées par visiteur.
 // Les rares offres sans champ "deadline" (anciennes saisies de test) sont de
-// ce fait exclues — le formulaire admin rend ce champ obligatoire.
-// NB : pas de orderBy("timestamp") — Firestore exclurait silencieusement toute
+// ce fait exclues - le formulaire admin rend ce champ obligatoire.
+// NB : pas de orderBy("timestamp") - Firestore exclurait silencieusement toute
 // offre sans ce champ ; le tri se fait côté client.
 
 "use client";

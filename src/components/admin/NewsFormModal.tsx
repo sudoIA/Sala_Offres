@@ -13,6 +13,7 @@ import { logAdminAction } from "@/lib/admin-log";
 import { formatJobBody } from "@/lib/job-body";
 import { safeExternalUrl } from "@/lib/safe-url";
 import type { NewsArticle } from "@/types/news";
+import { normalizeDashes } from "@/lib/dashes";
 
 interface NewsFormModalProps {
   open: boolean;
@@ -49,13 +50,13 @@ export function NewsFormModal({ open, article, onClose }: NewsFormModalProps) {
       return;
     }
     setSaving(true);
-    const data = {
+    const data = normalizeDashes({
       title: form.title.trim(),
       summary: form.summary.trim(),
       body: form.body.trim(),
       image: image || null,
       visibility: form.visibility,
-    };
+    });
     try {
       if (article) {
         await updateDoc(doc(db, "news", article.id), data);

@@ -42,7 +42,7 @@ export default function AdminJobsPage() {
   async function toggleVisibility(job: Job, visible: boolean) {
     try {
       await updateDoc(doc(db, "emplois", job.id), { visibility: visible });
-      await logAdminAction("update", "emplois", `${job.title || "Offre"} — ${visible ? "rendue visible" : "masquée"}`, job.id);
+      await logAdminAction("update", "emplois", `${job.title || "Offre"} - ${visible ? "rendue visible" : "masquée"}`, job.id);
     } catch (err) {
       console.error("Erreur mise à jour visibilité :", err);
       notify("Impossible de mettre à jour la visibilité.", "error");
@@ -144,8 +144,8 @@ export default function AdminJobsPage() {
                   </label>
                 </div>
                 <div className="admin-card-meta">
-                  <span><i className="fas fa-map-marker-alt"></i>{job.city || "—"}</span>
-                  <span className="admin-badge">{job.contract || "—"}</span>
+                  <span><i className="fas fa-map-marker-alt"></i>{job.city || "-"}</span>
+                  <span className="admin-badge">{job.contract || "-"}</span>
                   <span><i className="far fa-clock"></i>{deadline}</span>
                 </div>
                 <div className="admin-card-footer">

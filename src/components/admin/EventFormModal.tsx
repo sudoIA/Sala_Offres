@@ -1,6 +1,6 @@
 // src/components/admin/EventFormModal.tsx
 // Formulaire de création/édition d'un événement (collection Firestore
-// "events", partagée avec l'app mobile — les noms de champs ci-dessous
+// "events", partagée avec l'app mobile - les noms de champs ci-dessous
 // reprennent exactement les siens : title, body, host, city, place, tel,
 // email, site, image, deadline, deadline2, visibility. "resume" est propre au site web (aperçu
 // sur la carte de la liste, distinct de la description complète "body").
@@ -14,6 +14,7 @@ import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import type { SalaEvent } from "@/types/event";
 import { logAdminAction } from "@/lib/admin-log";
+import { normalizeDashes } from "@/lib/dashes";
 
 interface EventFormModalProps {
   open: boolean;
@@ -90,6 +91,7 @@ export function EventFormModal({ open, event, onClose }: EventFormModalProps) {
       deadline2: form.deadline2 ? Timestamp.fromDate(new Date(form.deadline2)) : null,
       visibility: form.visibility,
     };
+    Object.assign(eventData, normalizeDashes(eventData));
     if (!event) eventData.timestamp = Timestamp.now();
 
     try {

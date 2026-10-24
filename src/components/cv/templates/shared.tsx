@@ -49,7 +49,7 @@ export function ExperienceBlocks({ experiences, withDot }: { experiences: CvExpe
               <div className="cv-item-date">{exp.period || ""}</div>
             </div>
             <div className="cv-item-subtitle">
-              {exp.company || ""} {exp.city ? `— ${exp.city}` : ""}
+              {exp.company || ""} {exp.city ? `- ${exp.city}` : ""}
             </div>
             <BulletList text={exp.description} />
           </div>
@@ -71,7 +71,7 @@ export function EducationBlocks({ education, withDot }: { education: CvEducation
               <div className="cv-item-date">{edu.year || ""}</div>
             </div>
             <div className="cv-item-subtitle">
-              {edu.school || ""} {edu.city ? `— ${edu.city}` : ""}
+              {edu.school || ""} {edu.city ? `- ${edu.city}` : ""}
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@ export function ProjectBlocks({ projects }: { projects: CvProject[] }) {
       {projects.map((proj, i) => (
         <div className="mb-2 cv-entry-block" key={i}>
           <div className="cv-item-title">
-            {proj.name} {proj.role && <>— <span className="cv-item-subtitle">{proj.role}</span></>}
+            {proj.name} {proj.role && <>- <span className="cv-item-subtitle">{proj.role}</span></>}
           </div>
           <BulletList text={proj.description} />
         </div>

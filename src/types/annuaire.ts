@@ -31,7 +31,7 @@ export interface AnnuaireLegacyFields {
   statut?: string;
   /**
    * Nom de fichier (pas une URL) d'une photo du bâtiment, à chercher dans le
-   * dossier Firebase Storage de la catégorie — voir useAnnuaireImages. Le nom
+   * dossier Firebase Storage de la catégorie - voir useAnnuaireImages. Le nom
    * du champ contient une espace (pas un underscore) tel qu'il existe déjà
    * dans les fiches Firestore.
    */

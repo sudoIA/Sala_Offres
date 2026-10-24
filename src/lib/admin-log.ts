@@ -2,7 +2,7 @@
 // Journal des actions du back-office (collection "admin_logs") : qui a
 // publié, modifié ou supprimé quoi, et quand. Consultable dans
 // Admin > Journal. Les règles Firestore n'autorisent que l'ajout d'entrées
-// par un admin, à son propre nom — jamais leur modification ni suppression.
+// par un admin, à son propre nom - jamais leur modification ni suppression.
 //
 // L'écriture du journal ne doit jamais faire échouer l'action elle-même :
 // en cas d'erreur, on se contente de la signaler dans la console.

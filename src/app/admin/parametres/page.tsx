@@ -17,6 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 import { DEFAULT_SETTINGS, clearSiteSettingsCache, loadSiteSettings, type SiteSettings } from "@/lib/site-settings";
 import { notify } from "@/lib/notify";
 import { AutoPublishPanel } from "@/components/admin/AutoPublishPanel";
+import { DashCleanupPanel } from "@/components/admin/DashCleanupPanel";
 import { logAdminAction } from "@/lib/admin-log";
 
 export default function AdminSettingsPage() {
@@ -305,6 +306,7 @@ export default function AdminSettingsPage() {
       </div>
 
       <AutoPublishPanel />
+      <DashCleanupPanel />
     </section>
   );
 }

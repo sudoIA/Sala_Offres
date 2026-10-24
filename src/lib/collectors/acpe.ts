@@ -4,7 +4,7 @@
 // une simple requête + parsing HTML (cheerio) suffit, pas de navigateur headless.
 //
 // Sélecteurs vérifiés le 2026-09-11 en inspectant le HTML réel de la page
-// liste et d'une page détail (voir les deux blocs ci-dessous) — à revalider
+// liste et d'une page détail (voir les deux blocs ci-dessous) - à revalider
 // si l'ACPE change son thème, ce genre de site pouvant changer sans préavis.
 //
 // Page liste, un encart par offre (classe "job-card") :

@@ -158,8 +158,8 @@ export default function AdminEventsPage() {
               </div>
               <div className="admin-card-meta">
                 <span className="admin-badge">{evt.visibility === false ? "Masqué" : "Visible"}</span>
-                <span><i className="far fa-calendar"></i>{evt.deadlineDate ? evt.deadlineDate.toLocaleString("fr-FR") : "—"}</span>
-                <span><i className="fas fa-map-marker-alt"></i>{evt.city || "—"}</span>
+                <span><i className="far fa-calendar"></i>{evt.deadlineDate ? evt.deadlineDate.toLocaleString("fr-FR") : "-"}</span>
+                <span><i className="fas fa-map-marker-alt"></i>{evt.city || "-"}</span>
               </div>
               <div className="admin-card-footer">
                 <span className="text-muted small">

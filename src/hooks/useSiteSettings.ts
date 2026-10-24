@@ -1,7 +1,7 @@
 // src/hooks/useSiteSettings.ts
 // Fournit les réglages du site (visibilité des sections, coordonnées de
 // contact) aux composants React, avec les valeurs par défaut en attendant la
-// réponse de Firestore — évite tout flash de contenu incorrect.
+// réponse de Firestore - évite tout flash de contenu incorrect.
 
 "use client";
 

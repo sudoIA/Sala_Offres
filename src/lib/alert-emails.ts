@@ -49,7 +49,7 @@ function buildEmailHtml(name: string, jobs: AlertJob[], siteUrl: string): string
     .join("");
   const more = jobs.length > MAX_JOBS_PER_EMAIL ? `<p>… et ${jobs.length - MAX_JOBS_PER_EMAIL} autre(s) sur <a href="${siteUrl}/offres">ongsala.com</a>.</p>` : "";
   return `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#222">
-  <h2 style="color:#2e7d32">Sala — nouvelles offres pour vous</h2>
+  <h2 style="color:#2e7d32">Sala - nouvelles offres pour vous</h2>
   <p>Bonjour ${escapeHtml(name)},</p>
   <p>Voici les nouvelles offres publiées sur Sala qui correspondent à vos alertes :</p>
   <ul style="padding-left:18px">${items}</ul>

@@ -1,5 +1,5 @@
 // src/types/event.ts
-// Forme d'un document de la collection Firestore "events" — alimentée par
+// Forme d'un document de la collection Firestore "events" - alimentée par
 // l'app mobile Sala et le back-office web. Les noms de champs (body, host,
 // site, deadline...) reprennent exactement ceux déjà utilisés par l'app
 // mobile pour rester compatibles avec ses données existantes.
@@ -16,7 +16,7 @@ export interface EventDoc {
   place?: string; // lieu précis (adresse, salle)
   tel?: string; // téléphone de l'organisateur
   email?: string; // e-mail de l'organisateur
-  image?: string; // optionnel — pas toujours une URL exploitable
+  image?: string; // optionnel - pas toujours une URL exploitable
   deadline?: Timestamp; // date et heure de l'événement
   deadline2?: Timestamp; // date et heure de fin (optionnel)
   timestamp?: Timestamp; // date de publication

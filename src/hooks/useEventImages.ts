@@ -1,6 +1,6 @@
 // src/hooks/useEventImages.ts
 // Résout en arrière-plan l'affiche (image) de chaque événement affiché,
-// sans bloquer le rendu de la liste — voir resolveEventImageUrl.
+// sans bloquer le rendu de la liste - voir resolveEventImageUrl.
 
 "use client";
 

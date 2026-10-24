@@ -15,7 +15,7 @@
 // Page détail :
 //   .post-content                   -> texte intégral de l'annonce (contenu
 //                                       éditorial riche, jamais de champs fixes
-//                                       communs à toutes les annonces — d'où
+//                                       communs à toutes les annonces - d'où
 //                                       l'extraction "au mieux" ci-dessous).
 //
 // Beaucoup de titres suivent "Entreprise recrute un(e) Poste" (même patron que
@@ -95,7 +95,7 @@ export async function collectLesOpportunitesPage(page = 1): Promise<CollectLesOp
   $(".banner.row").each((_, el) => {
     const card = $(el);
     const typeHref = card.find('.col-md-4 a[href*="/type/"]').first().attr("href") || "";
-    // On ne garde que les vraies offres d'emploi et de stage — on ignore le
+    // On ne garde que les vraies offres d'emploi et de stage - on ignore le
     // bénévolat ("volontaires"), les bourses d'études et les autres types.
     if (!/\/type\/(avis-de-recrutement|stages)\//.test(typeHref)) return;
 

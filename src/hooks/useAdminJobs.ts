@@ -16,7 +16,7 @@ function toJob(id: string, data: JobDoc): Job {
 
 /**
  * Lecture ponctuelle (pas d'abonnement temps réel) des offres publiées
- * récemment — sert au dédoublonnage au moment de lancer une collecte (voir
+ * récemment - sert au dédoublonnage au moment de lancer une collecte (voir
  * admin/imports). Limitée aux DEDUPE_WINDOW_DAYS derniers jours : une offre
  * importée aujourd'hui ne peut pas doublonner une annonce vieille d'un an, et
  * relire tout l'historique (plus de 2 600 offres) à chaque collecte coûtait

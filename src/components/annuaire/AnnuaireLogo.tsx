@@ -1,7 +1,7 @@
 // src/components/annuaire/AnnuaireLogo.tsx
 // Logo d'une fiche annuaire, ou icône par défaut propre à la catégorie
 // (chapeau de diplômé pour les écoles, bâtiment pour les entreprises, langue
-// pour les clubs d'anglais) quand aucun logo n'est renseigné — utilisé à
+// pour les clubs d'anglais) quand aucun logo n'est renseigné - utilisé à
 // l'identique par la carte et la fiche détail pour qu'elles ne divergent
 // jamais.
 

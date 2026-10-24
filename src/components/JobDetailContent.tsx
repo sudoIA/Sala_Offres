@@ -94,7 +94,7 @@ export function JobDetailContent({ job }: { job: Job }) {
           {publishedDate && (
             <p className="text-muted small mt-3 mb-0">
               Publiée le {publishedDate.toLocaleDateString("fr-FR")}
-              {job.deadlineDate ? ` — Date limite : ${job.deadlineDate.toLocaleDateString("fr-FR")}` : ""}
+              {job.deadlineDate ? ` - Date limite : ${job.deadlineDate.toLocaleDateString("fr-FR")}` : ""}
             </p>
           )}
           <div className="mt-3" style={{ color: "var(--sala-red)", fontSize: "0.85rem", lineHeight: 1.6 }}>

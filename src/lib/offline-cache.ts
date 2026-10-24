@@ -1,6 +1,6 @@
 // src/lib/offline-cache.ts
-// Sauvegarde locale (localStorage) du dernier contenu chargé — offres,
-// événements, annuaires — pour qu'il reste consultable même sans connexion,
+// Sauvegarde locale (localStorage) du dernier contenu chargé - offres,
+// événements, annuaires - pour qu'il reste consultable même sans connexion,
 // y compris en changeant de page. Le "mode hors-ligne" (interrupteur dans la
 // sidebar / la barre du haut en mobile) active ou désactive cette
 // sauvegarde ; par défaut il est actif.

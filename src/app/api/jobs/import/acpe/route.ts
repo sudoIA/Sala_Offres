@@ -2,7 +2,7 @@
 // Collecte les offres ACPE et les renvoie normalisées, sans toucher à
 // Firestore : c'est l'écran admin ("Imports") qui, une fois connecté avec un
 // compte administrateur, écrit lui-même le résultat dans "emplois_import"
-// (voir useJobImports.ts) — ainsi les règles de sécurité Firestore standard
+// (voir useJobImports.ts) - ainsi les règles de sécurité Firestore standard
 // (isAdmin()) s'appliquent normalement, sans avoir besoin d'identifiants
 // serveur séparés (Firebase Admin SDK).
 

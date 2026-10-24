@@ -1,7 +1,7 @@
 // src/hooks/useCvBuilder.ts
 // État complet du générateur de CV : personnel, listes dynamiques
 // (expériences/formations/projets/langues), compétences/loisirs, modèle
-// choisi — avec sauvegarde automatique dans sessionStorage et sauvegarde à
+// choisi - avec sauvegarde automatique dans sessionStorage et sauvegarde à
 // la demande dans Firestore pour l'utilisateur connecté.
 
 "use client";

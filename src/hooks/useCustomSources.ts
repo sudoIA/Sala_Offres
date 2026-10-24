@@ -55,7 +55,7 @@ export function useCustomSources() {
   async function updateSource(source: CustomSource, patch: Partial<CustomSourceConfig & Pick<CustomSource, "lastRunAt" | "lastCount" | "lastError">>) {
     await updateDoc(doc(db, "import_sources", source.id), patch);
     if ("enabled" in patch) {
-      await logAdminAction("update", "import_sources", `${source.name} — collecte quotidienne ${patch.enabled ? "activée" : "désactivée"}`, source.id);
+      await logAdminAction("update", "import_sources", `${source.name} - collecte quotidienne ${patch.enabled ? "activée" : "désactivée"}`, source.id);
     }
   }
 
@@ -66,7 +66,7 @@ export function useCustomSources() {
    */
   async function setDefaultCompany(source: CustomSource, defaultCompany: string): Promise<number> {
     await updateDoc(doc(db, "import_sources", source.id), { defaultCompany });
-    await logAdminAction("update", "import_sources", `${source.name} — entreprise par défaut : ${defaultCompany || "aucune"}`, source.id);
+    await logAdminAction("update", "import_sources", `${source.name} - entreprise par défaut : ${defaultCompany || "aucune"}`, source.id);
     if (!defaultCompany) return 0;
     const pending = await getDocs(
       query(collection(db, "emplois_import"), where("source", "==", customSourceKey(source.id)), where("status", "==", "pending"))

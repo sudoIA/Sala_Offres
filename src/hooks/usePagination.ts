@@ -1,6 +1,6 @@
 // src/hooks/usePagination.ts
 // Pagination générique côté client pour les grilles du back-office (offres,
-// événements, annuaires...) — évite les listes interminables sur une seule
+// événements, annuaires...) - évite les listes interminables sur une seule
 // page. `resetKey` (ex : le terme de recherche) ramène automatiquement à la
 // page 1 quand il change.
 

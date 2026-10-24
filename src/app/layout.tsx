@@ -20,7 +20,7 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
 });
 
-const title = "Sala — Emplois & Opportunités en République du Congo";
+const title = "Sala - Emplois & Opportunités en République du Congo";
 const description =
   "Plateforme d'aide à l'emploi et aux opportunités pour les jeunes en République du Congo par l'ONG Sala (Brazzaville, Pointe-Noire).";
 

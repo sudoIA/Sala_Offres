@@ -1,6 +1,6 @@
 // src/hooks/useCompanyLogos.ts
 // Résout en arrière-plan le logo de chaque entreprise présente dans une
-// liste d'offres, sans bloquer le rendu — voir resolveCompanyLogoUrl.
+// liste d'offres, sans bloquer le rendu - voir resolveCompanyLogoUrl.
 // Dédoublonne par nom d'entreprise pour éviter les recherches redondantes.
 
 "use client";
