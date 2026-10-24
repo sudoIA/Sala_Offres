@@ -1,7 +1,7 @@
 // src/components/profile/FavoritesPanel.tsx
-// Onglet "Favoris" du profil : les offres mises en favori sur cet appareil
-// (bouton favori des cartes d'offres, stocké localement). L'onglet affichait
-// auparavant toujours "aucun favori".
+// Onglet "Favoris" du profil : les offres mises en favori (bouton favori des
+// cartes d'offres), enregistrées dans le compte et retrouvées sur tous les
+// appareils et dans l'application mobile (voir favorites-sync.ts).
 
 "use client";
 
@@ -10,7 +10,7 @@ import Link from "next/link";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { JobCard } from "@/components/JobCard";
-import { readFavoris, toggleFavori } from "@/lib/job-helpers";
+import { FAVORIS_EVENT, readFavoris, toggleFavori } from "@/lib/job-helpers";
 import type { Job, JobDoc } from "@/types/job";
 
 const MAX_FAVORITES = 50;
@@ -18,6 +18,14 @@ const MAX_FAVORITES = 50;
 export function FavoritesPanel() {
   const [jobs, setJobs] = useState<Job[] | null>(null);
   const [missing, setMissing] = useState<string[]>([]);
+  // Relu quand les favoris du compte arrivent après l'affichage de l'onglet.
+  const [version, setVersion] = useState(0);
+
+  useEffect(() => {
+    const reload = () => setVersion((v) => v + 1);
+    window.addEventListener(FAVORIS_EVENT, reload);
+    return () => window.removeEventListener(FAVORIS_EVENT, reload);
+  }, []);
 
   useEffect(() => {
     const ids = readFavoris().slice(-MAX_FAVORITES).reverse(); // plus récents d'abord
@@ -36,7 +44,7 @@ export function FavoritesPanel() {
       setJobs(results.flatMap((r) => (r.job && r.job.visibility !== false ? [r.job] : [])));
       setMissing(results.filter((r) => !r.job || r.job.visibility === false).map((r) => r.id));
     });
-  }, []);
+  }, [version]);
 
   function remove(jobId: string) {
     toggleFavori(jobId);
@@ -53,7 +61,7 @@ export function FavoritesPanel() {
   return (
     <div>
       <h5 className="fw-bold mb-1">Offres sauvegardées</h5>
-      <p className="text-muted small mb-3">Les favoris sont enregistrés sur cet appareil (téléphone ou ordinateur).</p>
+      <p className="text-muted small mb-3">Vos favoris sont enregistrés dans votre compte : vous les retrouvez sur tous vos appareils et dans l&apos;application Sala.</p>
 
       {jobs === null && (
         <div className="text-center py-4">

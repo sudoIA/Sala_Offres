@@ -1,6 +1,7 @@
 // src/app/api/v1/route.ts
 // GET /api/v1 : sommaire de l'API publique (lecture seule). Documentation
-// complète pour les développeurs : docs/api-v1.md.
+// complète pour les développeurs : docs/api-v1.md (et docs/app-mobile-guide.md
+// pour les comptes candidats, les favoris et la sécurité).
 
 import { NextRequest } from "next/server";
 import { apiJson, apiOptions, handleGet } from "@/lib/api/http";
@@ -17,7 +18,7 @@ export function GET(req: NextRequest) {
         version: "1",
         description: "API publique en lecture seule des contenus du site Sala (ongsala.com).",
         endpoints: {
-          offres: `${base}/offres?page=1&limit=20&q=&ville=&contrat=`,
+          offres: `${base}/offres?page=1&limit=20&q=&ville=&contrat=&ids=`,
           offre: `${base}/offres/{id}`,
           evenements: `${base}/evenements?ville=`,
           evenement: `${base}/evenements/{id}`,

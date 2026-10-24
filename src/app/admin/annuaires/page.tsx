@@ -15,6 +15,7 @@ import { usePagination } from "@/hooks/usePagination";
 import { AnnuaireCard, AnnuaireCardSkeleton } from "@/components/annuaire/AnnuaireCard";
 import { AnnuaireDetailContent } from "@/components/annuaire/AnnuaireDetailContent";
 import { AnnuaireFormModal } from "@/components/admin/AnnuaireFormModal";
+import { MissingCompaniesPanel, type MissingCompany } from "@/components/admin/MissingCompaniesPanel";
 import { Modal } from "@/components/Modal";
 import { Pagination } from "@/components/admin/Pagination";
 import { confirmDelete, notify } from "@/lib/notify";
@@ -34,6 +35,8 @@ export default function AdminAnnuairesPage() {
   const [search, setSearch] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<AnnuaireItem | null>(null);
+  // Nouvelle fiche pré-remplie depuis une offre (voir MissingCompaniesPanel).
+  const [prefill, setPrefill] = useState<Record<string, string> | null>(null);
   const [previewItem, setPreviewItem] = useState<AnnuaireItem | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -41,6 +44,7 @@ export default function AdminAnnuairesPage() {
   useEffect(() => {
     if (searchParams.get("new") === "1") {
       setEditingItem(null);
+      setPrefill(null);
       setModalOpen(true);
       router.replace("/admin/annuaires");
     }
@@ -67,6 +71,15 @@ export default function AdminAnnuairesPage() {
   function handleEdit(item: AnnuaireItem) {
     setPreviewItem(null);
     setEditingItem(item);
+    setPrefill(null);
+    setModalOpen(true);
+  }
+
+  function handleCreateFromJobs(company: MissingCompany) {
+    // Pas le lien "site" de l'offre : c'est souvent la page de candidature, pas le site de l'entreprise.
+    const withContact = (key: "city" | "email" | "tel") => company.jobs.map((j) => (j[key] || "").trim()).find(Boolean) || "";
+    setEditingItem(null);
+    setPrefill({ name: company.name, city: withContact("city"), email: withContact("email"), phone: withContact("tel") });
     setModalOpen(true);
   }
 
@@ -81,6 +94,7 @@ export default function AdminAnnuairesPage() {
           className="btn-sala-primary"
           onClick={() => {
             setEditingItem(null);
+            setPrefill(null);
             setModalOpen(true);
           }}
         >
@@ -102,6 +116,8 @@ export default function AdminAnnuairesPage() {
           </button>
         ))}
       </div>
+
+      {category === "companies" && !loading && <MissingCompaniesPanel companies={items} onCreate={handleCreateFromJobs} />}
 
       <div className="admin-toolbar">
         <div className="admin-search-wrap">
@@ -177,7 +193,7 @@ export default function AdminAnnuairesPage() {
         )}
       </Modal>
 
-      <AnnuaireFormModal open={modalOpen} category={category} item={editingItem} onClose={() => setModalOpen(false)} />
+      <AnnuaireFormModal open={modalOpen} category={category} item={editingItem} initial={prefill} onClose={() => setModalOpen(false)} />
     </section>
   );
 }

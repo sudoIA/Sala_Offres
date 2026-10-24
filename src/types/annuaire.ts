@@ -70,6 +70,8 @@ export interface CompanyDoc extends AnnuaireLegacyFields {
   website?: string;
   description?: string;
   services?: string[];
+  /** Autres noms sous lesquels l'entreprise publie ses offres (voir company-match.ts). */
+  aliases?: string[];
   logo?: string;
   photo?: string;
   summary?: string;

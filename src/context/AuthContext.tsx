@@ -10,6 +10,7 @@ import { onAuthStateChanged, type User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { isStaffRole, staffDisplayName, type StaffRole } from "@/lib/staff-roles";
+import { forgetAccountFavorites, syncFavoritesWithAccount } from "@/lib/favorites-sync";
 
 interface AuthContextValue {
   user: User | null;
@@ -77,6 +78,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const staffRole = isStaffRole(data?.role) ? data.role : null;
           setRole(staffRole);
           setStaffName(staffRole ? await loadStaffName(firebaseUser, data?.name) : "");
+          // Favoris du candidat : sans bloquer l'affichage.
+          if (!staffRole) syncFavoritesWithAccount(firebaseUser).catch(() => {});
         } catch (err) {
           console.error("Lecture du rôle impossible :", err);
           setRole(null);
@@ -84,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setRole(null);
         setStaffName("");
+        forgetAccountFavorites();
       }
       setLoading(false);
     });

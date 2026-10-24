@@ -4399,3 +4399,25 @@ body.dashboard-body {
 .grecaptcha-badge {
   visibility: hidden;
 }
+
+/* Champ d'image du back-office (ImageField) : aperçu, saisie, envoi. */
+.image-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.image-field input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.image-field-preview {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--sala-border);
+  background: #fff;
+  flex-shrink: 0;
+}

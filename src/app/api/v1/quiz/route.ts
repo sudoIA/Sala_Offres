@@ -1,12 +1,15 @@
 // src/app/api/v1/quiz/route.ts
 // GET /api/v1/quiz?theme=entretiens|droit_du_travail : questions d'un quiz,
 // dans l'ordre. Repli sur les questions d'origine du site si la base est vide.
+// `badges` : les niveaux débloqués selon le meilleur score (voir
+// quiz-badges.ts), pour que l'app affiche les mêmes que le site.
 
 import { NextRequest } from "next/server";
 import { apiError, apiJson, apiOptions, handleGet, textParam } from "@/lib/api/http";
 import { readCollection } from "@/lib/api/server-data";
 import { toApiQuiz } from "@/lib/api/serializers";
 import { INITIAL_QUIZ } from "@/lib/quiz-content";
+import { BADGE_LEVELS } from "@/lib/quiz-badges";
 import { QUIZ_THEME_LABELS } from "@/types/quiz";
 
 export const runtime = "nodejs";
@@ -19,7 +22,8 @@ export function GET(req: NextRequest) {
     let data = docs.map(toApiQuiz).filter((q) => q.theme === theme && q.options.length >= 2);
     if (data.length === 0) data = INITIAL_QUIZ.filter((q) => q.theme === theme).map((q) => toApiQuiz({ ...q }));
     data.sort((a, b) => a.order - b.order);
-    return apiJson({ data }, 3600);
+    const badges = BADGE_LEVELS.map(({ key, label, min, hint }) => ({ key, label, minRatio: min, hint }));
+    return apiJson({ data, badges }, 3600);
   });
 }
 

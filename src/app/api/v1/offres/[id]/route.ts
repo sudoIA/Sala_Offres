@@ -6,7 +6,7 @@ import { NextRequest } from "next/server";
 import { apiError, apiJson, apiOptions, handleGet } from "@/lib/api/http";
 import { readDocument } from "@/lib/api/server-data";
 import { isJobActive, toApiJob } from "@/lib/api/serializers";
-import { resolveImage } from "@/lib/api/images";
+import { attachCompanies } from "@/lib/api/company-links";
 import { getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
@@ -18,7 +18,7 @@ export function GET(req: NextRequest, ctx: { params: Promise<{ id: string }> }) 
     const doc = await readDocument("emplois", id);
     if (!doc || !isJobActive(doc)) return apiError(404, "Offre introuvable ou expirée.");
     const job = toApiJob(doc, getSiteUrl());
-    job.logo = await resolveImage("entreprises", job.company, true);
+    await attachCompanies([job]);
     return apiJson({ data: job });
   });
 }

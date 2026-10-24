@@ -138,6 +138,7 @@ await check("admin lit les statistiques", assertSucceeds(getDoc(doc(admin, "stat
 console.log("Badges de quiz du profil");
 await check("recréation du profil", assertSucceeds(setDoc(doc(user, "users/u1"), profile)));
 await check("candidat enregistre ses scores", assertSucceeds(updateDoc(doc(user, "users/u1"), { quizResults: { droit_du_travail: { best: 8, total: 10, attempts: 1 } } })));
+await check("candidat ajoute une offre à ses favoris", assertSucceeds(updateDoc(doc(user, "users/u1"), { savedJobs: ["job1", "job2"] })));
 await check("thème inconnu refusé dans les scores", assertFails(updateDoc(doc(user, "users/u1"), { quizResults: { autre: {} } })));
 
 console.log("Double authentification des admins");

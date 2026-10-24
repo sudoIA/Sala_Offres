@@ -60,6 +60,12 @@ describe("offres", () => {
     expect(matchesJobFilters(job, { ville: "Brazzaville" })).toBe(false);
     expect(matchesJobFilters(job, { contrat: "Stage" })).toBe(false);
   });
+
+  it("« CDI » retrouve aussi « Contrat à durée indéterminée »", () => {
+    const job = toApiJob({ ...doc, contract: "Contrat à durée indéterminée" }, SITE);
+    expect(matchesJobFilters(job, { contrat: "CDI" })).toBe(true);
+    expect(matchesJobFilters(job, { contrat: "CDD" })).toBe(false);
+  });
 });
 
 describe("événements", () => {

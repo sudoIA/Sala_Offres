@@ -8,7 +8,7 @@ import { apiError, apiJson, apiOptions, handleGet } from "@/lib/api/http";
 import { readCollection, readDocument } from "@/lib/api/server-data";
 import { isJobActive, toApiAnnuaire, toApiJob } from "@/lib/api/serializers";
 import { resolveImage } from "@/lib/api/images";
-import { companyMatches } from "@/lib/company-match";
+import { matchesCompanyItem } from "@/lib/company-match";
 import { getSiteUrl } from "@/lib/site-url";
 
 export const runtime = "nodejs";
@@ -21,10 +21,9 @@ export function GET(req: NextRequest, ctx: { params: Promise<{ id: string }> }) 
     if (!doc) return apiError(404, "Entreprise introuvable.");
 
     const company = toApiAnnuaire(doc, "entreprises");
-    const names = [doc.name, doc.full_name].filter((n): n is string => typeof n === "string");
     const siteUrl = getSiteUrl();
     const jobs = (await readCollection("emplois", { after: "deadline" }))
-      .filter((d) => isJobActive(d) && names.some((n) => companyMatches(d.company as string, n)))
+      .filter((d) => isJobActive(d) && matchesCompanyItem(d.company as string, doc))
       .map((d) => toApiJob(d, siteUrl))
       .sort((a, b) => (b.publishedAt || "").localeCompare(a.publishedAt || ""));
 
@@ -34,7 +33,10 @@ export function GET(req: NextRequest, ctx: { params: Promise<{ id: string }> }) 
     ]);
     company.logo = logo;
     company.photo = photo;
-    jobs.forEach((job) => (job.logo = logo));
+    jobs.forEach((job) => {
+      job.companyId = id;
+      job.logo = logo;
+    });
 
     return apiJson({ data: { ...company, url: `${siteUrl.replace(/\/$/, "")}/entreprises/${encodeURIComponent(id)}`, offres: jobs } });
   });

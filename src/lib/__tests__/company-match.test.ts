@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { companyMatches, companyWords } from "@/lib/company-match";
+import { companyMatches, companyWords, matchesCompanyItem } from "@/lib/company-match";
 
 describe("companyWords", () => {
   it("retire accents, ponctuation et forme juridique", () => {
@@ -36,5 +36,15 @@ describe("companyMatches", () => {
   it("reconnaît les sigles avec ou sans points", () => {
     expect(companyMatches("AGC Vie", "A.G.C. VIE")).toBe(true);
     expect(companyMatches("Air Liquide SCGI", "AIR LIQUIDE S.C.G.I.")).toBe(true);
+  });
+});
+
+describe("matchesCompanyItem", () => {
+  it("essaie le nom, le nom complet et les autres noms de la fiche", () => {
+    const comifi = { name: "COMIFI", full_name: "COMIFI", aliases: ["Congolaise de Microfinance"] };
+    expect(matchesCompanyItem("CONGOLAISE DE MICROFINANCE", comifi)).toBe(true);
+    expect(matchesCompanyItem("COMIFI S.A.", comifi)).toBe(true);
+    expect(matchesCompanyItem("MTN Congo", comifi)).toBe(false);
+    expect(matchesCompanyItem("Le PNUD", { name: "PNUD", aliases: "pas une liste" })).toBe(true);
   });
 });

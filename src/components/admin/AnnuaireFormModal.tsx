@@ -11,11 +11,14 @@ import { Modal } from "@/components/Modal";
 import { notify } from "@/lib/notify";
 import { ANNUAIRE_COLLECTIONS, type AnnuaireCategory, type AnnuaireItem } from "@/types/annuaire";
 import { logAdminAction } from "@/lib/admin-log";
+import { ImageField } from "@/components/admin/ImageField";
 
 interface AnnuaireFormModalProps {
   open: boolean;
   category: AnnuaireCategory;
   item: AnnuaireItem | null;
+  /** Nouvelle fiche pré-remplie (ex : entreprise vue dans une offre). */
+  initial?: Partial<typeof EMPTY_FORM> | null;
   onClose: () => void;
 }
 
@@ -45,12 +48,13 @@ const EMPTY_FORM = {
   coordinator: "",
   fee: "",
   activities: "",
+  aliases: "",
   logo: "",
   photo: "",
   summary: "",
 };
 
-export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFormModalProps) {
+export function AnnuaireFormModal({ open, category, item, initial, onClose }: AnnuaireFormModalProps) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [verified, setVerified] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -81,11 +85,13 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
       coordinator: item?.coordinator || "",
       fee: item?.fee || "",
       activities: (item?.activities || []).join(", "),
+      aliases: (item?.aliases || []).join(", "),
       logo: item?.logo || "",
       photo: item?.photo || "",
       summary: item?.summary || "",
+      ...(item ? {} : initial || {}),
     });
-  }, [open, item]);
+  }, [open, item, initial]);
 
   function set<K extends keyof typeof EMPTY_FORM>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -129,6 +135,7 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
         website: form.website.trim(),
         description: form.description.trim(),
         services: form.services.split(",").map((s) => s.trim()).filter(Boolean),
+        aliases: form.aliases.split(",").map((s) => s.trim()).filter(Boolean),
         logo: form.logo.trim(),
         photo: form.photo.trim(),
         summary: form.summary.trim(),
@@ -189,8 +196,8 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Email</label><input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
               <div className="form-group"><label>Site Web</label><input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} /></div>
-              <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
-              <div className="form-group"><label>Photo du lieu (URL de l&apos;image, facultatif)</label><input type="url" placeholder="https://..." value={form.photo} onChange={(e) => set("photo", e.target.value)} /></div>
+              <ImageField label="Logo" value={form.logo} onChange={(v) => set("logo", v)} folder={ANNUAIRE_COLLECTIONS[category]} nameHint={form.name} />
+              <ImageField label="Photo du lieu (facultatif)" value={form.photo} onChange={(v) => set("photo", v)} folder={ANNUAIRE_COLLECTIONS[category]} nameHint={`${form.name} photo`} />
             </div>
             <div className="form-group full-width">
               <label>Résumé (1-2 phrases, affiché sur la carte)</label>
@@ -220,8 +227,8 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Email RH</label><input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
               <div className="form-group"><label>Site Web</label><input type="url" value={form.website} onChange={(e) => set("website", e.target.value)} /></div>
-              <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
-              <div className="form-group"><label>Photo du lieu (URL de l&apos;image, facultatif)</label><input type="url" placeholder="https://..." value={form.photo} onChange={(e) => set("photo", e.target.value)} /></div>
+              <ImageField label="Logo" value={form.logo} onChange={(v) => set("logo", v)} folder={ANNUAIRE_COLLECTIONS[category]} nameHint={form.name} />
+              <ImageField label="Photo du lieu (facultatif)" value={form.photo} onChange={(v) => set("photo", v)} folder={ANNUAIRE_COLLECTIONS[category]} nameHint={`${form.name} photo`} />
             </div>
             <div className="form-group full-width">
               <label>Résumé (1-2 phrases, affiché sur la carte)</label>
@@ -230,6 +237,11 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
             <div className="form-group full-width">
               <label>Domaines d&apos;activité (séparés par des virgules)</label>
               <input type="text" placeholder="Recrutement, Stages, Alternance..." value={form.services} onChange={(e) => set("services", e.target.value)} />
+            </div>
+            <div className="form-group full-width">
+              <label>Autres noms dans les offres (séparés par des virgules, facultatif)</label>
+              <input type="text" placeholder="Ex : Congolaise de Microfinance, CO.MI.FI" value={form.aliases} onChange={(e) => set("aliases", e.target.value)} />
+              <small className="text-muted">Les offres publiées sous l&apos;un de ces noms sont reliées à cette fiche : logo et page entreprise.</small>
             </div>
             <div className="form-group full-width">
               <label>Description complète (affichée dans le détail)</label>
@@ -251,8 +263,8 @@ export function AnnuaireFormModal({ open, category, item, onClose }: AnnuaireFor
               <div className="form-group"><label>Coordinateur</label><input type="text" value={form.coordinator} onChange={(e) => set("coordinator", e.target.value)} /></div>
               <div className="form-group"><label>Téléphone</label><input type="text" value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
               <div className="form-group"><label>Tarif</label><input type="text" placeholder="Gratuit, Adhésion libre..." value={form.fee} onChange={(e) => set("fee", e.target.value)} /></div>
-              <div className="form-group"><label>Logo (URL de l&apos;image)</label><input type="url" placeholder="https://..." value={form.logo} onChange={(e) => set("logo", e.target.value)} /></div>
-              <div className="form-group"><label>Photo du lieu (URL de l&apos;image, facultatif)</label><input type="url" placeholder="https://..." value={form.photo} onChange={(e) => set("photo", e.target.value)} /></div>
+              <ImageField label="Logo" value={form.logo} onChange={(v) => set("logo", v)} folder={ANNUAIRE_COLLECTIONS[category]} nameHint={form.name} />
+              <ImageField label="Photo du lieu (facultatif)" value={form.photo} onChange={(v) => set("photo", v)} folder={ANNUAIRE_COLLECTIONS[category]} nameHint={`${form.name} photo`} />
             </div>
             <div className="form-group full-width">
               <label>Résumé (1-2 phrases, affiché sur la carte)</label>

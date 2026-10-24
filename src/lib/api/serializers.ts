@@ -8,6 +8,7 @@
 import { formatJobBody } from "@/lib/job-body";
 import { RICH_TEXT, sanitizeHtmlServer } from "@/lib/server-sanitize";
 import { safeExternalUrl } from "@/lib/safe-url";
+import { ALERT_CONTRACTS } from "@/lib/job-alerts";
 import { eventCardSummary, eventContactLinks, isEventCurrent, type EventContactLink } from "@/lib/event-helpers";
 import {
   annuaireAddress,
@@ -62,6 +63,8 @@ export interface ApiJob {
   site: string | null;
   languages: string | null;
   competences: string[];
+  /** Fiche de l'annuaire des entreprises reliée à l'offre (voir company-links.ts), ou null. */
+  companyId: string | null;
   logo: string | null;
   publishedAt: string | null;
   deadline: string | null;
@@ -89,6 +92,7 @@ export function toApiJob(d: PlainDoc, siteUrl: string): ApiJob {
     site: safeExternalUrl(str(d.site)),
     languages: strOrNull(d.languages),
     competences: Array.isArray(d.competences) ? d.competences.filter((c): c is string => typeof c === "string") : [],
+    companyId: null,
     logo: null,
     publishedAt: date(d.timestamp),
     deadline: date(d.deadline),
@@ -105,7 +109,11 @@ export interface JobFilters {
 /** Filtres de la liste des offres (insensibles à la casse et aux accents). */
 export function matchesJobFilters(job: ApiJob, { q, ville, contrat }: JobFilters): boolean {
   if (ville && !searchable(job.city).includes(searchable(ville))) return false;
-  if (contrat && searchable(job.contract) !== searchable(contrat)) return false;
+  if (contrat) {
+    // "CDI" retrouve aussi "Contrat à durée indéterminée" (mêmes formulations que les alertes e-mail).
+    const known = ALERT_CONTRACTS.find((c) => searchable(c.value) === searchable(contrat));
+    if (known ? !known.pattern.test(`${job.contract} ${job.title}`) : searchable(job.contract) !== searchable(contrat)) return false;
+  }
   if (q) {
     const haystack = searchable(`${job.title} ${job.company} ${job.city} ${job.contract} ${job.descriptionText}`);
     if (!searchable(q).split(/\s+/).filter(Boolean).every((word) => haystack.includes(word))) return false;
@@ -269,6 +277,8 @@ export interface ApiAnnuaireItem {
   phones: string[];
   emails: string[];
   website: string | null;
+  /** Entreprises : autres noms sous lesquels elle publie ses offres. */
+  aliases: string[];
   tags: { label: string; items: string[] };
   directionsUrl: string | null;
   logo: string | null;
@@ -294,6 +304,7 @@ export function toApiAnnuaire(d: PlainDoc, categoryKey: string): ApiAnnuaireItem
     phones: annuairePhones(item),
     emails: annuaireEmails(item),
     website: annuaireWebsite(item) || null,
+    aliases: Array.isArray(item.aliases) ? item.aliases.filter((a): a is string => typeof a === "string") : [],
     tags: annuaireDetailChips(category, item),
     directionsUrl: annuaireDirectionsUrl(item),
     logo: null,

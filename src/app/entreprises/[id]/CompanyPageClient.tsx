@@ -16,7 +16,7 @@ import { AnnuaireDetailContent } from "@/components/annuaire/AnnuaireDetailConte
 import { JobCard } from "@/components/JobCard";
 import { useActiveJobs } from "@/hooks/useJobs";
 import { useCompanyLogos } from "@/hooks/useCompanyLogos";
-import { companyMatches } from "@/lib/company-match";
+import { matchesCompanyItem } from "@/lib/company-match";
 import { annuaireFullName } from "@/lib/annuaire-helpers";
 import { ANNUAIRE_COLLECTIONS, type AnnuaireItem, type AnnuaireItemDoc } from "@/types/annuaire";
 
@@ -41,7 +41,7 @@ export function CompanyPageClient({ id }: { id: string }) {
   }, [id]);
 
   const companyJobs = useMemo(
-    () => (company ? jobs.filter((j) => companyMatches(j.company, company.name) || companyMatches(j.company, company.full_name)) : []),
+    () => (company ? jobs.filter((j) => matchesCompanyItem(j.company, company)) : []),
     [jobs, company]
   );
   const logos = useCompanyLogos(companyJobs.map((j) => j.company));

@@ -3,7 +3,9 @@
 // "MTN CONGO S.A.", "Total Énergies") à sa fiche de l'annuaire des
 // entreprises ("MTN Congo", "TotalEnergies"), pour la page entreprise.
 // Comparaison sans accents, casse, ponctuation ni forme juridique ; l'un
-// des deux noms peut être contenu dans l'autre, mot pour mot.
+// des deux noms peut être contenu dans l'autre, mot pour mot. Une fiche peut
+// aussi lister d'« autres noms » (champ "aliases" : "Congolaise de
+// Microfinance" pour COMIFI), essayés comme son nom.
 
 // Mots trop courants pour identifier à eux seuls une entreprise ("Congo"
 // correspondrait à "Airtel Congo" comme à "Jardin du Congo").
@@ -41,4 +43,19 @@ export function companyMatches(a?: string | null, b?: string | null): boolean {
   // Un nom trop court ("BG") correspondrait à n'importe quoi.
   if (short.join("").length < 3 || short.every((w) => GENERIC_WORDS.has(w))) return false;
   return containsSequence(long, short);
+}
+
+/** Fiche d'annuaire, telle que lue par le site (AnnuaireItem) ou par l'API (document brut). */
+type CompanyFiche = { name?: unknown; full_name?: unknown; aliases?: unknown } | Record<string, unknown>;
+
+/** Les noms sous lesquels une fiche d'annuaire peut apparaître dans une offre. */
+export function companyNames(fiche: CompanyFiche): string[] {
+  const item = fiche as { name?: unknown; full_name?: unknown; aliases?: unknown };
+  const aliases = Array.isArray(item.aliases) ? item.aliases : [];
+  return [item.name, item.full_name, ...aliases].filter((n): n is string => typeof n === "string" && n.trim() !== "");
+}
+
+/** Vrai si le nom d'entreprise d'une offre désigne cette fiche d'annuaire. */
+export function matchesCompanyItem(jobCompany: string | null | undefined, item: CompanyFiche): boolean {
+  return companyNames(item).some((n) => companyMatches(jobCompany, n));
 }

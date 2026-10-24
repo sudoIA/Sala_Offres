@@ -1,16 +1,25 @@
 // src/lib/job-helpers.ts
 // Petits utilitaires partagés entre les pages Offres : pastilles colorées
-// d'entreprise, compte à rebours d'expiration, favoris locaux (localStorage).
+// d'entreprise, compte à rebours d'expiration, favoris (sur l'appareil, et
+// dans le profil du candidat connecté : voir favorites-sync.ts).
 
 import { findStorageFileUrl } from "@/lib/storage-lookup";
+import { findCompany, loadCompanyDirectory } from "@/hooks/useCompanyDirectory";
+import { saveFavoriToAccount } from "@/lib/favorites-sync";
 
 /**
- * Cherche le logo d'une entreprise dans le dossier Storage "entreprises/"
- * (partagé avec l'annuaire des entreprises) à partir de son nom. Renvoie
- * null si aucun fichier ne correspond - CompanyTile affiche alors ses
- * initiales comme avant.
+ * Logo d'une entreprise : d'abord celui de sa fiche dans l'annuaire des
+ * entreprises (URL, ou nom de fichier du dossier Storage "entreprises/"),
+ * sinon un fichier de ce dossier dont le nom ressemble au sien. Renvoie
+ * null si rien ne correspond - CompanyTile affiche alors ses initiales.
  */
-export function resolveCompanyLogoUrl(company?: string | null): Promise<string | null> {
+export async function resolveCompanyLogoUrl(company?: string | null): Promise<string | null> {
+  const logo = findCompany(await loadCompanyDirectory(), company)?.logo?.trim();
+  if (logo && /^https?:\/\//i.test(logo)) return logo;
+  if (logo) {
+    const fromFiche = await findStorageFileUrl("entreprises", logo.replace(/\.[^.]+$/, ""), { bidirectional: true });
+    if (fromFiche) return fromFiche;
+  }
   return findStorageFileUrl("entreprises", company, { bidirectional: true });
 }
 
@@ -101,21 +110,34 @@ export function formatRelativeTime(date: Date): string {
 }
 
 const FAVORIS_KEY = "sala_favoris";
+/** Événement émis quand les favoris de l'appareil sont remplacés par ceux du compte. */
+export const FAVORIS_EVENT = "sala-favoris";
 
 /** Identifiants des offres mises en favori sur cet appareil (Profil > Favoris). */
 export function readFavoris(): string[] {
   try {
-    return JSON.parse(localStorage.getItem(FAVORIS_KEY) || "[]");
+    const list = JSON.parse(localStorage.getItem(FAVORIS_KEY) || "[]");
+    return Array.isArray(list) ? list.filter((id): id is string => typeof id === "string") : [];
   } catch {
     return [];
   }
+}
+
+/** Remplace les favoris de l'appareil (synchronisation avec le compte). */
+export function writeFavoris(ids: string[], notifyPage = false): void {
+  try {
+    localStorage.setItem(FAVORIS_KEY, JSON.stringify(ids));
+  } catch {
+    // Stockage indisponible (navigation privée).
+  }
+  if (notifyPage) window.dispatchEvent(new Event(FAVORIS_EVENT));
 }
 
 export function isFavori(jobId: string): boolean {
   return readFavoris().includes(jobId);
 }
 
-/** Bascule un favori local (par appareil) et renvoie le nouvel état. */
+/** Bascule un favori (appareil + compte si connecté) et renvoie le nouvel état. */
 export function toggleFavori(jobId: string): boolean {
   const favoris = readFavoris();
   const idx = favoris.indexOf(jobId);
@@ -124,12 +146,10 @@ export function toggleFavori(jobId: string): boolean {
   } else {
     favoris.push(jobId);
   }
-  try {
-    localStorage.setItem(FAVORIS_KEY, JSON.stringify(favoris));
-  } catch {
-    // Stockage indisponible (navigation privée) : le favori reste en mémoire pour cette session seulement.
-  }
-  return favoris.includes(jobId);
+  writeFavoris(favoris);
+  const saved = favoris.includes(jobId);
+  saveFavoriToAccount(jobId, saved);
+  return saved;
 }
 
 /** Partage une offre via l'API native si disponible, sinon copie le lien. */
