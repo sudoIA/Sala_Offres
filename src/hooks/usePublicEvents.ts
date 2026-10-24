@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { baselineEvenements } from "@/lib/evenements-content";
-import { sortEventsByDate, toSalaEvent } from "@/lib/event-helpers";
+import { isEventCurrent, sortEventsByDate, toSalaEvent } from "@/lib/event-helpers";
 import { loadSnapshot, saveSnapshot } from "@/lib/offline-cache";
 import type { EventDoc, SalaEvent } from "@/types/event";
 
@@ -70,7 +70,7 @@ export function usePublicEvents() {
         // Pas d'orderBy() ni de where() ici : Firestore exclurait
         // silencieusement tout événement sans champ "deadline", ce qui
         // ferait passer une collection non vide pour vide. On filtre donc
-        // côté client (visibilité + événements à venir uniquement).
+        // côté client (visibilité + événements à venir ou en cours).
         const snap = await Promise.race([getDocs(collection(db, "events")), timeout(FETCH_TIMEOUT_MS)]);
         if (cancelled) return;
 
@@ -79,10 +79,9 @@ export function usePublicEvents() {
           return;
         }
 
-        const now = new Date();
         const upcoming = snap.docs
           .map((d) => toSalaEvent(d.id, d.data() as EventDoc))
-          .filter((evt) => evt.visibility !== false && (!evt.deadlineDate || evt.deadlineDate > now));
+          .filter((evt) => evt.visibility !== false && isEventCurrent(evt));
 
         const sorted = sortEventsByDate(upcoming);
         setEvents(sorted);

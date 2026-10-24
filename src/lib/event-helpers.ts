@@ -17,6 +17,17 @@ export async function resolveEventImageUrl(image?: string | null): Promise<strin
   return findStorageFileUrl("events", trimmed);
 }
 
+/**
+ * Un événement reste affiché jusqu'à sa date de fin (deadline2), ou sa date
+ * de début (deadline) s'il n'a pas de fin. Filtrer sur la seule date de début
+ * masquait les événements en cours (ex. un concours ouvert du 10/09 au 25/10),
+ * alors que l'app mobile les affiche.
+ */
+export function isEventCurrent(evt: Pick<SalaEvent, "deadlineDate" | "deadline2Date">, now = new Date()): boolean {
+  const end = evt.deadline2Date || evt.deadlineDate;
+  return !end || end > now;
+}
+
 export function sortEventsByDate(events: SalaEvent[]): SalaEvent[] {
   return [...events].sort((a, b) => {
     const ta = a.deadlineDate ? a.deadlineDate.getTime() : Number.MAX_SAFE_INTEGER;
