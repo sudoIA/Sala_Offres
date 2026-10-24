@@ -1493,7 +1493,7 @@ footer.sala-footer .footer-recaptcha {
   border: 1px solid var(--sala-border);
   border-radius: 14px;
   padding: 0;
-  margin-bottom: 18px;
+  margin-bottom: 0;
   box-shadow: var(--sala-shadow-sm);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   height: 100%;
@@ -1519,7 +1519,7 @@ footer.sala-footer .footer-recaptcha {
   position: relative;
   flex-shrink: 0;
   display: flex;
-  padding: 14px 44px 14px 16px;
+  padding: 10px 40px 10px 12px;
 }
 
 .annuaire-card-banner-uni { background: linear-gradient(135deg, #cdeed6, #eaf6ed); }
@@ -1584,7 +1584,7 @@ footer.sala-footer .footer-recaptcha {
 }
 
 .annuaire-card-body {
-  padding: 14px 20px 20px;
+  padding: 10px 14px 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1603,22 +1603,31 @@ footer.sala-footer .footer-recaptcha {
 
 .annuaire-card-logo-wrap .sala-company-tile,
 .annuaire-card-logo-wrap .card-icon-header {
-  border: 3px solid #ffffff;
+  border: 2px solid #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 /* Dans la carte compacte, le logo reste bien visible mais plus petit que dans
-   la fiche détail (104px) puisqu'il est maintenant à côté du nom, pas au-dessus. */
+   la fiche détail (104px) puisqu'il est à côté du nom, pas au-dessus. */
 .annuaire-card-header-row .sala-company-tile.sala-company-tile-lg {
-  width: 72px;
-  height: 72px;
-  font-size: 1.3rem;
+  width: 52px;
+  height: 52px;
+  font-size: 1rem;
 }
 
 .annuaire-card-header-row .card-icon-header {
-  width: 72px;
-  height: 72px;
-  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  font-size: 1.45rem;
+}
+
+.annuaire-card-header-row {
+  gap: 10px;
+}
+
+.annuaire-card-header-row .annuaire-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
 }
 
 .annuaire-card-header-text {
@@ -1627,9 +1636,9 @@ footer.sala-footer .footer-recaptcha {
 }
 
 .annuaire-card-name {
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 700;
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -1687,24 +1696,26 @@ footer.sala-footer .footer-recaptcha {
 
 .annuaire-card-summary {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.5;
 }
 
-.annuaire-card-cta {
-  padding: 12px 20px;
-  border-top: 1px solid var(--sala-border);
-  text-align: right;
-  font-size: 0.85rem;
-  font-weight: 700;
-  margin-top: auto;
+/* Petite flèche sur la ligne de la ville : la carte entière s'ouvre au clic,
+   sans ligne « Voir la fiche » qui ajoutait de la hauteur. */
+.annuaire-card-arrow {
+  font-size: 0.8rem;
+  flex-shrink: 0;
 }
 
-.annuaire-card-cta.cta-uni { color: var(--sala-green-dark); }
-.annuaire-card-cta.cta-comp { color: #0284c7; }
-.annuaire-card-cta.cta-club { color: var(--sala-red-dark); }
+.annuaire-card-arrow.cta-uni { color: var(--sala-green-dark); }
+.annuaire-card-arrow.cta-comp { color: #0284c7; }
+.annuaire-card-arrow.cta-club { color: var(--sala-red-dark); }
+
+.annuaire-card .annuaire-skeleton-block {
+  height: 72px;
+}
 
 /* Fiche détail (modale) */
 .annuaire-detail-header {
