@@ -1,63 +1,30 @@
 // src/app/admin/utilisateurs/page.tsx
-// Comptes candidats inscrits ; promouvoir un compte donne accès au back-office.
+// Comptes candidats inscrits. Les membres de l'équipe y sont signalés par
+// leur rôle ; l'accès au back-office se donne dans Admin > Équipe.
 
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
 import { useUsersAdmin } from "@/hooks/useUsersAdmin";
 import { CompanyTile } from "@/components/CompanyTile";
-import { confirmAction, notify } from "@/lib/notify";
-import type { UserProfile } from "@/types/user-profile";
+import { ROLE_INFO } from "@/lib/staff-roles";
 
 export default function AdminUsersPage() {
-  const { users, adminUids, loading, promote, demote } = useUsersAdmin();
-  const { user: currentUser } = useAuth();
+  const { users, staffRoles, loading } = useUsersAdmin();
   const [search, setSearch] = useState("");
 
   const term = search.trim().toLowerCase();
   const filtered = users.filter((u) => !term || [u.fullName, u.email, u.city].some((v) => (v || "").toLowerCase().includes(term)));
-
-  async function handleToggleAdmin(user: UserProfile) {
-    const isAdmin = adminUids.has(user.id);
-    const label = user.fullName || user.email || "cet utilisateur";
-    // Garde-fous : ne jamais laisser le back-office sans administrateur, ni
-    // un admin se retirer ses propres droits par mégarde (il serait aussitôt
-    // expulsé du tableau de bord sans pouvoir annuler).
-    if (isAdmin && user.id === currentUser?.uid) {
-      notify("Vous ne pouvez pas retirer vos propres droits. Demandez à un autre administrateur.", "error");
-      return;
-    }
-    if (isAdmin && adminUids.size <= 1) {
-      notify("Impossible : c'est le dernier administrateur. Promouvez d'abord quelqu'un d'autre.", "error");
-      return;
-    }
-    const confirmed = isAdmin
-      ? await confirmAction("Confirmer", `Retirer les droits administrateur de « ${label} » ?`, "#e30613")
-      : await confirmAction("Confirmer", `Donner les droits administrateur (accès complet à ce tableau de bord) à « ${label} » ?`);
-
-    if (!confirmed) return;
-
-    try {
-      if (isAdmin) {
-        await demote(user.id);
-        notify("Droits administrateur retirés.");
-      } else {
-        await promote(user.id);
-        notify("Utilisateur promu administrateur.");
-      }
-    } catch (err) {
-      console.error("Erreur mise à jour du rôle :", err);
-      notify("Erreur : " + (err as Error).message, "error");
-    }
-  }
 
   return (
     <section>
       <div className="admin-section-header">
         <div>
           <h1 className="admin-page-title">Utilisateurs</h1>
-          <p className="admin-page-subtitle">Comptes candidats inscrits. Promouvoir un compte donne accès à ce tableau de bord.</p>
+          <p className="admin-page-subtitle">
+            Comptes candidats inscrits. Pour donner accès au back-office à quelqu&apos;un, passez par <Link href="/admin/equipe">Équipe</Link>.
+          </p>
         </div>
       </div>
 
@@ -89,7 +56,7 @@ export default function AdminUsersPage() {
 
         {!loading &&
           filtered.map((u) => {
-            const isAdmin = adminUids.has(u.id);
+            const role = staffRoles.get(u.id);
             const joined = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString("fr-FR") : "-";
             return (
               <div className="admin-card" key={u.id}>
@@ -101,9 +68,9 @@ export default function AdminUsersPage() {
                       <div className="subtitle">{u.email || ""}</div>
                     </div>
                   </div>
-                  {isAdmin && (
+                  {role && (
                     <span className="admin-badge" style={{ background: "var(--sala-red-light)", color: "var(--sala-red)" }}>
-                      Admin
+                      {ROLE_INFO[role].label}
                     </span>
                   )}
                 </div>
@@ -113,13 +80,6 @@ export default function AdminUsersPage() {
                 </div>
                 <div className="admin-card-footer">
                   <span className="text-muted small">{(u.skills || []).length} compétence(s)</span>
-                  <button
-                    className={`btn-icon ${isAdmin ? "btn-icon-delete" : "btn-icon-edit"}`}
-                    title={isAdmin ? "Retirer les droits admin" : "Promouvoir en admin"}
-                    onClick={() => handleToggleAdmin(u)}
-                  >
-                    <i className={`fas ${isAdmin ? "fa-user-minus" : "fa-user-shield"}`}></i>
-                  </button>
                 </div>
               </div>
             );

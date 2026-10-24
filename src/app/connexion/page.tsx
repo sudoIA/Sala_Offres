@@ -12,6 +12,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { signInWithEmailAndPassword, sendPasswordResetEmail, signOut, type AuthError, type MultiFactorError, type UserCredential } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { isMfaRequired, mfaErrorMessage, resolveTotpSignIn } from "@/lib/mfa";
+import { isStaffRole } from "@/lib/staff-roles";
 
 export default function ConnexionPage() {
   const router = useRouter();
@@ -30,12 +31,13 @@ export default function ConnexionPage() {
     const roleDoc = await getDoc(doc(db, "roles", result.user.uid));
     const role = roleDoc.exists() ? roleDoc.data().role : "user";
 
-    if (role === "admin") {
+    if (isStaffRole(role)) {
       setSuccess("Connexion réussie ! Redirection...");
       setFadingOut(true);
-      setTimeout(() => router.push("/admin"), 500);
+      // Un modérateur n'a pas accès à la vue d'ensemble : il arrive sur les offres.
+      setTimeout(() => router.push(role === "admin" ? "/admin" : "/admin/offres"), 500);
     } else {
-      setError("Accès réservé aux administrateurs de l'ONG Sala.");
+      setError("Accès réservé à l'équipe de l'ONG Sala.");
       await signOut(auth);
       setLoading(false);
     }

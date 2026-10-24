@@ -1,19 +1,19 @@
 // src/hooks/useUsersAdmin.ts
-// Comptes candidats (collection "users") et l'ensemble des UID admin
-// (collection "roles"), rechargés à la demande (refresh()) après une
-// promotion/rétrogradation.
+// Comptes candidats (collection "users") et le rôle de ceux qui font partie
+// de l'équipe (collection "roles"), pour les signaler dans la liste. L'équipe
+// elle-même se gère dans Admin > Équipe (voir useTeam.ts).
 
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { collection, deleteDoc, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import type { UserProfile, UserProfileDoc } from "@/types/user-profile";
-import { logAdminAction } from "@/lib/admin-log";
+import { isStaffRole, type StaffRole } from "@/lib/staff-roles";
 
 export function useUsersAdmin() {
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [adminUids, setAdminUids] = useState<Set<string>>(new Set());
+  const [staffRoles, setStaffRoles] = useState<Map<string, StaffRole>>(new Map());
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
@@ -21,7 +21,12 @@ export function useUsersAdmin() {
     try {
       const [usersSnap, rolesSnap] = await Promise.all([getDocs(collection(db, "users")), getDocs(collection(db, "roles"))]);
       setUsers(usersSnap.docs.map((d) => ({ id: d.id, ...(d.data() as UserProfileDoc) })));
-      setAdminUids(new Set(rolesSnap.docs.filter((d) => d.data().role === "admin").map((d) => d.id)));
+      const roles = new Map<string, StaffRole>();
+      rolesSnap.docs.forEach((d) => {
+        const role = d.data().role;
+        if (isStaffRole(role)) roles.set(d.id, role);
+      });
+      setStaffRoles(roles);
     } catch (err) {
       console.error("Erreur chargement utilisateurs :", err);
     } finally {
@@ -33,26 +38,5 @@ export function useUsersAdmin() {
     refresh();
   }, [refresh]);
 
-  function userLabel(uid: string): string {
-    const u = users.find((x) => x.id === uid);
-    return u?.fullName || u?.email || uid;
-  }
-
-  async function promote(uid: string) {
-    await setDoc(doc(db, "roles", uid), { role: "admin" });
-    await logAdminAction("promote", "roles", userLabel(uid), uid);
-    setAdminUids((prev) => new Set(prev).add(uid));
-  }
-
-  async function demote(uid: string) {
-    await deleteDoc(doc(db, "roles", uid));
-    await logAdminAction("demote", "roles", userLabel(uid), uid);
-    setAdminUids((prev) => {
-      const next = new Set(prev);
-      next.delete(uid);
-      return next;
-    });
-  }
-
-  return { users, adminUids, loading, refresh, promote, demote };
+  return { users, staffRoles, loading, refresh };
 }

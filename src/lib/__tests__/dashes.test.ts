@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dashFieldUpdates, normalizeDashes, replaceLongDashes } from "@/lib/dashes";
+import { normalizeDashes, replaceLongDashes } from "@/lib/dashes";
 
 describe("replaceLongDashes", () => {
   it("remplace tirets cadratin et demi-cadratin par un tiret court", () => {
@@ -16,11 +16,3 @@ describe("normalizeDashes", () => {
   });
 });
 
-describe("dashFieldUpdates", () => {
-  it("ne renvoie que les champs modifiés", () => {
-    expect(dashFieldUpdates({ title: "A — B", city: "Brazzaville" })).toEqual({ title: "A - B" });
-  });
-  it("renvoie null quand il n'y a rien à changer", () => {
-    expect(dashFieldUpdates({ title: "A - B" })).toBeNull();
-  });
-});

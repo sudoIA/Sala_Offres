@@ -1,15 +1,22 @@
 // src/components/admin/AdminSidebar.tsx
 // Sidebar bureau du back-office (masquée sous 992px au profit d'AdminMobileTabs).
+// N'affiche que les sections ouvertes au rôle du membre connecté.
 
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ADMIN_NAV_ITEMS } from "@/lib/admin-nav";
+import { useAuth } from "@/context/AuthContext";
+import { adminNavFor } from "@/lib/admin-nav";
+
+const OVERVIEW_HREFS = ["/admin", "/admin/rapport"];
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const { role } = useAuth();
+  const items = adminNavFor(role);
+  const overview = items.filter((item) => OVERVIEW_HREFS.includes(item.href));
 
   return (
     <aside className="sala-sidebar">
@@ -22,15 +29,15 @@ export function AdminSidebar() {
       </div>
 
       <div className="sala-sidebar-nav">
-        <div className="sala-nav-section-title">Vue</div>
-        {ADMIN_NAV_ITEMS.slice(0, 2).map((item) => (
+        {overview.length > 0 && <div className="sala-nav-section-title">Vue</div>}
+        {overview.map((item) => (
           <Link key={item.href} href={item.href} className={`sala-nav-item${pathname === item.href ? " active" : ""}`}>
             <i className={item.icon}></i> {item.label}
           </Link>
         ))}
 
         <div className="sala-nav-section-title">Contenu</div>
-        {ADMIN_NAV_ITEMS.slice(2).map((item) => (
+        {items.filter((item) => !OVERVIEW_HREFS.includes(item.href)).map((item) => (
           <Link
             key={item.href}
             href={item.href}

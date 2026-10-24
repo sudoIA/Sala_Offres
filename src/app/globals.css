@@ -3029,6 +3029,36 @@ body.dashboard-body {
   white-space: nowrap;
 }
 
+/* Admin > Équipe : choix du rôle d'un nouveau membre. */
+.team-role-choice {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  border: 0;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.team-role-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--sala-border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.team-role-option.active {
+  border-color: var(--sala-green);
+  background: var(--sala-green-light);
+}
+
+.team-role-option input {
+  margin-top: 4px;
+  accent-color: var(--sala-green);
+}
+
 .sala-sidebar-brand-tag {
   font-size: 0.68rem;
   font-weight: 700;

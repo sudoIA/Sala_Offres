@@ -1,8 +1,8 @@
 // src/lib/dashes.ts
 // Choix éditorial de Sala : pas de tiret long (— ou –) dans les textes du
 // site, seulement le tiret court "-". Appliqué à chaque enregistrement
-// (formulaires admin, imports d'offres) et au nettoyage ponctuel de la base
-// (Admin > Paramètres).
+// (formulaires admin, imports d'offres). Les contenus plus anciens ont été
+// nettoyés une fois pour toutes en octobre 2026.
 
 const LONG_DASHES = /[—–]/g;
 
@@ -32,17 +32,4 @@ export function normalizeDashes<T>(value: T): T {
     return out as T;
   }
   return value;
-}
-
-/**
- * Champs d'un document à réécrire pour en retirer les tirets longs
- * (uniquement ceux qui changent), ou null s'il n'y a rien à faire.
- */
-export function dashFieldUpdates(data: Record<string, unknown>): Record<string, unknown> | null {
-  const updates: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(data)) {
-    const cleaned = normalizeDashes(value);
-    if (JSON.stringify(cleaned) !== JSON.stringify(value)) updates[key] = cleaned;
-  }
-  return Object.keys(updates).length ? updates : null;
 }

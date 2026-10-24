@@ -7,7 +7,7 @@
 // serveur séparés (Firebase Admin SDK).
 
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireStaff } from "@/lib/admin-auth";
 import { collectAcpePage, enrichAcpeJob } from "@/lib/collectors/acpe";
 
 function sleep(ms: number) {
@@ -17,7 +17,7 @@ function sleep(ms: number) {
 export async function POST(req: NextRequest) {
   // Route réservée aux admins connectés : sinon n'importe qui pourrait
   // déclencher en boucle des collectes vers les sites sources.
-  const denied = await requireAdmin(req);
+  const denied = await requireStaff(req);
   if (denied) return denied;
 
   let page = 1;

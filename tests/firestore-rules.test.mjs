@@ -13,6 +13,8 @@ const env = await initializeTestEnvironment({
 await env.withSecurityRulesDisabled(async (ctx) => {
   const db = ctx.firestore();
   await setDoc(doc(db, "roles/admin1"), { role: "admin" });
+  await setDoc(doc(db, "roles/mod1"), { role: "moderateur", name: "Modo" });
+  await setDoc(doc(db, "import_sources/src1"), { name: "Site", url: "https://x.cg", lastRunAt: null });
   await setDoc(doc(db, "emplois/job1"), { title: "Offre", visibility: true });
   await setDoc(doc(db, "news/visible"), { title: "A", visibility: true });
   await setDoc(doc(db, "news/hidden"), { title: "B", visibility: false });
@@ -144,9 +146,31 @@ await check("admin active la règle", assertSucceeds(setDoc(doc(admin, "settings
 await check("règle active : admin sans code refusé", assertFails(setDoc(doc(admin, "emplois/y"), { title: "y" })));
 await check("règle active : admin sans code ne lit plus les imports", assertFails(getDocs(collection(admin, "import_sources"))));
 await check("règle active : admin avec code accepté", assertSucceeds(setDoc(doc(adminMfa, "emplois/y"), { title: "y" })));
+await check("règle active : modérateur sans code refusé", assertFails(setDoc(doc(env.authenticatedContext("mod1", { email: "m@sala.cg" }).firestore(), "emplois/y2"), { title: "y" })));
 await check("règle active : lecture publique inchangée", assertSucceeds(getDoc(doc(anon, "emplois/job1"))));
 await check("admin avec code désactive la règle", assertSucceeds(setDoc(doc(adminMfa, "settings/security"), { adminMfaRequired: false })));
 await check("règle inactive : admin sans code accepté", assertSucceeds(setDoc(doc(admin, "emplois/z"), { title: "z" })));
+
+console.log("Rôles de l'équipe");
+const mod = env.authenticatedContext("mod1", { email: "m@sala.cg", email_verified: true }).firestore();
+await check("modérateur lit son rôle", assertSucceeds(getDoc(doc(mod, "roles/mod1"))));
+await check("modérateur publie une offre", assertSucceeds(setDoc(doc(mod, "emplois/m1"), { title: "m" })));
+await check("modérateur supprime une offre", assertSucceeds(deleteDoc(doc(mod, "emplois/m1"))));
+await check("modérateur valide un import", assertSucceeds(setDoc(doc(mod, "emplois_import/i1"), { status: "approved" })));
+await check("modérateur lit l'historique des collectes", assertSucceeds(getDocs(collection(mod, "import_runs"))));
+await check("modérateur lit les sources", assertSucceeds(getDocs(collection(mod, "import_sources"))));
+await check("modérateur note le résultat d'une collecte", assertSucceeds(updateDoc(doc(mod, "import_sources/src1"), { lastRunAt: "2026-10-24", lastCount: 3, lastError: null })));
+await check("modérateur ne change pas l'adresse d'une source", assertFails(updateDoc(doc(mod, "import_sources/src1"), { url: "https://pirate.cg" })));
+await check("modérateur signe le journal", assertSucceeds(addDoc(collection(mod, "admin_logs"), { action: "publish", target: "emplois", label: "x", targetId: null, uid: "mod1", email: "m@sala.cg", at: serverTimestamp() })));
+await check("modérateur ne lit pas le journal", assertFails(getDocs(collection(mod, "admin_logs"))));
+await check("modérateur ne modifie pas un événement", assertFails(setDoc(doc(mod, "events/e1"), { title: "x" })));
+await check("modérateur ne modifie pas les réglages", assertFails(setDoc(doc(mod, "settings/site"), { contactEmail: "x@x.cg" })));
+await check("modérateur ne liste pas l'équipe", assertFails(getDocs(collection(mod, "roles"))));
+await check("modérateur ne se donne pas le rôle admin", assertFails(setDoc(doc(mod, "roles/mod1"), { role: "admin" })));
+await check("modérateur ne lit pas les candidats", assertFails(getDocs(collection(mod, "users"))));
+await check("admin nomme un modérateur", assertSucceeds(setDoc(doc(admin, "roles/u9"), { role: "moderateur", name: "Nouveau", email: "n@x.cg" })));
+await check("rôle inconnu refusé", assertFails(setDoc(doc(admin, "roles/u9"), { role: "superadmin" })));
+await check("admin retire un membre", assertSucceeds(deleteDoc(doc(admin, "roles/u9"))));
 
 console.log("Application mobile");
 await check("Questions lisibles une fois connecté", assertSucceeds(getDoc(doc(user, "Questions/q1"))));

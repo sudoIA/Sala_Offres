@@ -18,16 +18,26 @@ service cloud.firestore {
     // get()/exists() ici ne redéclenchent pas l'évaluation des règles sur
     // "roles" : c'est le mécanisme standard pour un contrôle de rôle basé
     // sur un document (à défaut de custom claims Firebase Auth).
-    function isAdmin() {
+    // Rôles de l'équipe (voir src/lib/staff-roles.ts) : "admin" a tous les
+    // droits ; "moderateur" ne gère que les offres d'emploi et leurs imports.
+    function hasRole(allowed) {
       return isSignedIn() &&
         exists(/databases/$(database)/documents/roles/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == 'admin' &&
+        get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role in allowed &&
         adminMfaOk();
     }
 
-    // Double authentification des admins (Admin > Paramètres > Sécurité) :
+    function isAdmin() {
+      return hasRole(['admin']);
+    }
+
+    function isStaff() {
+      return hasRole(['admin', 'moderateur']);
+    }
+
+    // Double authentification de l'équipe (Admin > Paramètres > Sécurité) :
     // quand l'équipe la rend obligatoire (settings/security.adminMfaRequired),
-    // une session ouverte avec le seul mot de passe n'a plus les droits admin.
+    // une session ouverte avec le seul mot de passe n'a plus aucun droit.
     function adminMfaOk() {
       return !exists(/databases/$(database)/documents/settings/security) ||
         get(/databases/$(database)/documents/settings/security).data.get('adminMfaRequired', false) != true ||
@@ -35,9 +45,10 @@ service cloud.firestore {
     }
 
     // --- Contenu public géré depuis le back-office ---
+    // Offres d'emploi : administrateurs et modérateurs.
     match /emplois/{jobId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if isStaff();
     }
 
     // Nom réel de la collection côté Firestore : "events" (pas "evenements"),
@@ -89,23 +100,29 @@ service cloud.firestore {
     }
 
     // --- Offres collectées automatiquement (ACPE, ...), avant validation ---
-    // Jamais publique : seule l'équipe admin y accède, depuis l'écran
-    // "Imports" du back-office (lecture, écriture ET validation).
+    // Jamais publique : seule l'équipe (administrateurs et modérateurs) y
+    // accède, depuis l'écran "Imports" du back-office (lecture, écriture ET
+    // validation).
     match /emplois_import/{importId} {
-      allow read, write: if isAdmin();
+      allow read, write: if isStaff();
     }
 
     // --- Sources de collecte ajoutées par l'équipe (Admin > Imports) ---
-    // Configuration interne (adresses des sites collectés) : admins seulement.
+    // Configuration interne (adresses des sites collectés) : gérée par les
+    // administrateurs. Un modérateur peut la lire et lancer une collecte,
+    // qui note seulement sa date et son résultat.
     match /import_sources/{sourceId} {
-      allow read, write: if isAdmin();
+      allow read: if isStaff();
+      allow write: if isAdmin();
+      allow update: if isStaff() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastRunAt', 'lastCount', 'lastError']);
     }
 
     // --- Historique des collectes automatiques (tâche planifiée) ---
     // Écrit uniquement par le SDK Admin côté serveur (jamais soumis à ces
-    // règles) ; l'équipe admin peut seulement le consulter, pas le modifier.
+    // règles) ; l'équipe peut seulement le consulter, pas le modifier.
     match /import_runs/{runId} {
-      allow read: if isAdmin();
+      allow read: if isStaff();
       allow write: if false;
     }
 
@@ -191,11 +208,12 @@ service cloud.firestore {
     }
 
     // --- Journal des actions admin (Admin > Journal) ---
-    // Ajout uniquement, par un admin et à son propre nom ; jamais modifié ni
-    // supprimé, pour que l'historique reste fiable.
+    // Ajout uniquement, par un membre de l'équipe et à son propre nom ;
+    // jamais modifié ni supprimé, pour que l'historique reste fiable. Seuls
+    // les administrateurs le consultent.
     match /admin_logs/{logId} {
       allow read: if isAdmin();
-      allow create: if isAdmin() &&
+      allow create: if isStaff() &&
         request.resource.data.uid == request.auth.uid &&
         request.resource.data.keys().hasOnly(['action', 'target', 'label', 'targetId', 'uid', 'email', 'at']) &&
         request.resource.data.label is string && request.resource.data.label.size() <= 200;
@@ -246,13 +264,17 @@ service cloud.firestore {
       allow update: if statIncremented('visits') || statIncremented('jobViews') || statIncremented('quizzes');
     }
 
-    // --- Rôles admin ---
-    // Chacun peut savoir s'il est admin lui-même ; seule l'équipe admin peut
-    // lister tous les rôles ou en attribuer/retirer.
+    // --- Rôles de l'équipe ---
+    // Chacun peut connaître son propre rôle ; seuls les administrateurs
+    // listent l'équipe ou attribuent/retirent un rôle (en pratique via
+    // Admin > Équipe, côté serveur), avec un rôle connu uniquement.
     match /roles/{uid} {
       allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
       allow list: if isAdmin();
-      allow write: if isAdmin();
+      allow create, update: if isAdmin() &&
+        request.resource.data.keys().hasOnly(['role', 'name', 'email', 'addedBy', 'addedAt']) &&
+        request.resource.data.role in ['admin', 'moderateur'];
+      allow delete: if isAdmin();
     }
 
     // --- Application mobile ---

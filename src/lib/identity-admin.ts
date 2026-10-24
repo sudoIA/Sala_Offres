@@ -37,10 +37,25 @@ export interface AuthAccount {
   localId: string;
   email?: string;
   emailVerified?: boolean;
+  displayName?: string;
+  /** Millisecondes depuis 1970, en texte ; absent si le compte ne s'est jamais connecté. */
+  lastLoginAt?: string;
   mfaInfo?: { mfaEnrollmentId: string; displayName?: string; totpInfo?: object }[];
 }
 
 export async function lookupAccounts(query: { localId?: string[]; email?: string[] }): Promise<AuthAccount[]> {
   const data = await identityToolkit<{ users?: AuthAccount[] }>(`/v1/projects/${PROJECT_ID}/accounts:lookup`, { method: "POST", body: query });
   return data.users || [];
+}
+
+/** Crée un compte sans mot de passe : la personne le choisit via l'e-mail « mot de passe oublié ». */
+export async function createAccount(email: string, displayName: string): Promise<AuthAccount> {
+  return identityToolkit<AuthAccount>(`/v1/projects/${PROJECT_ID}/accounts`, {
+    method: "POST",
+    body: { email, ...(displayName ? { displayName } : {}) },
+  });
+}
+
+export async function updateAccount(localId: string, changes: { displayName?: string }): Promise<void> {
+  await identityToolkit(`/v1/projects/${PROJECT_ID}/accounts:update`, { method: "POST", body: { localId, ...changes } });
 }

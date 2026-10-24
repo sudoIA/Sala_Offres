@@ -6,11 +6,13 @@
 // - POST { action: "enable-totp" } : l'active (rien dans la console Firebase
 //   ne permet de le faire sans ligne de commande).
 // - POST { action: "reset", email } : retire la double authentification d'un
-//   autre admin qui a perdu son téléphone, pour qu'il la réactive.
+//   autre membre de l'équipe qui a perdu son téléphone, pour qu'il la
+//   réactive (bouton dans Admin > Équipe).
 
 import { NextResponse, type NextRequest } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getAdminDb } from "@/lib/firebase-admin";
+import { isStaffRole } from "@/lib/staff-roles";
 import { identityToolkit, IdentityToolkitError, lookupAccounts, PROJECT_ID } from "@/lib/identity-admin";
 
 interface ProviderConfig {
@@ -78,8 +80,8 @@ export async function POST(req: NextRequest) {
       const [account] = await lookupAccounts({ email: [email] });
       if (!account) return NextResponse.json({ ok: false, error: "Aucun compte avec cette adresse." }, { status: 404 });
       const role = await getAdminDb().collection("roles").doc(account.localId).get();
-      if (role.data()?.role !== "admin") {
-        return NextResponse.json({ ok: false, error: "Ce compte n'est pas administrateur." }, { status: 400 });
+      if (!isStaffRole(role.data()?.role)) {
+        return NextResponse.json({ ok: false, error: "Ce compte ne fait pas partie de l'équipe." }, { status: 400 });
       }
       if (!account.mfaInfo?.length) return NextResponse.json({ ok: true, changed: false });
       // "mfa" vide = suppression de toutes les méthodes enregistrées.

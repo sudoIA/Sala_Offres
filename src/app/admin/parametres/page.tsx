@@ -1,6 +1,7 @@
 // src/app/admin/parametres/page.tsx
-// Mon compte (profil, mot de passe) + réglages du site (coordonnées,
-// visibilité des sections dans les menus publics).
+// Mon compte (profil, mot de passe, double authentification) + réglages du
+// site (coordonnées, visibilité des sections dans les menus publics,
+// publication automatique), ces derniers réservés aux administrateurs.
 
 "use client";
 
@@ -18,12 +19,11 @@ import { DEFAULT_SETTINGS, clearSiteSettingsCache, loadSiteSettings, type SiteSe
 import { askMfaCode, notify } from "@/lib/notify";
 import { isMfaRequired, mfaErrorMessage, resolveTotpSignIn } from "@/lib/mfa";
 import { AutoPublishPanel } from "@/components/admin/AutoPublishPanel";
-import { DashCleanupPanel } from "@/components/admin/DashCleanupPanel";
 import { SecurityPanel } from "@/components/admin/SecurityPanel";
 import { logAdminAction } from "@/lib/admin-log";
 
 export default function AdminSettingsPage() {
-  const { user } = useAuth();
+  const { user, isAdmin, refreshStaffName } = useAuth();
   const [accountName, setAccountName] = useState("");
   const [accountPhoto, setAccountPhoto] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -48,6 +48,7 @@ export default function AdminSettingsPage() {
     setSavingAccount(true);
     try {
       await updateProfile(user, { displayName: accountName.trim() || null, photoURL: accountPhoto.trim() || null });
+      await refreshStaffName();
       notify("Profil mis à jour.");
     } catch (err) {
       console.error("Erreur mise à jour du profil :", err);
@@ -136,7 +137,7 @@ export default function AdminSettingsPage() {
       <div className="admin-section-header">
         <div>
           <h1 className="admin-page-title">Paramètres</h1>
-          <p className="admin-page-subtitle">Votre compte administrateur et les réglages généraux du site.</p>
+          <p className="admin-page-subtitle">{isAdmin ? "Votre compte et les réglages généraux du site." : "Votre compte et sa sécurité."}</p>
         </div>
       </div>
 
@@ -186,138 +187,142 @@ export default function AdminSettingsPage() {
         </form>
       </div>
 
-      <div className="admin-panel">
-        <h2><i className="fas fa-address-card me-2"></i>Coordonnées affichées sur le site</h2>
-        <form onSubmit={handleContactSubmit}>
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="setContactEmail">Email de contact public</label>
-              <input
-                id="setContactEmail"
-                type="email"
-                value={settings.contactEmail}
-                onChange={(e) => setSettings((s) => ({ ...s, contactEmail: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="setContactCities">Villes / zone d&apos;action</label>
-              <input
-                id="setContactCities"
-                type="text"
-                value={settings.contactCities}
-                onChange={(e) => setSettings((s) => ({ ...s, contactCities: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="setFacebook">Facebook (optionnel)</label>
-              <input
-                id="setFacebook"
-                type="url"
-                placeholder="https://facebook.com/..."
-                value={settings.socialFacebook}
-                onChange={(e) => setSettings((s) => ({ ...s, socialFacebook: e.target.value }))}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="setWhatsapp">WhatsApp (optionnel)</label>
-              <input
-                id="setWhatsapp"
-                type="url"
-                placeholder="https://wa.me/242..."
-                value={settings.socialWhatsapp}
-                onChange={(e) => setSettings((s) => ({ ...s, socialWhatsapp: e.target.value }))}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="setInstagram">Instagram (optionnel)</label>
-              <input
-                id="setInstagram"
-                type="url"
-                placeholder="https://instagram.com/..."
-                value={settings.socialInstagram}
-                onChange={(e) => setSettings((s) => ({ ...s, socialInstagram: e.target.value }))}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="setLinkedin">LinkedIn (optionnel)</label>
-              <input
-                id="setLinkedin"
-                type="url"
-                placeholder="https://linkedin.com/company/..."
-                value={settings.socialLinkedin}
-                onChange={(e) => setSettings((s) => ({ ...s, socialLinkedin: e.target.value }))}
-              />
-            </div>
-          </div>
-          <div className="form-actions" style={{ textAlign: "left" }}>
-            <button type="submit" className="btn-sala-primary" disabled={savingContact}>
-              {savingContact ? "Enregistrement..." : "Enregistrer les coordonnées"}
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div className="admin-panel">
-        <h2><i className="fas fa-eye me-2"></i>Sections visibles sur le site</h2>
-        <p className="admin-page-subtitle" style={{ marginBottom: 16 }}>
-          Décochez une section pour masquer son lien dans les menus (Offres d&apos;emploi et Créer un CV restent toujours visibles).
-        </p>
-        <form onSubmit={handleVisibilitySubmit}>
-          <div className="d-flex flex-column gap-2 mb-3">
-            <label className="visibility-toggle">
-              <input
-                type="checkbox"
-                checked={settings.sectionsVisible.evenements}
-                onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, evenements: e.target.checked } }))}
-              />
-              Événements
-            </label>
-            <label className="visibility-toggle">
-              <input
-                type="checkbox"
-                checked={settings.sectionsVisible.annuaires}
-                onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, annuaires: e.target.checked } }))}
-              />
-              Annuaires
-            </label>
-            <label className="visibility-toggle">
-              <input
-                type="checkbox"
-                checked={settings.sectionsVisible.entretiens}
-                onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, entretiens: e.target.checked } }))}
-              />
-              Entretiens
-            </label>
-            <label className="visibility-toggle">
-              <input
-                type="checkbox"
-                checked={settings.sectionsVisible.legislation}
-                onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, legislation: e.target.checked } }))}
-              />
-              Législation / Droit du Travail
-            </label>
-            <label className="visibility-toggle">
-              <input
-                type="checkbox"
-                checked={settings.sectionsVisible.actualites}
-                onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, actualites: e.target.checked } }))}
-              />
-              Actualités (News Sala)
-            </label>
-          </div>
-          <div className="form-actions" style={{ textAlign: "left" }}>
-            <button type="submit" className="btn-sala-primary" disabled={savingVisibility}>
-              {savingVisibility ? "Enregistrement..." : "Enregistrer la visibilité"}
-            </button>
-          </div>
-        </form>
-      </div>
-
       <SecurityPanel />
-      <AutoPublishPanel />
-      <DashCleanupPanel />
+
+      {isAdmin && (
+        <>
+          <div className="admin-panel">
+            <h2><i className="fas fa-address-card me-2"></i>Coordonnées affichées sur le site</h2>
+            <form onSubmit={handleContactSubmit}>
+              <div className="form-grid">
+                <div className="form-group">
+                  <label htmlFor="setContactEmail">Email de contact public</label>
+                  <input
+                    id="setContactEmail"
+                    type="email"
+                    value={settings.contactEmail}
+                    onChange={(e) => setSettings((s) => ({ ...s, contactEmail: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="setContactCities">Villes / zone d&apos;action</label>
+                  <input
+                    id="setContactCities"
+                    type="text"
+                    value={settings.contactCities}
+                    onChange={(e) => setSettings((s) => ({ ...s, contactCities: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="setFacebook">Facebook (optionnel)</label>
+                  <input
+                    id="setFacebook"
+                    type="url"
+                    placeholder="https://facebook.com/..."
+                    value={settings.socialFacebook}
+                    onChange={(e) => setSettings((s) => ({ ...s, socialFacebook: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="setWhatsapp">WhatsApp (optionnel)</label>
+                  <input
+                    id="setWhatsapp"
+                    type="url"
+                    placeholder="https://wa.me/242..."
+                    value={settings.socialWhatsapp}
+                    onChange={(e) => setSettings((s) => ({ ...s, socialWhatsapp: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="setInstagram">Instagram (optionnel)</label>
+                  <input
+                    id="setInstagram"
+                    type="url"
+                    placeholder="https://instagram.com/..."
+                    value={settings.socialInstagram}
+                    onChange={(e) => setSettings((s) => ({ ...s, socialInstagram: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="setLinkedin">LinkedIn (optionnel)</label>
+                  <input
+                    id="setLinkedin"
+                    type="url"
+                    placeholder="https://linkedin.com/company/..."
+                    value={settings.socialLinkedin}
+                    onChange={(e) => setSettings((s) => ({ ...s, socialLinkedin: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="form-actions" style={{ textAlign: "left" }}>
+                <button type="submit" className="btn-sala-primary" disabled={savingContact}>
+                  {savingContact ? "Enregistrement..." : "Enregistrer les coordonnées"}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="admin-panel">
+            <h2><i className="fas fa-eye me-2"></i>Sections visibles sur le site</h2>
+            <p className="admin-page-subtitle" style={{ marginBottom: 16 }}>
+              Décochez une section pour masquer son lien dans les menus (Offres d&apos;emploi et Créer un CV restent toujours visibles).
+            </p>
+            <form onSubmit={handleVisibilitySubmit}>
+              <div className="d-flex flex-column gap-2 mb-3">
+                <label className="visibility-toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.sectionsVisible.evenements}
+                    onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, evenements: e.target.checked } }))}
+                  />
+                  Événements
+                </label>
+                <label className="visibility-toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.sectionsVisible.annuaires}
+                    onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, annuaires: e.target.checked } }))}
+                  />
+                  Annuaires
+                </label>
+                <label className="visibility-toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.sectionsVisible.entretiens}
+                    onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, entretiens: e.target.checked } }))}
+                  />
+                  Entretiens
+                </label>
+                <label className="visibility-toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.sectionsVisible.legislation}
+                    onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, legislation: e.target.checked } }))}
+                  />
+                  Législation / Droit du Travail
+                </label>
+                <label className="visibility-toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.sectionsVisible.actualites}
+                    onChange={(e) => setSettings((s) => ({ ...s, sectionsVisible: { ...s.sectionsVisible, actualites: e.target.checked } }))}
+                  />
+                  Actualités (News Sala)
+                </label>
+              </div>
+              <div className="form-actions" style={{ textAlign: "left" }}>
+                <button type="submit" className="btn-sala-primary" disabled={savingVisibility}>
+                  {savingVisibility ? "Enregistrement..." : "Enregistrer la visibilité"}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <AutoPublishPanel />
+        </>
+      )}
     </section>
   );
 }

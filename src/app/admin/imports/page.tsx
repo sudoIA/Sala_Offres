@@ -9,6 +9,7 @@ import { useState } from "react";
 import { fetchRecentJobsOnce } from "@/hooks/useAdminJobs";
 import { IMPORT_SOURCES, useJobImports, type ImportedJobRecord, type ImportSourceKey } from "@/hooks/useJobImports";
 import { useImportRuns } from "@/hooks/useImportRuns";
+import { useAuth } from "@/context/AuthContext";
 import { usePagination } from "@/hooks/usePagination";
 import { CompanyTile } from "@/components/CompanyTile";
 import { CustomSourcesPanel } from "@/components/admin/CustomSourcesPanel";
@@ -44,6 +45,8 @@ export default function AdminImportsPage() {
   const { runs: importRuns } = useImportRuns();
   const [tab, setTab] = useState<Tab>("pending");
   const { sources: customSources, updateSource } = useCustomSources();
+  // Les sources personnalisées se configurent par un administrateur ; un modérateur les utilise.
+  const { isAdmin } = useAuth();
   const [source, setSource] = useState<ImportSourceKey | string>("acpe");
   const selectedCustom = customSources.find((s) => customSourceKey(s.id) === source);
 
@@ -164,7 +167,7 @@ export default function AdminImportsPage() {
         </div>
       )}
 
-      <CustomSourcesPanel />
+      {isAdmin && <CustomSourcesPanel />}
 
       <div className="admin-toolbar">
         <label className="d-flex align-items-center gap-2 mb-0">

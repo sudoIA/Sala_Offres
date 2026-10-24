@@ -5,14 +5,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ADMIN_NAV_ITEMS } from "@/lib/admin-nav";
+import { useAuth } from "@/context/AuthContext";
+import { adminNavFor } from "@/lib/admin-nav";
 
 export function AdminMobileTabs() {
   const pathname = usePathname();
+  const { role } = useAuth();
 
   return (
     <nav className="admin-mobile-tabs">
-      {ADMIN_NAV_ITEMS.map((item) => {
+      {adminNavFor(role).map((item) => {
         const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
         return (
           <Link key={item.href} href={item.href} className={`admin-mobile-tab${active ? " active" : ""}`}>

@@ -6,7 +6,7 @@
 // résultat dans "emplois_import".
 
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-auth";
+import { requireStaff } from "@/lib/admin-auth";
 import { assertPublicHttpUrl, collectGenericSource } from "@/lib/collectors/generic";
 import { isCustomSourceKey } from "@/lib/custom-sources";
 
@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   // Route réservée aux admins connectés : elle interroge un site au choix.
-  const denied = await requireAdmin(req);
+  const denied = await requireStaff(req);
   if (denied) return denied;
 
   let body: { source?: string; url?: string; selector?: string; keyword?: string; defaultCompany?: string };

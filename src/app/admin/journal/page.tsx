@@ -35,8 +35,8 @@ const ACTION_LABELS: Record<string, { label: string; className: string }> = {
   update: { label: "Modification", className: "text-bg-primary" },
   delete: { label: "Suppression", className: "text-bg-danger" },
   reject: { label: "Rejet", className: "text-bg-secondary" },
-  promote: { label: "Droits admin donnés", className: "text-bg-warning" },
-  demote: { label: "Droits admin retirés", className: "text-bg-warning" },
+  promote: { label: "Accès donné", className: "text-bg-warning" },
+  demote: { label: "Accès retiré", className: "text-bg-warning" },
   settings: { label: "Réglages", className: "text-bg-info" },
 };
 
@@ -51,7 +51,7 @@ const TARGET_LABELS: Record<string, string> = {
   entreprises: "Entreprise",
   clubs_anglais: "Club d'anglais",
   news: "Actualité",
-  roles: "Utilisateur",
+  roles: "Équipe",
   settings: "Paramètres",
 };
 

@@ -49,3 +49,19 @@ export async function askMfaCode(): Promise<string | null> {
   });
   return result.isConfirmed ? String(result.value).trim() : null;
 }
+
+/** Demande un texte court (null si annulé). */
+export async function askText(title: string, label: string, initial = ""): Promise<string | null> {
+  const result = await Swal.fire({
+    title,
+    input: "text",
+    inputLabel: label,
+    inputValue: initial,
+    showCancelButton: true,
+    confirmButtonText: "Enregistrer",
+    cancelButtonText: "Annuler",
+    confirmButtonColor: "#3b9452",
+    inputValidator: (value) => (value.trim() ? null : "Ce champ est obligatoire."),
+  });
+  return result.isConfirmed ? String(result.value).trim() : null;
+}

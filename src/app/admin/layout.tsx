@@ -1,6 +1,7 @@
 // src/app/admin/layout.tsx
 // Garde d'accès admin + coquille du back-office (sidebar, topbar, onglets
-// mobiles) partagée par toutes les sections /admin/*.
+// mobiles) partagée par toutes les sections /admin/*. Un modérateur n'ouvre
+// que les sections de son rôle (voir admin-nav.ts) : sinon, retour aux offres.
 // Si l'équipe a rendu la double authentification obligatoire (voir
 // src/lib/mfa.ts), un admin sans application configurée doit le faire avant
 // d'entrer, et une session ouverte sans le code doit être rouverte.
@@ -8,25 +9,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { MfaEnrollment } from "@/components/admin/MfaEnrollment";
+import { canAccessAdminPath } from "@/lib/admin-nav";
 import { hasTotp, loadSecurityPolicy, sessionUsedSecondFactor } from "@/lib/mfa";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminTopbar } from "@/components/admin/AdminTopbar";
 import { AdminMobileTabs } from "@/components/admin/AdminMobileTabs";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, role, isStaff, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
+  const allowed = canAccessAdminPath(pathname, role);
   // "ok" : accès libre ; "enroll" : configurer l'application ; "relogin" : se reconnecter avec le code.
   const [mfaGate, setMfaGate] = useState<"checking" | "ok" | "enroll" | "relogin">("checking");
   const [mfaCheck, setMfaCheck] = useState(0);
 
   useEffect(() => {
-    if (loading || !user || !isAdmin) return;
+    if (loading || !user || !isStaff) return;
     let cancelled = false;
     (async () => {
       const { adminMfaRequired } = await loadSecurityPolicy();
@@ -40,7 +44,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => {
       cancelled = true;
     };
-  }, [loading, user, isAdmin, mfaCheck]);
+  }, [loading, user, isStaff, mfaCheck]);
 
   async function relogin() {
     await signOut(auth);
@@ -53,13 +57,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.replace("/connexion");
       return;
     }
-    if (!isAdmin) {
-      alert("Accès refusé. Réservé aux administrateurs de l'ONG Sala.");
+    if (!isStaff) {
+      alert("Accès refusé. Réservé à l'équipe de l'ONG Sala.");
       router.replace("/");
+      return;
     }
-  }, [loading, user, isAdmin, router]);
+    if (!allowed) router.replace("/admin/offres");
+  }, [loading, user, isStaff, allowed, router]);
 
-  if (loading || !user || !isAdmin || mfaGate === "checking") {
+  if (loading || !user || !isStaff || mfaGate === "checking") {
     return (
       <div className="admin-auth-checking">
         <div className="spinner-border text-success"></div>
@@ -100,7 +106,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="sala-main-content">
           <AdminTopbar />
           <AdminMobileTabs />
-          <main className="admin-main">{children}</main>
+          <main className="admin-main">{allowed ? children : null}</main>
         </div>
       </div>
     </div>
