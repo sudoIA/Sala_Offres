@@ -130,6 +130,19 @@ Paramètre facultatif : `ville`. Les fiches sont triées par nom.
 | `logo`, `photo` | string ou null | URL des images |
 | `verified` | boolean | Fiche vérifiée par l'équipe |
 
+### `GET /entreprises/{id}`
+Page d'une entreprise de l'annuaire : mêmes champs qu'une fiche de
+`/annuaires?categorie=entreprises`, plus :
+
+| Champ | Type | Contenu |
+|---|---|---|
+| `url` | string | Page de l'entreprise sur le site (`/entreprises/{id}`) |
+| `offres` | liste | Ses offres actives, au même format que `GET /offres`, de la plus récente à la plus ancienne |
+
+Les offres sont reliées à l'entreprise par leur nom (accents, majuscules,
+ponctuation et forme juridique ignorés : « MTN CONGO S.A. » correspond à la
+fiche « MTN Congo »). 404 si la fiche n'existe pas.
+
 ### `GET /droit-du-travail`
 Fiches du droit du travail (collection `legislation`), dans l'ordre
 d'affichage. Paramètre facultatif : `theme`, qui vaut `contrat`, `salaire`,
@@ -161,6 +174,10 @@ questions sont triées dans l'ordre du quiz.
 ```
 
 Chaque question a 2 à 4 options, dont **une seule** est juste.
+Le quiz `droit_du_travail` compte 10 questions tirées des fiches du guide.
+Sur le site, un quiz terminé débloque des badges selon le meilleur score :
+« Premier pas » (terminé), « Bon niveau » (60 %), « Expert » (80 %) et
+« Sans faute » (100 %). L'app peut reprendre les mêmes seuils.
 `explanation` est à afficher après le choix de l'utilisateur.
 
 ### `GET /actualites`

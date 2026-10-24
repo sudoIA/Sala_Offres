@@ -9,8 +9,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
-import { signInWithEmailAndPassword, sendPasswordResetEmail, signOut, type AuthError } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail, signOut, type AuthError, type MultiFactorError, type UserCredential } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
+import { isMfaRequired, mfaErrorMessage, resolveTotpSignIn } from "@/lib/mfa";
 
 export default function ConnexionPage() {
   const router = useRouter();
@@ -21,6 +22,38 @@ export default function ConnexionPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [fadingOut, setFadingOut] = useState(false);
+  // Double authentification : connexion interrompue, en attente du code à 6 chiffres.
+  const [mfaError, setMfaError] = useState<MultiFactorError | null>(null);
+  const [mfaCode, setMfaCode] = useState("");
+
+  async function finishLogin(result: UserCredential) {
+    const roleDoc = await getDoc(doc(db, "roles", result.user.uid));
+    const role = roleDoc.exists() ? roleDoc.data().role : "user";
+
+    if (role === "admin") {
+      setSuccess("Connexion réussie ! Redirection...");
+      setFadingOut(true);
+      setTimeout(() => router.push("/admin"), 500);
+    } else {
+      setError("Accès réservé aux administrateurs de l'ONG Sala.");
+      await signOut(auth);
+      setLoading(false);
+    }
+  }
+
+  async function handleMfaSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!mfaError) return;
+    setLoading(true);
+    setError("");
+    try {
+      await finishLogin(await resolveTotpSignIn(auth, mfaError, mfaCode));
+    } catch (err) {
+      setError(mfaErrorMessage(err));
+      setMfaCode("");
+      setLoading(false);
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -33,20 +66,15 @@ export default function ConnexionPage() {
     setLoading(true);
     setError("");
     try {
-      const result = await signInWithEmailAndPassword(auth, email.trim(), password);
-      const roleDoc = await getDoc(doc(db, "roles", result.user.uid));
-      const role = roleDoc.exists() ? roleDoc.data().role : "user";
-
-      if (role === "admin") {
-        setSuccess("Connexion réussie ! Redirection...");
-        setFadingOut(true);
-        setTimeout(() => router.push("/admin"), 500);
-      } else {
-        setError("Accès réservé aux administrateurs de l'ONG Sala.");
-        await signOut(auth);
-        setLoading(false);
-      }
+      await finishLogin(await signInWithEmailAndPassword(auth, email.trim(), password));
     } catch (err) {
+      if (isMfaRequired(err)) {
+        // Mot de passe correct : il reste le code de l'application.
+        setMfaError(err);
+        setSuccess("");
+        setLoading(false);
+        return;
+      }
       const authErr = err as AuthError;
       console.error("Erreur login :", authErr);
       let message = "Erreur de connexion : " + authErr.message;
@@ -105,6 +133,34 @@ export default function ConnexionPage() {
           {error && <div className="auth-alert error">{error}</div>}
           {success && <div className="auth-alert success">{success}</div>}
 
+          {mfaError ? (
+            <form onSubmit={handleMfaSubmit} noValidate>
+              <div className="auth-field">
+                <label htmlFor="mfa-code">Code de votre application d&apos;authentification</label>
+                <div className="auth-input-wrap">
+                  <i className="fas fa-shield-alt icon-left"></i>
+                  <input
+                    type="text"
+                    id="mfa-code"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    placeholder="123456"
+                    maxLength={6}
+                    autoFocus
+                    value={mfaCode}
+                    onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ""))}
+                    style={{ letterSpacing: "0.3em", fontWeight: 700 }}
+                  />
+                </div>
+              </div>
+              <button type="submit" className="auth-submit" disabled={loading || mfaCode.length !== 6}>
+                {loading ? <i className="fas fa-spinner fa-spin"></i> : <span>Valider le code</span>}
+              </button>
+              <div className="auth-links">
+                <a onClick={() => { setMfaError(null); setMfaCode(""); setError(""); }}>Revenir au mot de passe</a>
+              </div>
+            </form>
+          ) : (
           <form onSubmit={handleSubmit} noValidate>
             <div className="auth-field">
               <label htmlFor="email">Adresse email</label>
@@ -155,6 +211,7 @@ export default function ConnexionPage() {
               <a onClick={handleResetPassword}>Mot de passe oublié ?</a>
             </div>
           </form>
+          )}
 
           <Link href="/" className="auth-back-link">
             <i className="fas fa-arrow-left"></i> Retour au site Sala

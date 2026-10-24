@@ -4,6 +4,7 @@
 
 import type { Timestamp } from "firebase/firestore";
 import type { JobAlertPrefs } from "@/lib/job-alerts";
+import type { QuizResults } from "@/lib/quiz-badges";
 
 export interface UserProfileDoc {
   fullName?: string;
@@ -16,6 +17,7 @@ export interface UserProfileDoc {
   savedJobs?: string[];
   applications?: string[];
   jobAlerts?: JobAlertPrefs;
+  quizResults?: QuizResults;
   createdAt?: Timestamp;
 }
 

@@ -21,7 +21,8 @@ export default function AdminQuizPage() {
   const [importing, setImporting] = useState(false);
 
   const existingIds = useMemo(() => new Set(questions.map((q) => q.id)), [questions]);
-  const importNeeded = INITIAL_QUIZ.some((q) => !existingIds.has(q.id));
+  const missingCount = INITIAL_QUIZ.filter((q) => !existingIds.has(q.id)).length;
+  const importNeeded = missingCount > 0;
   const filtered = questions.filter((q) => q.theme === theme);
 
   function openEditor(question: QuizQuestion | null) {
@@ -73,8 +74,8 @@ export default function AdminQuizPage() {
         <div className="alert alert-info d-flex flex-wrap align-items-center justify-content-between gap-2">
           <span className="small">
             <i className="fas fa-info-circle me-1"></i>
-            Les {INITIAL_QUIZ.length} questions du quiz d&apos;entretien d&apos;origine ne sont pas encore toutes dans la base.
-            Copiez-les pour pouvoir les modifier ici et les rendre disponibles à l&apos;app.
+            {missingCount} question{missingCount > 1 ? "s" : ""} d&apos;origine (quiz Entretiens et Droit du Travail) {missingCount > 1 ? "ne sont" : "n'est"} pas encore dans la base.
+            Copiez-les pour pouvoir les modifier ici.
           </span>
           <button className="btn-sala-primary btn-sm" onClick={handleImport} disabled={importing}>
             {importing ? "Copie en cours..." : "Copier les questions dans la base"}
@@ -92,7 +93,8 @@ export default function AdminQuizPage() {
 
       {theme === "droit_du_travail" && (
         <p className="small text-muted">
-          Le quiz Droit du Travail apparaît sur la page Droit du Travail du site dès qu&apos;il compte au moins 3 questions.
+          Le quiz Droit du Travail apparaît sur la page Droit du Travail du site. Tant que la base ne contient aucune question de ce thème,
+          le site et l&apos;API affichent les 10 questions d&apos;origine, tirées des fiches du guide.
         </p>
       )}
 

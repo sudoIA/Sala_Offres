@@ -1,13 +1,17 @@
 // src/components/entretiens/InterviewQuiz.tsx
 // Quiz d'entraînement interactif à choix multiple. Les questions viennent de
 // la collection "quiz" (Admin > Quiz), par thème : entretiens ou droit du
-// travail.
+// travail. Chaque quiz terminé met à jour le meilleur score et les badges
+// (voir src/lib/quiz-badges.ts).
 
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { usePublicQuiz } from "@/hooks/useQuiz";
+import { useQuizResults } from "@/hooks/useQuizResults";
+import { QuizBadges } from "@/components/QuizBadges";
+import type { BadgeLevel } from "@/lib/quiz-badges";
 import type { QuizOption, QuizTheme } from "@/types/quiz";
 import { Confetti } from "@/components/Confetti";
 import { EncourageFace } from "@/components/EncourageFace";
@@ -39,6 +43,8 @@ export function InterviewQuiz({ theme = "entretiens", minQuestions = 1 }: { them
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<QuizOption | null>(null);
+  const { results, record } = useQuizResults();
+  const [newBadges, setNewBadges] = useState<BadgeLevel[]>([]);
 
   function start() {
     setStep(0);
@@ -58,6 +64,7 @@ export function InterviewQuiz({ theme = "entretiens", minQuestions = 1 }: { them
       setStep((s) => s + 1);
       setSelected(null);
     } else {
+      setNewBadges(record(theme, score, questions.length));
       setPhase("result");
     }
   }
@@ -75,6 +82,10 @@ export function InterviewQuiz({ theme = "entretiens", minQuestions = 1 }: { them
         <button className="btn-sala-primary rounded-pill px-5 py-3 fw-bold" onClick={start} disabled={loading || questions.length === 0}>
           Commencer le Quiz ({Math.max(1, questions.length)} min) <i className="fas fa-play ms-2"></i>
         </button>
+        <div className="mt-4 mx-auto" style={{ maxWidth: 520 }}>
+          <div className="small fw-bold text-muted mb-2">{results[theme] ? "Vos badges" : "Badges à gagner"}</div>
+          <QuizBadges result={results[theme]} compact />
+        </div>
       </div>
     );
   }
@@ -142,7 +153,16 @@ export function InterviewQuiz({ theme = "entretiens", minQuestions = 1 }: { them
       )}
       <h3 className="fw-bold mb-2">{icon.title}</h3>
       <p className="text-muted mb-4">{icon.msg}</p>
-      <div className="h2 fw-bold text-success mb-4">{score} / {questions.length}</div>
+      <div className="h2 fw-bold text-success mb-3">{score} / {questions.length}</div>
+      {newBadges.length > 0 && (
+        <div className="alert alert-success small mx-auto" style={{ maxWidth: 520 }} role="status">
+          <i className="fas fa-award me-1"></i>
+          {newBadges.length > 1 ? "Nouveaux badges débloqués" : "Nouveau badge débloqué"} : <strong>{newBadges.map((b) => b.label).join(", ")}</strong>
+        </div>
+      )}
+      <div className="mx-auto mb-4" style={{ maxWidth: 560 }}>
+        <QuizBadges result={results[theme]} />
+      </div>
       <div className="d-flex flex-wrap justify-content-center gap-3">
         <button className="btn-sala-outline rounded-pill px-4" onClick={() => setPhase("intro")}>Recommencer</button>
         <Link href="/offres" className="btn-sala-primary rounded-pill px-4">Postuler à une offre</Link>

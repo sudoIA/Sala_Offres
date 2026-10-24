@@ -20,6 +20,13 @@ export interface VerifiedIdToken {
   uid: string;
   email?: string;
   emailVerified: boolean;
+  /** Méthode du second facteur utilisée à la connexion ("totp"...), absente sinon. */
+  secondFactor?: string;
+}
+
+function secondFactorOf(firebase: unknown): string | undefined {
+  const value = (firebase as { sign_in_second_factor?: unknown } | undefined)?.sign_in_second_factor;
+  return typeof value === "string" && value ? value : undefined;
 }
 
 /** Lève une erreur si le jeton est invalide, expiré ou émis pour un autre projet. */
@@ -43,5 +50,6 @@ export async function verifyFirebaseIdToken(
     uid,
     email: typeof payload.email === "string" ? payload.email : undefined,
     emailVerified: payload.email_verified === true,
+    secondFactor: secondFactorOf(payload.firebase),
   };
 }

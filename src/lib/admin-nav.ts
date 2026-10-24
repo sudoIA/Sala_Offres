@@ -21,6 +21,14 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
     subtitle: "Un coup d'œil sur l'activité de la plateforme",
   },
   {
+    href: "/admin/rapport",
+    icon: "fas fa-file-alt",
+    label: "Rapport mensuel",
+    mobileLabel: "Rapport",
+    title: "Rapport mensuel",
+    subtitle: "Bilan d'activité du mois, à imprimer ou partager avec les partenaires.",
+  },
+  {
     href: "/admin/offres",
     icon: "fas fa-briefcase",
     label: "Offres d'emploi",

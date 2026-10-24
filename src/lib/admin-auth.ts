@@ -9,12 +9,28 @@
 // non soumis à App Check), sinon via l'API REST Firestore AVEC ce même jeton,
 // donc sous les règles de sécurité habituelles (cas du développement local,
 // où FIREBASE_SERVICE_ACCOUNT n'est pas défini).
+//
+// Si l'équipe a rendu la double authentification obligatoire (voir mfa.ts),
+// le jeton doit en plus prouver une connexion avec le code à 6 chiffres.
 
 import { NextResponse, type NextRequest } from "next/server";
 import { getAdminDb, hasAdminCredentials } from "@/lib/firebase-admin";
 import { verifyFirebaseIdToken } from "@/lib/id-token";
 
 const PROJECT_ID = "sala-a6c15";
+
+/** Règle d'équipe "double authentification obligatoire" (settings/security, voir mfa.ts). */
+async function adminMfaRequired(idToken: string): Promise<boolean> {
+  if (hasAdminCredentials()) {
+    const snap = await getAdminDb().collection("settings").doc("security").get();
+    return snap.data()?.adminMfaRequired === true;
+  }
+  const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/settings/security`;
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${idToken}` }, cache: "no-store" });
+  if (!res.ok) return false;
+  const data = (await res.json()) as { fields?: { adminMfaRequired?: { booleanValue?: boolean } } };
+  return data.fields?.adminMfaRequired?.booleanValue === true;
+}
 
 async function hasAdminRole(uid: string, idToken: string): Promise<boolean> {
   // En production, lecture par le SDK Admin (non soumis à App Check).
@@ -44,6 +60,9 @@ export async function requireAdmin(req: NextRequest): Promise<NextResponse | nul
     const decoded = await verifyFirebaseIdToken(idToken, PROJECT_ID);
     if (!(await hasAdminRole(decoded.uid, idToken))) {
       return NextResponse.json({ ok: false, error: "Accès réservé aux administrateurs." }, { status: 403 });
+    }
+    if (!decoded.secondFactor && (await adminMfaRequired(idToken))) {
+      return NextResponse.json({ ok: false, error: "Double authentification requise : reconnectez-vous avec votre code." }, { status: 403 });
     }
     return null;
   } catch (err) {

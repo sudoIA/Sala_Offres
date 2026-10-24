@@ -27,6 +27,14 @@ describe("verifyFirebaseIdToken", () => {
     await expect(verifyFirebaseIdToken(token, PROJECT, keys)).resolves.toEqual({ uid: "uid123", email: "a@sala.cg", emailVerified: true });
   });
 
+  it("indique si la connexion a utilisé la double authentification", async () => {
+    const { keys, sign } = await setup();
+    const strong = await sign({ firebase: { sign_in_provider: "password", sign_in_second_factor: "totp" } });
+    const weak = await sign({ firebase: { sign_in_provider: "password" } });
+    expect((await verifyFirebaseIdToken(strong, PROJECT, keys)).secondFactor).toBe("totp");
+    expect((await verifyFirebaseIdToken(weak, PROJECT, keys)).secondFactor).toBeUndefined();
+  });
+
   it("refuse un jeton d'un autre projet", async () => {
     const { keys, sign } = await setup();
     await expect(verifyFirebaseIdToken(await sign({}, { aud: "autre-projet" }), PROJECT, keys)).rejects.toThrow();

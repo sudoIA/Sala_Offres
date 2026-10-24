@@ -33,3 +33,19 @@ export async function confirmAction(title: string, text: string, confirmColor = 
   });
   return result.isConfirmed;
 }
+
+/** Demande le code à 6 chiffres de l'application d'authentification (null si annulé). */
+export async function askMfaCode(): Promise<string | null> {
+  const result = await Swal.fire({
+    title: "Code de vérification",
+    text: "Saisissez le code à 6 chiffres affiché par votre application d'authentification.",
+    input: "text",
+    inputAttributes: { inputmode: "numeric", autocomplete: "one-time-code", maxlength: "6" },
+    showCancelButton: true,
+    confirmButtonText: "Valider",
+    cancelButtonText: "Annuler",
+    confirmButtonColor: "#3b9452",
+    inputValidator: (value) => (/^\d{6}$/.test(value.trim()) ? null : "6 chiffres attendus."),
+  });
+  return result.isConfirmed ? String(result.value).trim() : null;
+}

@@ -1,6 +1,7 @@
 // src/app/sitemap.ts
 // Génère /sitemap.xml : les pages statiques du site + une entrée par offre
-// active, pour que les moteurs de recherche découvrent chaque offre.
+// active et une par entreprise de l'annuaire, pour que les moteurs de
+// recherche découvrent chaque offre et chaque page entreprise.
 
 import type { MetadataRoute } from "next";
 import { collection, getDocs, query, Timestamp, where } from "firebase/firestore";
@@ -48,5 +49,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Erreur génération du sitemap (offres) :", err);
   }
 
-  return [...staticEntries, ...jobEntries];
+  let companyEntries: MetadataRoute.Sitemap = [];
+  try {
+    const ids = hasAdminCredentials()
+      ? (await getAdminDb().collection("entreprises").select().get()).docs.map((d) => d.id)
+      : (await getDocs(collection(db, "entreprises"))).docs.map((d) => d.id);
+    companyEntries = ids.map((id) => ({ url: `${base}/entreprises/${encodeURIComponent(id)}`, lastModified: now }));
+  } catch (err) {
+    console.error("Erreur génération du sitemap (entreprises) :", err);
+  }
+
+  return [...staticEntries, ...jobEntries, ...companyEntries];
 }

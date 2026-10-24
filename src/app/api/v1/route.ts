@@ -22,6 +22,7 @@ export function GET(req: NextRequest) {
           evenements: `${base}/evenements?ville=`,
           evenement: `${base}/evenements/{id}`,
           annuaires: `${base}/annuaires?categorie=universites|entreprises|clubs&ville=`,
+          entreprise: `${base}/entreprises/{id}`,
           droitDuTravail: `${base}/droit-du-travail?theme=`,
           quiz: `${base}/quiz?theme=entretiens|droit_du_travail`,
           actualites: `${base}/actualites`,

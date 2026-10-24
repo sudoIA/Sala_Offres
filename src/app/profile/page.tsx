@@ -17,6 +17,9 @@ import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { FavoritesPanel } from "@/components/profile/FavoritesPanel";
 import { JobAlertsPanel } from "@/components/profile/JobAlertsPanel";
 import { SavedCvsPanel } from "@/components/profile/SavedCvsPanel";
+import { QuizBadges } from "@/components/QuizBadges";
+import { useQuizResults } from "@/hooks/useQuizResults";
+import { QUIZ_THEME_LABELS, type QuizTheme } from "@/types/quiz";
 import { loadUserProfile, logoutUser, saveJobAlerts, updateUserProfile, type ProfileUpdateData } from "@/lib/candidate-profile";
 import type { JobAlertPrefs } from "@/lib/job-alerts";
 import type { UserProfile } from "@/types/user-profile";
@@ -38,6 +41,7 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [tab, setTab] = useState<Tab>("about");
   const [modalOpen, setModalOpen] = useState(false);
+  const { results: quizResults } = useQuizResults();
 
   useEffect(() => {
     if (authLoading) return;
@@ -149,6 +153,21 @@ export default function ProfilePage() {
                     <span className="text-muted small">Aucune compétence listée</span>
                   )}
                 </div>
+
+                <hr className="my-4" />
+
+                <h5 className="fw-bold mb-3">Mes badges de quiz</h5>
+                {(["entretiens", "droit_du_travail"] as QuizTheme[]).map((theme) => (
+                  <div className="mb-3" key={theme}>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="small fw-bold">{QUIZ_THEME_LABELS[theme]}</span>
+                      <Link href={theme === "entretiens" ? "/entretiens" : "/legislation"} className="small">
+                        {quizResults[theme] ? "Rejouer" : "Jouer"} <i className="fas fa-arrow-right ms-1"></i>
+                      </Link>
+                    </div>
+                    <QuizBadges result={quizResults[theme]} compact />
+                  </div>
+                ))}
 
                 <hr className="my-4" />
 

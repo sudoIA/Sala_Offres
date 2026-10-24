@@ -7,6 +7,7 @@
 "use client";
 
 import { Suspense, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { AppTopbar } from "@/components/layout/AppTopbar";
@@ -177,7 +178,19 @@ function AnnuairesPageInner() {
       </div>
 
       <Modal open={!!detailItem} onClose={() => setDetailItem(null)} title={annuaireModalTitle(category)} size="md">
-        {detailItem && <AnnuaireDetailContent category={category} item={detailItem} />}
+        {detailItem && (
+          <AnnuaireDetailContent
+            category={category}
+            item={detailItem}
+            extraActions={
+              category === "companies" ? (
+                <Link href={`/entreprises/${encodeURIComponent(detailItem.id)}`} className="btn btn-sm btn-outline-success rounded-pill">
+                  <i className="fas fa-briefcase me-1"></i> Page entreprise et offres
+                </Link>
+              ) : undefined
+            }
+          />
+        )}
       </Modal>
 
       <FabCv />

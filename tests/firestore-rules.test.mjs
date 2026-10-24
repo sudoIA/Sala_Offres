@@ -122,6 +122,32 @@ await check("une seule réponse refusée", assertFails(setDoc(doc(admin, "quiz/q
 await check("champ inconnu refusé", assertFails(setDoc(doc(admin, "quiz/q3"), { ...quiz, extra: 1 })));
 await check("admin supprime une question", assertSucceeds(deleteDoc(doc(admin, "quiz/q1"))));
 
+console.log("Statistiques mensuelles");
+await check("visite : création à 1", assertSucceeds(setDoc(doc(anon, "stats_monthly/2026-10"), { visits: increment(1) }, { merge: true })));
+await check("visite : +1", assertSucceeds(setDoc(doc(anon, "stats_monthly/2026-10"), { visits: increment(1) }, { merge: true })));
+await check("quiz : nouveau compteur à 1", assertSucceeds(setDoc(doc(anon, "stats_monthly/2026-10"), { quizzes: increment(1) }, { merge: true })));
+await check("visite : +3 refusé", assertFails(setDoc(doc(anon, "stats_monthly/2026-10"), { visits: increment(3) }, { merge: true })));
+await check("deux compteurs à la fois refusés", assertFails(setDoc(doc(anon, "stats_monthly/2026-10"), { visits: increment(1), jobViews: increment(1) }, { merge: true })));
+await check("champ inconnu refusé", assertFails(setDoc(doc(anon, "stats_monthly/2026-10"), { autre: increment(1) }, { merge: true })));
+await check("mois mal formé refusé", assertFails(setDoc(doc(anon, "stats_monthly/pirate"), { visits: increment(1) }, { merge: true })));
+await check("visiteur ne lit pas les statistiques", assertFails(getDoc(doc(anon, "stats_monthly/2026-10"))));
+await check("admin lit les statistiques", assertSucceeds(getDoc(doc(admin, "stats_monthly/2026-10"))));
+
+console.log("Badges de quiz du profil");
+await check("recréation du profil", assertSucceeds(setDoc(doc(user, "users/u1"), profile)));
+await check("candidat enregistre ses scores", assertSucceeds(updateDoc(doc(user, "users/u1"), { quizResults: { droit_du_travail: { best: 8, total: 10, attempts: 1 } } })));
+await check("thème inconnu refusé dans les scores", assertFails(updateDoc(doc(user, "users/u1"), { quizResults: { autre: {} } })));
+
+console.log("Double authentification des admins");
+const adminMfa = env.authenticatedContext("admin1", { email: "a@sala.cg", email_verified: true, firebase: { sign_in_provider: "password", sign_in_second_factor: "totp" } }).firestore();
+await check("admin active la règle", assertSucceeds(setDoc(doc(admin, "settings/security"), { adminMfaRequired: true })));
+await check("règle active : admin sans code refusé", assertFails(setDoc(doc(admin, "emplois/y"), { title: "y" })));
+await check("règle active : admin sans code ne lit plus les imports", assertFails(getDocs(collection(admin, "import_sources"))));
+await check("règle active : admin avec code accepté", assertSucceeds(setDoc(doc(adminMfa, "emplois/y"), { title: "y" })));
+await check("règle active : lecture publique inchangée", assertSucceeds(getDoc(doc(anon, "emplois/job1"))));
+await check("admin avec code désactive la règle", assertSucceeds(setDoc(doc(adminMfa, "settings/security"), { adminMfaRequired: false })));
+await check("règle inactive : admin sans code accepté", assertSucceeds(setDoc(doc(admin, "emplois/z"), { title: "z" })));
+
 console.log("Application mobile");
 await check("Questions lisibles une fois connecté", assertSucceeds(getDoc(doc(user, "Questions/q1"))));
 await check("Questions illisibles sans compte", assertFails(getDoc(doc(anon, "Questions/q1"))));

@@ -56,7 +56,13 @@ export default function AuthPage() {
     } catch (err) {
       const authErr = err as AuthError;
       console.error(authErr);
-      setError(authErr.code === "auth/too-many-requests" ? "Trop de tentatives. Veuillez patienter un instant." : "Identifiants incorrects ou compte inexistant.");
+      setError(
+        authErr.code === "auth/too-many-requests"
+          ? "Trop de tentatives. Veuillez patienter un instant."
+          : authErr.code === "auth/multi-factor-auth-required"
+            ? "Ce compte administrateur est protégé par la double authentification : connectez-vous depuis l'espace administration (/connexion)."
+            : "Identifiants incorrects ou compte inexistant."
+      );
     } finally {
       setLoginLoading(false);
     }
@@ -96,7 +102,9 @@ export default function AuthPage() {
     } catch (err) {
       const authErr = err as AuthError;
       console.error(authErr);
-      if (authErr.code !== "auth/popup-closed-by-user") setError("Erreur Google Sign-In : " + authErr.message);
+      if (authErr.code === "auth/multi-factor-auth-required") {
+        setError("Ce compte administrateur est protégé par la double authentification : connectez-vous depuis l'espace administration (/connexion).");
+      } else if (authErr.code !== "auth/popup-closed-by-user") setError("Erreur Google Sign-In : " + authErr.message);
     } finally {
       setGoogleLoading(false);
     }

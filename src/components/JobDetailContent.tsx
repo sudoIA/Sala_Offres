@@ -7,10 +7,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { sanitizeHtml } from "@/lib/sanitize-html";
 import { CompanyTile } from "@/components/CompanyTile";
 import { CountdownGrid } from "@/components/CountdownGrid";
 import { useCompanyLogos } from "@/hooks/useCompanyLogos";
+import { useCompanyFor } from "@/hooks/useCompanyDirectory";
 import { formatJobBody } from "@/lib/job-body";
 import { recordJobView } from "@/lib/job-views";
 import type { Job } from "@/types/job";
@@ -25,6 +27,8 @@ export function JobDetailContent({ job }: { job: Job }) {
   }, [job.id]);
   const logos = useCompanyLogos([job.company]);
   const logoUrl = job.company ? logos[job.company] : null;
+  // Fiche de l'annuaire correspondante, s'il y en a une (page entreprise).
+  const directoryCompany = useCompanyFor(job.company);
 
   const safeTitle = sanitizeHtml(job.title || "Offre d'emploi");
   const safeCompany = sanitizeHtml(job.company || "Entreprise au Congo");
@@ -150,6 +154,11 @@ export function JobDetailContent({ job }: { job: Job }) {
           )}
           {!job.city && !site && !job.tel && !email && (
             <p className="text-muted small mb-0">Aucune coordonnée supplémentaire renseignée.</p>
+          )}
+          {directoryCompany && (
+            <Link href={`/entreprises/${encodeURIComponent(directoryCompany.id)}`} className="btn btn-sm btn-outline-success rounded-pill mt-3">
+              <i className="fas fa-building me-1"></i> Fiche de l&apos;entreprise et toutes ses offres
+            </Link>
           )}
         </div>
       )}

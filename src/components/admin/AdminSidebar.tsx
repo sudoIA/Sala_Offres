@@ -23,14 +23,14 @@ export function AdminSidebar() {
 
       <div className="sala-sidebar-nav">
         <div className="sala-nav-section-title">Vue</div>
-        {ADMIN_NAV_ITEMS.slice(0, 1).map((item) => (
+        {ADMIN_NAV_ITEMS.slice(0, 2).map((item) => (
           <Link key={item.href} href={item.href} className={`sala-nav-item${pathname === item.href ? " active" : ""}`}>
             <i className={item.icon}></i> {item.label}
           </Link>
         ))}
 
         <div className="sala-nav-section-title">Contenu</div>
-        {ADMIN_NAV_ITEMS.slice(1).map((item) => (
+        {ADMIN_NAV_ITEMS.slice(2).map((item) => (
           <Link
             key={item.href}
             href={item.href}

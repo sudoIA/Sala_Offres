@@ -2042,6 +2042,82 @@ footer.sala-footer .footer-recaptcha {
   color: #b9050f;
 }
 
+/* Badges des quiz (voir src/lib/quiz-badges.ts). */
+.quiz-badges {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.quiz-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border: 1px dashed var(--sala-border);
+  border-radius: var(--sala-radius-md);
+  color: var(--sala-text-muted);
+  min-width: 0;
+}
+
+.quiz-badge-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sala-bg);
+  font-size: 1.05rem;
+}
+
+.quiz-badge-label {
+  font-weight: 700;
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.quiz-badge-hint {
+  font-size: 0.7rem;
+  line-height: 1.2;
+}
+
+.quiz-badge.earned {
+  border-style: solid;
+  border-color: var(--sala-green-border);
+  background: var(--sala-green-subtle);
+  color: var(--sala-green-dark);
+}
+
+.quiz-badge.earned .quiz-badge-icon {
+  background: var(--sala-green);
+  color: #fff;
+}
+
+.quiz-badges.compact .quiz-badge {
+  padding: 6px 4px;
+}
+
+.quiz-badges.compact .quiz-badge-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 0.85rem;
+}
+
+:root.dark-mode .quiz-badge.earned {
+  background: rgba(59, 148, 82, 0.14);
+  border-color: rgba(59, 148, 82, 0.45);
+  color: #8fd19e;
+}
+
+@media (max-width: 420px) {
+  .quiz-badges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Confettis affichés quand le score du quiz d'entretien atteint 80%. */
 .confetti-wrap {
   position: fixed;
@@ -4219,6 +4295,48 @@ body.dashboard-body {
 .insight-bar-col:hover .insight-bar,
 .insight-bar-col:focus .insight-bar {
   filter: brightness(0.85);
+}
+
+/* Rapport mensuel (Admin > Rapport mensuel). */
+.report-delta {
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+.report-delta-up {
+  color: var(--sala-green-dark);
+}
+
+.report-delta-down {
+  color: var(--sala-red-dark);
+}
+
+.report-delta-flat {
+  color: var(--sala-text-muted);
+}
+
+@media print {
+  .sala-sidebar,
+  .admin-topbar,
+  .admin-mobile-tabs,
+  .no-print {
+    display: none !important;
+  }
+
+  .report-page details {
+    display: none;
+  }
+
+  .report-page .admin-panel,
+  .report-page .stat-card {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .report-page .insight-bar {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
 }
 
 .insight-ranking {

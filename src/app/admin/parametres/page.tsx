@@ -12,12 +12,14 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { DEFAULT_SETTINGS, clearSiteSettingsCache, loadSiteSettings, type SiteSettings } from "@/lib/site-settings";
-import { notify } from "@/lib/notify";
+import { askMfaCode, notify } from "@/lib/notify";
+import { isMfaRequired, mfaErrorMessage, resolveTotpSignIn } from "@/lib/mfa";
 import { AutoPublishPanel } from "@/components/admin/AutoPublishPanel";
 import { DashCleanupPanel } from "@/components/admin/DashCleanupPanel";
+import { SecurityPanel } from "@/components/admin/SecurityPanel";
 import { logAdminAction } from "@/lib/admin-log";
 
 export default function AdminSettingsPage() {
@@ -61,7 +63,15 @@ export default function AdminSettingsPage() {
     setSavingPassword(true);
     try {
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
-      await reauthenticateWithCredential(user, credential);
+      try {
+        await reauthenticateWithCredential(user, credential);
+      } catch (err) {
+        // Compte protégé par la double authentification : le code est aussi demandé.
+        if (!isMfaRequired(err)) throw err;
+        const code = await askMfaCode();
+        if (!code) return;
+        await resolveTotpSignIn(auth, err, code);
+      }
       await updatePassword(user, newPassword);
       setCurrentPassword("");
       setNewPassword("");
@@ -71,7 +81,7 @@ export default function AdminSettingsPage() {
       const message =
         code === "auth/wrong-password" || code === "auth/invalid-credential"
           ? "Mot de passe actuel incorrect."
-          : "Erreur : " + (err as Error).message;
+          : mfaErrorMessage(err);
       notify(message, "error");
     } finally {
       setSavingPassword(false);
@@ -305,6 +315,7 @@ export default function AdminSettingsPage() {
         </form>
       </div>
 
+      <SecurityPanel />
       <AutoPublishPanel />
       <DashCleanupPanel />
     </section>
