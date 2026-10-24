@@ -256,7 +256,8 @@ export default function AuthPage() {
               </form>
             )}
 
-            <div className="text-center mt-4 pt-3 border-top">
+            {/* Accès admin proposé sur ordinateur seulement, comme dans le pied de page. */}
+            <div className="text-center mt-4 pt-3 border-top d-none d-lg-block">
               <small className="text-muted">
                 Vous êtes administrateur de l&apos;ONG ?{" "}
                 <Link href="/connexion" className="text-decoration-none fw-bold" style={{ color: "var(--sala-green)" }}>Accès Admin</Link>
